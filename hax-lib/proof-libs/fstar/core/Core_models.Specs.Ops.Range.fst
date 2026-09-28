@@ -17,3 +17,10 @@ let new_accessors (a b: usize) : Lemma
 let contains (r: t_RangeInclusive usize) (x: usize) : bool = impl_10__contains #usize #usize r x
 
 let is_empty (r: t_RangeInclusive usize) : bool = impl_10__is_empty #usize r
+
+/// A client's generic `r.contains(&x)`, as hax extracts it: F* traits have no
+/// provided methods, so this goes through `RangeBoundsDefaults`.
+let generic_contains (#r: Type0) {| Core_models.Ops.Range.t_RangeBounds r usize |} (x: r) (i: usize)
+    : bool = f_contains #r #usize #FStar.Tactics.Typeclasses.solve #usize x i
+
+let range_contains (r: t_Range usize) (x: usize) : bool = generic_contains r x

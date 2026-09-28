@@ -409,12 +409,6 @@ pub fn test_binary_search_unsorted_present_but_missed() -> bool {
 }
 
 #[rust_lean_test]
-pub fn test_range_inclusive_accessors() -> bool {
-    let r = 1usize..=3;
-    *r.start() == 1 && *r.end() == 3
-}
-
-#[rust_lean_test]
 pub fn test_copy_within() -> bool {
     let mut a: [u8; 4] = [1, 2, 3, 4];
     let s: &mut [u8] = &mut a;

@@ -106,6 +106,12 @@ pub fn test_range_inclusive_into_inner() -> bool {
 }
 
 #[rust_lean_test]
+pub fn test_range_inclusive_accessors() -> bool {
+    let r = 1usize..=3;
+    *r.start() == 1 && *r.end() == 3
+}
+
+#[rust_lean_test]
 pub fn test_range_inclusive_contains() -> bool {
     let r = 2u8..=5;
     r.contains(&2) && r.contains(&5) && !r.contains(&1) && !r.contains(&6)

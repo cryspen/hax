@@ -5,6 +5,10 @@
 //! is what makes aeneas emit `clone_from := ...default inst` in every instance
 //! here. The opposite shape -- no call anywhere, so no field at all -- is what
 //! the `alloc` model extraction exercises.
+//!
+//! Also guards `RangeBounds::contains`, the other way round: nothing in this
+//! crate may call it, so only the charon root that `cargo hax` adds keeps the
+//! field in the instance below.
 
 #![allow(dead_code)]
 
@@ -126,4 +130,24 @@ pub struct NotClone(pub u8);
 
 pub fn ref_clone(a: &NotClone) -> &NotClone {
     core::clone::Clone::clone(&a)
+}
+
+// ----- a client `RangeBounds` ------------------------------------------------
+
+pub struct Interval {
+    lo: u8,
+    hi: u8,
+}
+
+impl core::ops::RangeBounds<u8> for Interval {
+    fn start_bound(&self) -> core::ops::Bound<&u8> {
+        core::ops::Bound::Included(&self.lo)
+    }
+    fn end_bound(&self) -> core::ops::Bound<&u8> {
+        core::ops::Bound::Excluded(&self.hi)
+    }
+}
+
+pub fn interval_start(x: &Interval) -> core::ops::Bound<&u8> {
+    core::ops::RangeBounds::start_bound(x)
 }
