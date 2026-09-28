@@ -181,6 +181,49 @@ let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
   else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
 
+/// See [`std::slice::copy_within`]
+let impl__copy_within
+      (#v_T #v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Range.t_RangeBounds v_R usize)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Marker.t_Copy v_T)
+      (s: t_Slice v_T)
+      (src: v_R)
+      (dest: usize)
+    : Prims.Pure (t_Slice v_T)
+      (requires
+        (match
+            Core_models.Slice.Index.try_range #v_R
+              src
+              ({ Core_models.Ops.Range.f_end = impl__len #v_T s <: usize }
+                <:
+                Core_models.Ops.Range.t_RangeTo usize)
+            <:
+            Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)
+          with
+          | Core_models.Option.Option_Some r ->
+            dest <=.
+            ((impl__len #v_T s <: usize) -!
+              (r.Core_models.Ops.Range.f_end -! r.Core_models.Ops.Range.f_start <: usize)
+              <:
+              usize)
+          | Core_models.Option.Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  let r:Core_models.Ops.Range.t_Range usize =
+    Core_models.Slice.Index.range #v_R
+      src
+      ({ Core_models.Ops.Range.f_end = impl__len #v_T s <: usize }
+        <:
+        Core_models.Ops.Range.t_RangeTo usize)
+  in
+  let s:t_Slice v_T =
+    Rust_primitives.Slice.slice_copy_within #v_T
+      s
+      r.Core_models.Ops.Range.f_start
+      r.Core_models.Ops.Range.f_end
+      dest
+  in
+  s
+
 /// See [`std::slice::get_unchecked`]
 assume
 val impl__get_unchecked':

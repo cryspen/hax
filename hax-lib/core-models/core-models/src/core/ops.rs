@@ -371,6 +371,57 @@ pub mod range {
     }
 
     impl_iterator_range_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+
+    /// See [`std::ops::Bound`]
+    pub enum Bound<T> {
+        Included(T),
+        Excluded(T),
+        Unbounded,
+    }
+    /// See [`std::ops::RangeBounds`]
+    #[hax_lib::attributes]
+    pub trait RangeBounds<T> {
+        #[hax_lib::requires(true)]
+        fn start_bound(&self) -> Bound<&T>;
+        #[hax_lib::requires(true)]
+        fn end_bound(&self) -> Bound<&T>;
+    }
+    macro_rules! range_bounds_methods {
+        (|$r:ident| $start:expr, $end:expr) => {
+            fn start_bound(&self) -> Bound<&T> {
+                let $r = self;
+                $start
+            }
+            fn end_bound(&self) -> Bound<&T> {
+                let $r = self;
+                $end
+            }
+        };
+    }
+    impl<T> RangeBounds<T> for RangeFull {
+        range_bounds_methods!(|_r| Bound::Unbounded, Bound::Unbounded);
+    }
+    impl<T> RangeBounds<T> for RangeFrom<T> {
+        range_bounds_methods!(|r| Bound::Included(&r.start), Bound::Unbounded);
+    }
+    impl<T> RangeBounds<T> for RangeTo<T> {
+        range_bounds_methods!(|r| Bound::Unbounded, Bound::Excluded(&r.end));
+    }
+    impl<T> RangeBounds<T> for Range<T> {
+        range_bounds_methods!(|r| Bound::Included(&r.start), Bound::Excluded(&r.end));
+    }
+    impl<T> RangeBounds<T> for (Bound<T>, Bound<T>) {
+        range_bounds_methods!(|r| bound_as_ref(&r.0), bound_as_ref(&r.1));
+    }
+    // std's `Bound::as_ref`, as a function: an inherent `impl Bound` block
+    // would take a positional `impl_N` name that must match real core's.
+    fn bound_as_ref<T>(bound: &Bound<T>) -> Bound<&T> {
+        match bound {
+            Bound::Included(x) => Bound::Included(x),
+            Bound::Excluded(x) => Bound::Excluded(x),
+            Bound::Unbounded => Bound::Unbounded,
+        }
+    }
 }
 
 #[cfg(test)]
