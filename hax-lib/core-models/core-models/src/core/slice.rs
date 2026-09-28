@@ -799,7 +799,7 @@ pub mod index {
         }
     }
 
-    // One function per bound: Aeneas fails on a body that matches on both.
+    // Inline into `try_range`, as std does, once AeneasVerif/aeneas#1369 is fixed.
     fn start_index<R: crate::ops::range::RangeBounds<usize>>(range: &R) -> Option<usize> {
         use crate::ops::range::Bound;
         match range.start_bound() {
@@ -809,6 +809,7 @@ pub mod index {
         }
     }
 
+    // Inline into `try_range`, as std does, once AeneasVerif/aeneas#1369 is fixed.
     fn end_index<R: crate::ops::range::RangeBounds<usize>>(range: &R, len: usize) -> Option<usize> {
         use crate::ops::range::Bound;
         match range.end_bound() {
