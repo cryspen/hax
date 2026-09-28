@@ -1,5 +1,5 @@
-{ craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine
-, doCheck ? true, zlib, just, libiconv }:
+{ craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine, zlib
+, just, libiconv }:
 let
   pname = "hax";
   is-webapp-static-asset = path:
@@ -14,8 +14,9 @@ let
     src = lib.cleanSourceWith {
       src = craneLib.path ./..;
       filter = path: type:
-        (builtins.isNull
-        (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
+        # Trees no workspace member builds against, kept out of the source hash.
+        (builtins.isNull (builtins.match
+          ".*/(tests|examples|docs|proof-libs|hax-lib/core-models)/.*" path)
         && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
           || is-crate-readme path)
         && (craneLib.filterCargoSources path type
@@ -23,18 +24,12 @@ let
           || is-crate-readme path))
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
-    inherit buildInputs doCheck;
+    inherit buildInputs;
+    # Workspace tests run in the `Test Workspace` CI job instead.
+    doCheck = false;
     cargoExtraArgs = "--locked";
     doNotRemoveReferencesToRustToolchain = true;
-  } // (if doCheck then {
-    # [cargo test] builds independent workspaces. Each time another
-    # workspace is added, it's corresponding lockfile should be added
-    # in the [cargoLockList] list below.
-    cargoVendorDir = craneLib.vendorMultipleCargoDeps {
-      cargoLockList = [ ../Cargo.lock ../tests/Cargo.lock ];
-    };
-  } else
-    { });
+  };
   # hax dependencies (without hax itself)
   cargoArtifacts = craneLib.buildDepsOnly (commonArgs // { pname = pname; });
   # `cargo-hax` alone, matching a plain `cargo install cargo-hax`: built in its
@@ -78,6 +73,18 @@ let
     cargoExtraArgs =
       "--locked -p cargo-hax --bin hax-export-json-schemas --features cargo-hax/legacy-engine";
   });
+  # All `hax-engine-names-extract` needs; unlike `hax`, it does not wait for
+  # `hax_export_json_schemas`, so both build in parallel. `cargo-hax` looks for
+  # the driver next to its own executable, hence one directory for both.
+  hax_frontend_only = stdenv.mkDerivation {
+    name = "hax-frontend-only-${commonArgs.version}";
+    phases = [ "installPhase" ];
+    installPhase = ''
+      mkdir -p $out/bin
+      cp ${hax_bin}/bin/cargo-hax $out/bin/
+      cp ${hax_driver_and_libs}/bin/driver-hax-frontend-exporter $out/bin/
+    '';
+  };
   # hax without cargo artifacts: only binaries
   hax = stdenv.mkDerivation {
     name = "hax-${commonArgs.version}";
@@ -113,10 +120,22 @@ let
     # '';
     inherit cargoArtifacts pname;
   });
+  # [cargo test] builds independent workspaces. Each time another
+  # workspace is added, it's corresponding lockfile should be added
+  # in the [cargoLockList] list below.
+  tests-vendor-dir = craneLib.vendorMultipleCargoDeps {
+    cargoLockList = [ ../Cargo.lock ../tests/Cargo.lock ];
+  };
   tests = craneLib.buildPackage (commonArgs // {
-    inherit cargoArtifacts;
+    # Cargo rebuilds any dependency whose vendored source path changed, so
+    # these artifacts must come from the same vendor directory.
+    cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
+      pname = "hax-tests";
+      cargoVendorDir = tests-vendor-dir;
+    });
     pname = "hax-tests";
     doCheck = true;
+    cargoVendorDir = tests-vendor-dir;
     CI = "true";
     cargoBuildCommand = "true";
     checkPhaseCargoCommand = ''
@@ -169,7 +188,7 @@ in stdenv.mkDerivation {
       cargoArtifacts = hax_driver_and_libs;
       # `build.rs` here shells out to `cargo-hax`, which in turn needs
       # `hax-driver` on `PATH`: both are needed, not just `hax_driver_and_libs`.
-      nativeBuildInputs = [ hax ];
+      nativeBuildInputs = [ hax_frontend_only ];
       postUnpack = ''
         cd $sourceRoot/engine/names/extract
         sourceRoot="."
