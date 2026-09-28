@@ -371,6 +371,70 @@ pub mod range {
     }
 
     impl_iterator_range_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+
+    /// See [`std::ops::Bound`]
+    pub enum Bound<T> {
+        Included(T),
+        Excluded(T),
+        Unbounded,
+    }
+    /// See [`std::ops::RangeBounds`]
+    #[hax_lib::attributes]
+    pub trait RangeBounds<T> {
+        #[hax_lib::requires(true)]
+        fn start_bound(&self) -> Bound<&T>;
+        #[hax_lib::requires(true)]
+        fn end_bound(&self) -> Bound<&T>;
+    }
+    impl<T> RangeBounds<T> for RangeFull {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+    }
+    impl<T> RangeBounds<T> for RangeFrom<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+    }
+    impl<T> RangeBounds<T> for RangeTo<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Excluded(&self.end)
+        }
+    }
+    impl<T> RangeBounds<T> for Range<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Excluded(&self.end)
+        }
+    }
+    impl<T> RangeBounds<T> for (Bound<T>, Bound<T>) {
+        fn start_bound(&self) -> Bound<&T> {
+            bound_as_ref(&self.0)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            bound_as_ref(&self.1)
+        }
+    }
+    // std's `Bound::as_ref`, as a function: an inherent `impl Bound` block
+    // would take a positional `impl_N` name that must match real core's.
+    fn bound_as_ref<T>(bound: &Bound<T>) -> Bound<&T> {
+        match bound {
+            Bound::Included(x) => Bound::Included(x),
+            Bound::Excluded(x) => Bound::Excluded(x),
+            Bound::Unbounded => Bound::Unbounded,
+        }
+    }
 }
 
 #[cfg(test)]

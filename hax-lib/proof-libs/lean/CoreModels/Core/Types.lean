@@ -1065,6 +1065,22 @@ structure ops.range.RangeInclusive (T : Type) where
   start : T
   «end» : T
 
+/-- [core_models::ops::range::Bound]
+    Source: 'core-models/src/core/ops.rs', lines 376:4-380:5
+    Visibility: public -/
+@[discriminant isize]
+inductive ops.range.Bound (T : Type) where
+| Included : T → ops.range.Bound T
+| Excluded : T → ops.range.Bound T
+| Unbounded : ops.range.Bound T
+
+/-- Trait declaration: [core_models::ops::range::RangeBounds]
+    Source: 'core-models/src/core/ops.rs', lines 383:4-388:5
+    Visibility: public -/
+structure ops.range.RangeBounds (Self : Type) (T : Type) where
+  start_bound : Self → RustM (ops.range.Bound T)
+  end_bound : Self → RustM (ops.range.Bound T)
+
 /-- [core_models::panic::location::Location]
     Source: 'core-models/src/core/panic.rs', lines 11:4-15:5
     Visibility: public -/

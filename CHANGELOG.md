@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+Lean backend and library:
+ - Add models of `RangeBounds`, `copy_within` on slices and `drain` on `Vec`
+
+F* backend and library:
+ - Add models of `RangeBounds`, `copy_within` on slices and `drain` on `Vec`,
+   with preconditions for the ranges on which Rust panics
+
+### Changed
+
+F* backend and library:
+ - Breaking: `Core_models.Ops.Range.impl` to `impl_4` are now the `RangeBounds`
+   instances, with the `Iterator` instances of `Range` moving to `impl_5` to
+   `impl_16`
+
 ## [0.4.1] - 2026-09-23
 
 ### Fixed
