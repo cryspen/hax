@@ -328,6 +328,20 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     quote! {#attr #item}.into()
 }
 
+/// Errors for the `attr`s of a field that can be enabled at once, given the
+/// predicates of their `cfg_attr` wrappers.
+fn overlap_errors(cfgs: &[Option<Meta>], attr: &str) -> Vec<TokenStream> {
+    let message = format!("At most one `{attr}` may be enabled per field.");
+    let error = quote! {const _: () = {compile_error!(#message)};};
+    (0..cfgs.len())
+        .flat_map(|j| (0..j).map(move |i| (i, j)))
+        .map(|(i, j)| {
+            let preds = cfgs[i].iter().chain(&cfgs[j]);
+            cfg_gate(error.clone(), &parse_quote! {all(#(#preds),*)})
+        })
+        .collect()
+}
+
 pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
 
@@ -468,35 +482,44 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
             }
             visit_mut::visit_item_impl_mut(self, item);
         }
-        fn visit_fields_named_mut(&mut self, fields_named: &mut FieldsNamed) {
-            visit_mut::visit_fields_named_mut(self, fields_named);
+        fn visit_field_mut(&mut self, field: &mut Field) {
+            visit_mut::visit_field_mut(self, field);
 
-            fn handle_reorder_attribute(attrs: &mut Vec<Attribute>, errors: &mut Vec<TokenStream>) {
-                retain_through_cfg_attr(attrs, |meta, cfg| {
-                    if !is_order(meta) {
-                        return true;
-                    }
-                    let Meta::List(ml) = meta else { unreachable!() };
-                    let Ok(n) =
-                        syn::parse2::<LitInt>(ml.tokens.clone()).and_then(|lit| lit.base10_parse())
-                    else {
-                        let error = quote! {const _: () = {compile_error!("Expected a (base 10) i32 literal.")};};
+            let named = field.ident.is_some();
+            let errors = &mut self.extra_items;
+            let mut cfgs = vec![];
+            retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                if !is_order(meta) {
+                    return true;
+                }
+                let Meta::List(ml) = meta else { unreachable!() };
+                let n = if named {
+                    syn::parse2::<LitInt>(ml.tokens.clone())
+                        .and_then(|lit| lit.base10_parse())
+                        .map_err(|_| "Expected a (base 10) i32 literal.")
+                } else {
+                    // Constructors of unnamed fields are positional: reordering
+                    // the fields of the type alone would be ill-typed.
+                    Err("`order` is only supported on named fields.")
+                };
+                let n = match n {
+                    Ok(n) => n,
+                    Err(message) => {
+                        let error = quote! {const _: () = {compile_error!(#message)};};
                         errors.push(match cfg {
                             Some(pred) => cfg_gate(error, pred),
                             None => error,
                         });
                         return false;
-                    };
-                    let payload = AttrPayload::Order(n);
-                    let payload: Attribute = parse_quote!(#payload);
-                    *meta = payload.meta;
-                    true
-                });
-            }
-
-            for field in &mut fields_named.named {
-                handle_reorder_attribute(&mut field.attrs, &mut self.extra_items);
-            }
+                    }
+                };
+                cfgs.push(cfg.cloned());
+                let payload = AttrPayload::Order(n);
+                let payload: Attribute = parse_quote!(#payload);
+                *meta = payload.meta;
+                true
+            });
+            errors.extend(overlap_errors(&cfgs, "order"));
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
@@ -547,11 +570,13 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             .iter()
                             .map(|(name, ty)| quote! {#name: #ty, })
                             .collect();
+                        let mut cfgs = vec![];
                         retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
                             if !is_refine(meta) {
                                 return true;
                             }
                             let Meta::List(ml) = meta else { unreachable!() };
+                            let pred = cfg.cloned();
                             let cfg = cfg.map(|pred| quote! {#[cfg(#pred)]});
                             let refine = match syn::parse2::<Expr>(ml.tokens.clone()) {
                                 Ok(refine) => refine,
@@ -561,6 +586,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                                     return false;
                                 }
                             };
+                            cfgs.push(pred);
                             let uid = ItemUid::fresh();
                             let assoc_attr = AttrPayload::AssociatedItem {
                                 role: AssociationRole::Refine,
@@ -583,6 +609,11 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             });
                             true
                         });
+                        extra.extend(
+                            overlap_errors(&cfgs, "refine")
+                                .into_iter()
+                                .map(Item::Verbatim),
+                        );
                     }
                 }
                 _ => (),

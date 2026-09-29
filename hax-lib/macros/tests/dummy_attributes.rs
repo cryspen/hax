@@ -35,6 +35,7 @@ enum Variants {
 impl Refined {
     #[cfg_attr(all(), hax_lib::requires(self.x < 5))]
     #[hax_lib::ensures(|result| result == self.x)]
+    #[cfg_attr(all(), decreases(self.x))]
     fn get(&self) -> u8 {
         self.x
     }

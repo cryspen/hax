@@ -42,7 +42,7 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
-                    fun.attrs.retain(|attr| !is_decoration(&attr.meta))
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| !is_decoration(meta))
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
@@ -51,7 +51,7 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    fun.attrs.retain(|attr| !is_decoration(&attr.meta))
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| !is_decoration(meta))
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
