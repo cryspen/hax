@@ -328,23 +328,33 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     quote! {#attr #item}.into()
 }
 
+/// The disjunction of `preds`, where `None` stands for an always enabled
+/// predicate.
+fn any_of(preds: impl IntoIterator<Item = Option<Meta>>) -> Option<Meta> {
+    let preds = preds.into_iter().collect::<Option<Vec<_>>>()?;
+    Some(parse_quote! {any(#(#preds),*)})
+}
+
 /// An error raised when two of the `attr`s of a field are enabled at once,
 /// given the predicates of their `cfg_attr` wrappers.
 fn overlap_error(span: Span, cfgs: &[Option<Meta>], attr: &str) -> Option<TokenStream> {
-    let pairs: Vec<Meta> = (0..cfgs.len())
+    if cfgs.len() < 2 {
+        return None;
+    }
+    let pairs = (0..cfgs.len())
         .flat_map(|j| (0..j).map(move |i| (i, j)))
-        .map(|(i, j)| {
-            let preds = cfgs[i].iter().chain(&cfgs[j]);
-            parse_quote! {all(#(#preds),*)}
-        })
-        .collect();
+        .map(|(i, j)| match (&cfgs[i], &cfgs[j]) {
+            (None, None) => None,
+            (a, b) => {
+                let preds = a.iter().chain(b);
+                Some(parse_quote! {all(#(#preds),*)})
+            }
+        });
     let message = format!("At most one `{attr}` may be enabled per field.");
-    (!pairs.is_empty()).then(|| {
-        gated_error(
-            Error::new(span, message),
-            Some(&parse_quote! {any(#(#pairs),*)}),
-        )
-    })
+    Some(gated_error(
+        Error::new(span, message),
+        any_of(pairs).as_ref(),
+    ))
 }
 
 pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
@@ -449,31 +459,22 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    // Only checked on decorated functions. On an error, the
-                    // specifications are dropped: generating them would pile
-                    // rustc errors on top of ours. The error is raised
-                    // whenever one of them is enabled.
-                    let mut error = None;
-                    let mut cfgs: Vec<Option<Meta>> = vec![];
-                    retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
-                        if !is_decoration(meta)
-                            || error
-                                .get_or_insert_with(|| {
-                                    foreign_self_projection_error(&fun.sig, &assoc)
-                                })
-                                .is_none()
-                        {
-                            return true;
+                    let mut cfgs = vec![];
+                    for_each_through_cfg_attr(&fun.attrs, |meta, cfg| {
+                        if is_decoration(meta) {
+                            cfgs.push(cfg.cloned());
                         }
-                        cfgs.push(cfg.cloned());
-                        false
                     });
-                    if let Some(Some(error)) = error {
-                        let pred = cfgs.into_iter().collect::<Option<Vec<_>>>();
-                        self.extra_items.push(cfg_gate(
-                            error,
-                            pred.map(|preds| parse_quote! {any(#(#preds),*)}).as_ref(),
-                        ));
+                    if cfgs.is_empty() {
+                        continue;
+                    }
+                    if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
+                        // Drop the specifications: generating them would pile
+                        // rustc errors on top of ours. The error is raised
+                        // whenever one of them is enabled.
+                        retain_through_cfg_attr(&mut fun.attrs, |meta, _| !is_decoration(meta));
+                        self.extra_items
+                            .push(cfg_gate(error, any_of(cfgs).as_ref()));
                         continue;
                     }
                     visit_through_cfg_attr(&mut fun.attrs, |meta, _cfg| {
@@ -570,11 +571,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         })
                         .collect();
                     for (i, field) in s.fields.iter_mut().enumerate() {
-                        let prev = &idents[0..=i];
-                        let binders: TokenStream = prev
-                            .iter()
-                            .map(|(name, ty)| quote! {#name: #ty, })
-                            .collect();
+                        let mut binders = None;
                         let span = field.span();
                         let mut cfgs = vec![];
                         retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
@@ -589,6 +586,12 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                                 }
                             };
                             cfgs.push(cfg.cloned());
+                            let binders: &TokenStream = binders.get_or_insert_with(|| {
+                                idents[0..=i]
+                                    .iter()
+                                    .map(|(name, ty)| quote! {#name: #ty, })
+                                    .collect()
+                            });
                             let uid = ItemUid::fresh();
                             let assoc_attr = AttrPayload::AssociatedItem {
                                 role: AssociationRole::Refine,

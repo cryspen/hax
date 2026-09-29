@@ -36,7 +36,7 @@ pub fn is_decoration(meta: &Meta) -> bool {
 }
 
 /// `meta` if it is a `refine`, see [`expects_refine`].
-pub fn as_refine(meta: &mut Meta) -> Option<&mut MetaList> {
+pub fn as_refine(meta: &Meta) -> Option<&MetaList> {
     match meta {
         Meta::List(ml) if matches!(expects_refine(&ml.path), Ok(Some(_))) => Some(ml),
         _ => None,
@@ -44,7 +44,7 @@ pub fn as_refine(meta: &mut Meta) -> Option<&mut MetaList> {
 }
 
 /// `meta` if it is an `order`, see [`expects_order`].
-pub fn as_order(meta: &mut Meta) -> Option<&mut MetaList> {
+pub fn as_order(meta: &Meta) -> Option<&MetaList> {
     match meta {
         Meta::List(ml) if matches!(expects_order(&ml.path), Ok(Some(_))) => Some(ml),
         _ => None,
@@ -82,6 +82,42 @@ pub fn expects_hax_path(allowlist: &[&str], path: &Path) -> Result<Option<String
     )
 }
 
+/// A `cfg_attr(PRED, ARGS..)`.
+struct CfgAttr {
+    pred: Meta,
+    args: Vec<Meta>,
+}
+
+impl CfgAttr {
+    fn parse(ml: &MetaList) -> Option<Self> {
+        let mut args = ml
+            .parse_args_with(punctuated::Punctuated::<Meta, Token![,]>::parse_terminated)
+            .ok()?
+            .into_iter();
+        let pred = args.next()?;
+        Some(CfgAttr {
+            pred,
+            args: args.collect(),
+        })
+    }
+
+    /// The predicate under which the arguments are enabled, within `outer`.
+    fn nested_cfg(&self, outer: Option<&Meta>) -> Meta {
+        let pred = &self.pred;
+        match outer {
+            Some(outer) => parse_quote! {all(#outer, #pred)},
+            None => pred.clone(),
+        }
+    }
+}
+
+fn as_cfg_attr(meta: &Meta) -> Option<&MetaList> {
+    match meta {
+        Meta::List(ml) if ml.path.is_ident("cfg_attr") => Some(ml),
+        _ => None,
+    }
+}
+
 /// Calls `f` on the metas of `attrs`, descending into `cfg_attr(PRED, ..)`
 /// wrappers: `f` is then called on each nested meta, with the conjunction of
 /// the enclosing predicates. `f` may rewrite a meta in place, and returns
@@ -95,32 +131,51 @@ pub fn retain_through_cfg_attr(
         cfg: Option<&Meta>,
         f: &mut impl FnMut(&mut Meta, Option<&Meta>) -> bool,
     ) -> bool {
-        let Meta::List(ml) = meta else {
+        let Some(ml) = as_cfg_attr(meta) else {
             return f(meta, cfg);
         };
-        if !ml.path.is_ident("cfg_attr") {
-            return f(meta, cfg);
+        let Some(cfg_attr) = CfgAttr::parse(ml) else {
+            return true;
+        };
+        let nested_cfg = cfg_attr.nested_cfg(cfg);
+        let mut changed = false;
+        let mut kept = vec![];
+        for mut meta in cfg_attr.args {
+            let before = quote! {#meta}.to_string();
+            if !walk(&mut meta, Some(&nested_cfg), f) {
+                changed = true;
+                continue;
+            }
+            changed |= quote! {#meta}.to_string() != before;
+            kept.push(meta);
         }
-        let Ok(args) =
-            ml.parse_args_with(punctuated::Punctuated::<Meta, Token![,]>::parse_terminated)
-        else {
-            return true;
-        };
-        let mut args = args.into_iter();
-        let Some(pred) = args.next() else {
-            return true;
-        };
-        let nested_cfg: Meta = match cfg {
-            Some(outer) => parse_quote! {all(#outer, #pred)},
-            None => pred.clone(),
-        };
-        let nested: Vec<Meta> = args
-            .filter_map(|mut meta| walk(&mut meta, Some(&nested_cfg), f).then_some(meta))
-            .collect();
-        ml.tokens = quote::quote! {#pred, #(#nested),*};
-        !nested.is_empty()
+        if let (true, Meta::List(ml)) = (changed, meta) {
+            let pred = &cfg_attr.pred;
+            ml.tokens = quote! {#pred, #(#kept),*};
+        }
+        !kept.is_empty()
     }
     attrs.retain_mut(|attr| walk(&mut attr.meta, None, &mut f));
+}
+
+/// Like [`retain_through_cfg_attr`], without rewriting anything.
+#[cfg(hax)]
+pub fn for_each_through_cfg_attr(attrs: &[Attribute], mut f: impl FnMut(&Meta, Option<&Meta>)) {
+    fn walk(meta: &Meta, cfg: Option<&Meta>, f: &mut impl FnMut(&Meta, Option<&Meta>)) {
+        let Some(ml) = as_cfg_attr(meta) else {
+            return f(meta, cfg);
+        };
+        let Some(cfg_attr) = CfgAttr::parse(ml) else {
+            return;
+        };
+        let nested_cfg = cfg_attr.nested_cfg(cfg);
+        for meta in &cfg_attr.args {
+            walk(meta, Some(&nested_cfg), f);
+        }
+    }
+    for attr in attrs {
+        walk(&attr.meta, None, &mut f);
+    }
 }
 
 /// Gates every item of `tokens` on `#[cfg(#pred)]`, if there is a `pred`.

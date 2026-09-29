@@ -4,6 +4,7 @@
 #[test]
 fn compile_fail() {
     let t = trybuild::TestCases::new();
+    t.compile_fail("tests/ui/common/*.rs");
     if cfg!(hax) {
         // trybuild builds with `--target` and its own flags, dropping those of
         // `.cargo/config.toml`: pass `--cfg hax` to the target and the host
@@ -13,6 +14,8 @@ fn compile_fail() {
             "hax",
             "--cfg",
             "trybuild",
+            "--verbose",
+            "--diagnostic-width=140",
             "-A",
             "dead_code",
             "-A",
@@ -24,7 +27,5 @@ fn compile_fail() {
         std::env::set_var("CARGO_TARGET_APPLIES_TO_HOST", "false");
         std::env::set_var("CARGO_HOST_RUSTFLAGS", "--cfg hax");
         t.compile_fail("tests/ui/hax/*.rs");
-    } else {
-        t.compile_fail("tests/ui/dummy/*.rs");
     }
 }

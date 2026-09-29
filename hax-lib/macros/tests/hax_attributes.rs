@@ -25,6 +25,7 @@ trait Super {
     type Item;
 }
 
+#[hax_lib::attributes]
 trait Sub: Super {
     #[cfg_attr(any(), hax_lib::requires(,))]
     fn id(&self, x: Self::Item) -> Self::Item;

@@ -1,11 +1,11 @@
 error: `order` is only supported on named fields.
- --> tests/ui/dummy/unnamed_order.rs:2:16
+ --> tests/ui/common/unnamed_order.rs:2:16
   |
 2 | struct S(u8, #[hax_lib::order(0)] u8);
   |                ^^^^^^^^^^^^^^^^^
 
 error: `order` is only supported on named fields.
- --> tests/ui/dummy/unnamed_order.rs:6:25
+ --> tests/ui/common/unnamed_order.rs:6:25
   |
 6 |     A(#[cfg_attr(all(), hax_lib::order(0))] u8),
   |                         ^^^^^^^^^^^^^^^^^
