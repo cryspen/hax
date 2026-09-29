@@ -31,23 +31,23 @@ pub fn internal_macro_misuse(name: &str) -> TokenStream {
     quote! { ::std::compile_error!(#message) }.into()
 }
 
+/// Strips the hax attributes of `allowlist` from `attrs`.
+fn strip(attrs: &mut Vec<syn::Attribute>, allowlist: &[&str]) {
+    retain_through_cfg_attr(attrs, |meta, _| as_hax_meta(meta, allowlist).is_none())
+}
+
 /// Strips the hax attributes enabled by `#[attributes]`.
 pub fn attributes(item: TokenStream) -> TokenStream {
     let item: Item = parse_macro_input!(item);
 
-    #[derive(Default)]
-    struct AttrVisitor {
-        errors: Vec<proc_macro2::TokenStream>,
-    }
+    struct AttrVisitor;
 
     use syn::visit_mut;
     impl VisitMut for AttrVisitor {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
-                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| {
-                        as_hax_meta(meta, DECORATION_KINDS).is_none()
-                    })
+                    strip(&mut fun.attrs, DECORATION_KINDS)
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
@@ -56,47 +56,31 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| {
-                        as_hax_meta(meta, DECORATION_KINDS).is_none()
-                    })
+                    strip(&mut fun.attrs, DECORATION_KINDS)
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
         }
-        fn visit_field_mut(&mut self, field: &mut Field) {
-            visit_mut::visit_field_mut(self, field);
-            let named = field.ident.is_some();
-            let errors = &mut self.errors;
-            retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
-                    return true;
-                };
-                if !named {
-                    errors.push(gated_error(unnamed_order_error(ml), cfg));
-                }
-                false
-            })
+        fn visit_fields_named_mut(&mut self, fields: &mut FieldsNamed) {
+            visit_mut::visit_fields_named_mut(self, fields);
+            for field in fields.named.iter_mut() {
+                strip(&mut field.attrs, &["order"])
+            }
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
-
             if let Item::Struct(s) = item {
                 for field in s.fields.iter_mut() {
-                    retain_through_cfg_attr(&mut field.attrs, |meta, _| {
-                        as_hax_meta(meta, &["refine"]).is_none()
-                    })
+                    strip(&mut field.attrs, &["refine", "order"])
                 }
             }
-            reject_non_struct_refines(item, &mut self.errors);
         }
     }
 
-    let mut visitor = AttrVisitor::default();
     let mut item = item;
-    visitor.visit_item_mut(&mut item);
-    let errors = visitor.errors;
+    AttrVisitor.visit_item_mut(&mut item);
 
-    quote! { #item #(#errors)* }.into()
+    quote! { #item }.into()
 }
 
 /// Expansion of `int!`.

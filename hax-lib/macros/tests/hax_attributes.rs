@@ -27,9 +27,6 @@ struct Nested {
     y: u8,
 }
 
-#[hax_lib::attributes]
-struct DisabledUnnamedOrder(#[cfg_attr(any(), hax_lib::order(0))] u8);
-
 trait Super {
     type Item;
 }

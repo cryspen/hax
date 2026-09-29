@@ -1,7 +1,6 @@
 //! This module defines the `ImplFnDecoration` structure and utils
 //! around it.
 
-use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 use syn::*;
@@ -59,102 +58,45 @@ pub fn expects_hax_path(allowlist: &[&str], path: &Path) -> Result<Option<String
     )
 }
 
-/// Pushes `meta` to `out`, splitting a `cfg_attr(PRED, ARGS..)` into one
-/// entry per nested argument, under the conjunction of the predicates.
-fn flatten_cfg_attr(meta: Meta, cfg: Option<Meta>, out: &mut Vec<(Option<Meta>, Meta)>) {
-    let args = match &meta {
-        Meta::List(ml) if ml.path.is_ident("cfg_attr") => ml
-            .parse_args_with(punctuated::Punctuated::<Meta, Token![,]>::parse_terminated)
-            .ok()
-            // A malformed `cfg_attr(PRED)` is left for rustc to report.
-            .filter(|args| args.len() > 1 || args.trailing_punct()),
-        _ => None,
-    };
-    let Some(args) = args else {
-        return out.push((cfg, meta));
-    };
-    let mut args = args.into_iter();
-    let pred = args.next().unwrap();
-    let cfg = Some(match cfg {
-        Some(outer) => parse_quote! {all(#outer, #pred)},
-        None => pred,
-    });
-    for arg in args {
-        flatten_cfg_attr(arg, cfg.clone(), out);
-    }
-}
-
-/// Calls `f` on the metas of `attrs`, splitting every `cfg_attr` into one
-/// attribute per nested meta: `f` receives the conjunction of the enclosing
-/// predicates, may rewrite the meta, and returns whether to keep it.
+/// Calls `f` on the metas of `attrs`, descending into `cfg_attr(PRED, ..)`
+/// wrappers: `f` receives the conjunction of the enclosing predicates, may
+/// rewrite the meta in place, and returns whether to keep it.
 pub fn retain_through_cfg_attr(
     attrs: &mut Vec<Attribute>,
     mut f: impl FnMut(&mut Meta, Option<&Meta>) -> bool,
 ) {
-    let mut kept = vec![];
-    for attr in std::mem::take(attrs) {
-        let mut metas = vec![];
-        flatten_cfg_attr(attr.meta.clone(), None, &mut metas);
-        for (cfg, mut meta) in metas {
-            if !f(&mut meta, cfg.as_ref()) {
-                continue;
-            }
-            let meta = match cfg {
-                Some(cfg) => parse_quote! {cfg_attr(#cfg, #meta)},
-                None => meta,
-            };
-            kept.push(Attribute {
-                meta,
-                ..attr.clone()
-            });
-        }
+    attrs.retain_mut(|attr| retain_meta(&mut attr.meta, None, &mut f));
+}
+
+fn retain_meta(
+    meta: &mut Meta,
+    cfg: Option<Meta>,
+    f: &mut impl FnMut(&mut Meta, Option<&Meta>) -> bool,
+) -> bool {
+    let Meta::List(ml) = meta else {
+        return f(meta, cfg.as_ref());
+    };
+    if !ml.path.is_ident("cfg_attr") {
+        return f(meta, cfg.as_ref());
     }
-    *attrs = kept;
-}
-
-/// Gates every item of `tokens` on `#[cfg(#pred)]`, if there is a `pred`.
-pub fn cfg_gate(tokens: TokenStream, pred: Option<&Meta>) -> TokenStream {
-    let Some(pred) = pred else {
-        return tokens;
+    let Ok(args) = ml.parse_args_with(punctuated::Punctuated::<Meta, Token![,]>::parse_terminated)
+    else {
+        return true;
     };
-    let Ok(file) = syn::parse2::<File>(tokens.clone()) else {
-        return quote! {#[cfg(#pred)] const _: () = {#tokens};};
-    };
-    file.items
-        .iter()
-        .map(|item| quote! {#[cfg(#pred)] #item})
-        .collect()
-}
-
-/// An item raising `error`, gated like [`cfg_gate`].
-pub fn gated_error(error: Error, pred: Option<&Meta>) -> TokenStream {
-    let error = error.to_compile_error();
-    cfg_gate(quote! {const _: () = {#error};}, pred)
-}
-
-/// The error for an `order` on an unnamed field: constructors of unnamed
-/// fields are positional, so reordering the fields of the type alone would be
-/// ill-typed.
-pub fn unnamed_order_error(order: &MetaList) -> Error {
-    Error::new_spanned(order, "`order` is only supported on named fields.")
-}
-
-/// Drops the `refine`s of the fields of an enum or a union, raising an error
-/// for each enabled one.
-pub fn reject_non_struct_refines(item: &mut Item, errors: &mut Vec<TokenStream>) {
-    let fields: Vec<&mut Field> = match item {
-        Item::Enum(e) => e.variants.iter_mut().flat_map(|v| &mut v.fields).collect(),
-        Item::Union(u) => u.fields.named.iter_mut().collect(),
-        _ => return,
-    };
-    for field in fields {
-        retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-            let Some((ml, _)) = as_hax_meta(meta, &["refine"]) else {
-                return true;
-            };
-            let message = "`refine` is only supported on the fields of a struct.";
-            errors.push(gated_error(Error::new_spanned(ml, message), cfg));
-            false
-        })
+    let mut nested: Vec<Meta> = args.into_iter().collect();
+    if nested.is_empty() {
+        return true;
     }
+    let pred = nested.remove(0);
+    let cfg = Some(match cfg {
+        Some(outer) => parse_quote! {all(#outer, #pred)},
+        None => pred.clone(),
+    });
+    let len = nested.len();
+    nested.retain_mut(|arg| retain_meta(arg, cfg.clone(), f));
+    if len > 0 && nested.is_empty() {
+        return false;
+    }
+    ml.tokens = quote! {#pred, #(#nested),*};
+    true
 }

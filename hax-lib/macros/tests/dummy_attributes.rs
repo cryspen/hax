@@ -32,7 +32,6 @@ enum Variants {
         #[hax_lib::order(0)]
         b: u8,
     },
-    Unnamed(#[cfg_attr(any(), hax_lib::order(0))] u8),
 }
 
 #[hax_lib::attributes]

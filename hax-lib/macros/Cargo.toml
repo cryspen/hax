@@ -23,7 +23,6 @@ quote = { workspace = true }
 
 [dev-dependencies]
 hax-lib = { path = ".." }
-trybuild = "1.0.115"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_lean)', 'cfg(doc_cfg)'] }

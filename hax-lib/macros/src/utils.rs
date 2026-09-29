@@ -87,6 +87,26 @@ pub(crate) fn impl_fn_decoration_args(
     quote! {#decoration, #generics, #where_clause, #self_ty #as_trait, #tokens}
 }
 
+/// Gates every item of `tokens` on `#[cfg(#pred)]`, if there is a `pred`.
+pub(crate) fn cfg_gate(tokens: TokenStream, pred: Option<&Meta>) -> TokenStream {
+    let Some(pred) = pred else {
+        return tokens;
+    };
+    let Ok(file) = syn::parse2::<File>(tokens.clone()) else {
+        return quote! {#[cfg(#pred)] const _: () = {#tokens};};
+    };
+    file.items
+        .iter()
+        .map(|item| quote! {#[cfg(#pred)] #item})
+        .collect()
+}
+
+/// An item raising `error`, gated like [`cfg_gate`].
+pub(crate) fn gated_error(error: Error, pred: Option<&Meta>) -> TokenStream {
+    let error = error.to_compile_error();
+    cfg_gate(quote! {const _: () = {#error};}, pred)
+}
+
 /// Emit one of charon's native `charon::*` markers. Only the lean backend drives
 /// charon directly, bypassing the engine; every other backend gets nothing.
 pub(crate) fn charon_attr(name: TokenStream) -> Option<TokenStream> {

@@ -492,39 +492,34 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
             }
             visit_mut::visit_item_impl_mut(self, item);
         }
-        fn visit_field_mut(&mut self, field: &mut Field) {
-            visit_mut::visit_field_mut(self, field);
-
-            let (named, span) = (field.ident.is_some(), field.span());
-            let errors = &mut self.extra_items;
-            let mut cfgs = vec![];
-            retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
-                    return true;
-                };
-                let n = if named {
-                    syn::parse2::<LitInt>(ml.tokens.clone())
+        fn visit_fields_named_mut(&mut self, fields: &mut FieldsNamed) {
+            visit_mut::visit_fields_named_mut(self, fields);
+            for field in fields.named.iter_mut() {
+                let span = field.span();
+                let errors = &mut self.extra_items;
+                let mut cfgs = vec![];
+                retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                    let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
+                        return true;
+                    };
+                    let n = match syn::parse2::<LitInt>(ml.tokens.clone())
                         .and_then(|lit| lit.base10_parse())
-                        .map_err(|_| {
-                            Error::new_spanned(&ml.tokens, "Expected a (base 10) i32 literal.")
-                        })
-                } else {
-                    Err(unnamed_order_error(ml))
-                };
-                let n = match n {
-                    Ok(n) => n,
-                    Err(error) => {
-                        errors.push(gated_error(error, cfg));
-                        return false;
-                    }
-                };
-                cfgs.push(cfg.cloned());
-                let payload = AttrPayload::Order(n);
-                let payload: Attribute = parse_quote!(#payload);
-                *meta = payload.meta;
-                true
-            });
-            errors.extend(overlap_error(span, &cfgs, "order"));
+                    {
+                        Ok(n) => n,
+                        Err(_) => {
+                            let message = "Expected a (base 10) i32 literal.";
+                            errors.push(gated_error(Error::new_spanned(&ml.tokens, message), cfg));
+                            return false;
+                        }
+                    };
+                    cfgs.push(cfg.cloned());
+                    let payload = AttrPayload::Order(n);
+                    let payload: Attribute = parse_quote!(#payload);
+                    *meta = payload.meta;
+                    true
+                });
+                errors.extend(overlap_error(span, &cfgs, "order"));
+            }
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
@@ -618,7 +613,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         extra.extend(overlap_error(span, &cfgs, "refine"));
                     }
                 }
-                _ => reject_non_struct_refines(item, &mut extra),
+                _ => (),
             }
             let extra: TokenStream = extra.into_iter().collect();
             *item = Item::Verbatim(quote! {#extra #item});

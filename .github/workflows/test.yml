@@ -46,12 +46,10 @@ jobs:
       # Its own target directory keeps these builds from overwriting the
       # `cfg(hax)` ones, as rustflags are not part of the artifact names.
       - name: Test `hax-lib-macros` without `--cfg hax`
-        run: >
-          cargo test -p hax-lib-macros --test dummy_attributes
-          --test compile_fail --verbose
+        run: cargo test -p hax-lib-macros --test dummy_attributes --verbose
         env:
           RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
-          CARGO_TARGET_DIR: ${{ runner.temp }}/target-no-cfg-hax
+          CARGO_TARGET_DIR: target/no-cfg-hax
 
       - name: Test `hax-frontend-exporter` with feature `rustc` off
         run: cargo check -p hax-frontend-exporter --no-default-features --verbose
