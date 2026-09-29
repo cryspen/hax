@@ -488,7 +488,10 @@ pub fn make_fn_decoration(
         };
         use AttrPayload::NeverErased;
         quote! {
-            #[cfg(#DebugOrHaxCfgExpr)]
+            // The ProVerif backend does not consume function contracts, and `#phi`
+            // may reference `#[cfg(hax)]`-only helpers, so skip the `const _`
+            // decoration under `hax_backend_proverif`.
+            #[cfg(all(#DebugOrHaxCfgExpr, not(hax_backend_proverif)))]
             #late_skip
             const _: () = {
                 #quantifiers
