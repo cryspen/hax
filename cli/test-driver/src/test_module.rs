@@ -90,7 +90,7 @@ impl TestModule {
             return false;
         }
         match backend {
-            BackendName::Fstar | BackendName::LegacyLean => self
+            BackendName::Fstar | BackendName::LegacyLean | BackendName::ProVerif => self
                 .expected_diagnostics(backend, FailureKind::Typecheck)
                 .is_empty(),
             _ => false,
