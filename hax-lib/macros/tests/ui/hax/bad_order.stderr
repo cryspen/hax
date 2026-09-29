@@ -1,0 +1,5 @@
+error: number too large to fit in target type
+ --> tests/ui/hax/bad_order.rs:3:22
+  |
+3 |     #[hax_lib::order(99999999999)]
+  |                      ^^^^^^^^^^^

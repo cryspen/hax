@@ -87,17 +87,6 @@ pub(crate) fn impl_fn_decoration_args(
     quote! {#decoration, #generics, #where_clause, #self_ty #as_trait, #tokens}
 }
 
-/// Gates every item of `tokens` on `#[cfg(#pred)]`.
-pub(crate) fn cfg_gate(tokens: TokenStream, pred: &Meta) -> TokenStream {
-    let Ok(file) = syn::parse2::<File>(tokens.clone()) else {
-        return quote! {#[cfg(#pred)] const _: () = {#tokens};};
-    };
-    file.items
-        .iter()
-        .map(|item| quote! {#[cfg(#pred)] #item})
-        .collect()
-}
-
 /// Emit one of charon's native `charon::*` markers. Only the lean backend drives
 /// charon directly, bypassing the engine; every other backend gets nothing.
 pub(crate) fn charon_attr(name: TokenStream) -> Option<TokenStream> {

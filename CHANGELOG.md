@@ -13,8 +13,10 @@ Changes to the hax-lib crate:
  - Support `refine` and `order` written behind a `cfg_attr` on the fields of an item annotated
    with `#[hax_lib::attributes]`, keeping the `cfg_attr` predicate, e.g. one per backend (#1496)
  - Raise the `#[hax_lib::attributes]` errors about a specification only when it is enabled
- - Strip `order` from enum variant fields in builds without `--cfg hax`
- - Reject overlapping `refine`s or `order`s on a field, and `order` on unnamed fields
+ - Strip `order` from the named fields of enum variants in builds without `--cfg hax`
+ - Reject overlapping `refine`s or `order`s on a field
+ - Reject `order` on unnamed fields, also in builds without `--cfg hax`, where it used to be
+   silently stripped: hax cannot reorder positional fields
 
 ## [0.4.1] - 2026-09-23
 

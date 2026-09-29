@@ -35,7 +35,10 @@ pub fn internal_macro_misuse(name: &str) -> TokenStream {
 pub fn attributes(item: TokenStream) -> TokenStream {
     let item: Item = parse_macro_input!(item);
 
-    struct AttrVisitor;
+    #[derive(Default)]
+    struct AttrVisitor {
+        errors: Vec<proc_macro2::TokenStream>,
+    }
 
     use syn::visit_mut;
     impl VisitMut for AttrVisitor {
@@ -58,23 +61,35 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         }
         fn visit_field_mut(&mut self, field: &mut Field) {
             visit_mut::visit_field_mut(self, field);
-            retain_through_cfg_attr(&mut field.attrs, |meta, _| !is_order(meta))
+            let named = field.ident.is_some();
+            let errors = &mut self.errors;
+            retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                let Some(ml) = as_order(meta) else {
+                    return true;
+                };
+                if !named {
+                    errors.push(gated_error(unnamed_order_error(ml), cfg));
+                }
+                false
+            })
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
 
             if let Item::Struct(s) = item {
                 for field in s.fields.iter_mut() {
-                    retain_through_cfg_attr(&mut field.attrs, |meta, _| !is_refine(meta))
+                    retain_through_cfg_attr(&mut field.attrs, |meta, _| as_refine(meta).is_none())
                 }
             }
         }
     }
 
+    let mut visitor = AttrVisitor::default();
     let mut item = item;
-    AttrVisitor.visit_item_mut(&mut item);
+    visitor.visit_item_mut(&mut item);
+    let errors = visitor.errors;
 
-    quote! { #item }.into()
+    quote! { #item #(#errors)* }.into()
 }
 
 /// Expansion of `int!`.

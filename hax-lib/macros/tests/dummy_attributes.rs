@@ -15,10 +15,7 @@ struct Refined {
 }
 
 #[hax_lib::attributes]
-struct Tuple(
-    #[cfg_attr(all(), hax_lib::refine(true))] u8,
-    #[hax_lib::order(0)] u8,
-);
+struct Tuple(#[cfg_attr(all(), hax_lib::refine(true))] u8, u8);
 
 #[hax_lib::attributes]
 enum Variants {
@@ -28,7 +25,7 @@ enum Variants {
         #[hax_lib::order(0)]
         b: u8,
     },
-    Unnamed(#[cfg_attr(all(), hax_lib::order(0))] u8),
+    Unnamed(#[cfg_attr(any(), hax_lib::order(0))] u8),
 }
 
 #[hax_lib::attributes]

@@ -328,18 +328,23 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     quote! {#attr #item}.into()
 }
 
-/// Errors for the `attr`s of a field that can be enabled at once, given the
-/// predicates of their `cfg_attr` wrappers.
-fn overlap_errors(cfgs: &[Option<Meta>], attr: &str) -> Vec<TokenStream> {
-    let message = format!("At most one `{attr}` may be enabled per field.");
-    let error = quote! {const _: () = {compile_error!(#message)};};
-    (0..cfgs.len())
+/// An error raised when two of the `attr`s of a field are enabled at once,
+/// given the predicates of their `cfg_attr` wrappers.
+fn overlap_error(span: Span, cfgs: &[Option<Meta>], attr: &str) -> Option<TokenStream> {
+    let pairs: Vec<Meta> = (0..cfgs.len())
         .flat_map(|j| (0..j).map(move |i| (i, j)))
         .map(|(i, j)| {
             let preds = cfgs[i].iter().chain(&cfgs[j]);
-            cfg_gate(error.clone(), &parse_quote! {all(#(#preds),*)})
+            parse_quote! {all(#(#preds),*)}
         })
-        .collect()
+        .collect();
+    let message = format!("At most one `{attr}` may be enabled per field.");
+    (!pairs.is_empty()).then(|| {
+        gated_error(
+            Error::new(span, message),
+            Some(&parse_quote! {any(#(#pairs),*)}),
+        )
+    })
 }
 
 pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
@@ -360,10 +365,10 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 if let TraitItem::Fn(fun) = ti {
                     let sig = fun.sig.clone();
                     let extra_items = &mut self.extra_items;
-                    visit_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
-                        let Meta::List(ml) = meta else { return };
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                        let Meta::List(ml) = meta else { return true };
                         let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                            return;
+                            return true;
                         };
                         let decoration = syn::Ident::new(&decoration, ml.path.span());
 
@@ -395,7 +400,15 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         let generics = merge_generics(parse_quote! {<Self_>}, generics);
                         let ImplFnDecoration {
                             kind, phi, self_ty, ..
-                        } = parse_quote! {#decoration, #generics, where, #self_ty, #tokens};
+                        } = match syn::parse2(
+                            quote! {#decoration, #generics, where, #self_ty, #tokens},
+                        ) {
+                            Ok(decoration) => decoration,
+                            Err(error) => {
+                                extra_items.push(gated_error(error, cfg));
+                                return false;
+                            }
+                        };
                         let (decoration, relation_attr) = make_fn_decoration(
                             phi,
                             sig.clone(),
@@ -409,10 +422,8 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         // sibling item below appear under the very same conditions.
                         let relation_attr: Attribute = parse_quote! {#relation_attr};
                         *meta = relation_attr.meta;
-                        extra_items.push(match cfg {
-                            Some(pred) => cfg_gate(decoration, pred),
-                            None => decoration,
-                        });
+                        extra_items.push(cfg_gate(decoration, cfg));
+                        true
                     });
                 }
             }
@@ -438,28 +449,31 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
-                        // Drop the specifications: generating them would
-                        // pile rustc errors on top of ours. The error is
-                        // raised whenever one of them is enabled.
-                        let mut cfgs: Vec<Option<Meta>> = vec![];
-                        retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
-                            let decorated = is_decoration(meta);
-                            if decorated {
-                                cfgs.push(cfg.cloned());
-                            }
-                            !decorated
-                        });
-                        if !cfgs.is_empty() {
-                            self.extra_items.push(
-                                match cfgs.into_iter().collect::<Option<Vec<_>>>() {
-                                    Some(preds) => {
-                                        cfg_gate(error, &parse_quote! {any(#(#preds),*)})
-                                    }
-                                    None => error,
-                                },
-                            );
+                    // Only checked on decorated functions. On an error, the
+                    // specifications are dropped: generating them would pile
+                    // rustc errors on top of ours. The error is raised
+                    // whenever one of them is enabled.
+                    let mut error = None;
+                    let mut cfgs: Vec<Option<Meta>> = vec![];
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                        if !is_decoration(meta)
+                            || error
+                                .get_or_insert_with(|| {
+                                    foreign_self_projection_error(&fun.sig, &assoc)
+                                })
+                                .is_none()
+                        {
+                            return true;
                         }
+                        cfgs.push(cfg.cloned());
+                        false
+                    });
+                    if let Some(Some(error)) = error {
+                        let pred = cfgs.into_iter().collect::<Option<Vec<_>>>();
+                        self.extra_items.push(cfg_gate(
+                            error,
+                            pred.map(|preds| parse_quote! {any(#(#preds),*)}).as_ref(),
+                        ));
                         continue;
                     }
                     visit_through_cfg_attr(&mut fun.attrs, |meta, _cfg| {
@@ -485,31 +499,22 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
         fn visit_field_mut(&mut self, field: &mut Field) {
             visit_mut::visit_field_mut(self, field);
 
-            let named = field.ident.is_some();
+            let (named, span) = (field.ident.is_some(), field.span());
             let errors = &mut self.extra_items;
             let mut cfgs = vec![];
             retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                if !is_order(meta) {
+                let Some(ml) = as_order(meta) else {
                     return true;
-                }
-                let Meta::List(ml) = meta else { unreachable!() };
+                };
                 let n = if named {
-                    syn::parse2::<LitInt>(ml.tokens.clone())
-                        .and_then(|lit| lit.base10_parse())
-                        .map_err(|_| "Expected a (base 10) i32 literal.")
+                    syn::parse2::<LitInt>(ml.tokens.clone()).and_then(|lit| lit.base10_parse())
                 } else {
-                    // Constructors of unnamed fields are positional: reordering
-                    // the fields of the type alone would be ill-typed.
-                    Err("`order` is only supported on named fields.")
+                    Err(unnamed_order_error(ml))
                 };
                 let n = match n {
                     Ok(n) => n,
-                    Err(message) => {
-                        let error = quote! {const _: () = {compile_error!(#message)};};
-                        errors.push(match cfg {
-                            Some(pred) => cfg_gate(error, pred),
-                            None => error,
-                        });
+                    Err(error) => {
+                        errors.push(gated_error(error, cfg));
                         return false;
                     }
                 };
@@ -519,12 +524,12 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 *meta = payload.meta;
                 true
             });
-            errors.extend(overlap_errors(&cfgs, "order"));
+            errors.extend(overlap_error(span, &cfgs, "order"));
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
 
-            let mut extra: Vec<Item> = vec![];
+            let mut extra: Vec<TokenStream> = vec![];
             match item {
                 Item::Struct(s) => {
                     let only_one_field = s.fields.len() == 1;
@@ -570,23 +575,20 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             .iter()
                             .map(|(name, ty)| quote! {#name: #ty, })
                             .collect();
+                        let span = field.span();
                         let mut cfgs = vec![];
                         retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                            if !is_refine(meta) {
+                            let Some(ml) = as_refine(meta) else {
                                 return true;
-                            }
-                            let Meta::List(ml) = meta else { unreachable!() };
-                            let pred = cfg.cloned();
-                            let cfg = cfg.map(|pred| quote! {#[cfg(#pred)]});
+                            };
                             let refine = match syn::parse2::<Expr>(ml.tokens.clone()) {
                                 Ok(refine) => refine,
                                 Err(error) => {
-                                    let error = error.to_compile_error();
-                                    extra.push(parse_quote! {#cfg const _: () = {#error};});
+                                    extra.push(gated_error(error, cfg));
                                     return false;
                                 }
                             };
-                            cfgs.push(pred);
+                            cfgs.push(cfg.cloned());
                             let uid = ItemUid::fresh();
                             let assoc_attr = AttrPayload::AssociatedItem {
                                 role: AssociationRole::Refine,
@@ -597,28 +599,26 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             let uid_attr = AttrPayload::Uid(uid);
                             let status_attr =
                                 &AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
-                            extra.push(syn::parse_quote! {
-                                #[cfg(#HaxCfgOptionName)]
-                                #cfg
-                                #status_attr
-                                const _: () = {
-                                    #uid_attr
+                            extra.push(cfg_gate(
+                                quote! {
+                                    #[cfg(#HaxCfgOptionName)]
                                     #status_attr
-                                    fn refinement #generics (#binders) -> ::hax_lib::Prop #where_clause { ::hax_lib::Prop::from(#refine) }
-                                };
-                            });
+                                    const _: () = {
+                                        #uid_attr
+                                        #status_attr
+                                        fn refinement #generics (#binders) -> ::hax_lib::Prop #where_clause { ::hax_lib::Prop::from(#refine) }
+                                    };
+                                },
+                                cfg,
+                            ));
                             true
                         });
-                        extra.extend(
-                            overlap_errors(&cfgs, "refine")
-                                .into_iter()
-                                .map(Item::Verbatim),
-                        );
+                        extra.extend(overlap_error(span, &cfgs, "refine"));
                     }
                 }
                 _ => (),
             }
-            let extra: TokenStream = extra.iter().map(|extra| quote! {#extra}).collect();
+            let extra: TokenStream = extra.into_iter().collect();
             *item = Item::Verbatim(quote! {#extra #item});
         }
     }

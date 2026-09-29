@@ -1,6 +1,8 @@
 //! This module defines the `ImplFnDecoration` structure and utils
 //! around it.
 
+use proc_macro2::TokenStream;
+use quote::quote;
 use syn::spanned::Spanned;
 use syn::*;
 
@@ -33,14 +35,20 @@ pub fn is_decoration(meta: &Meta) -> bool {
     matches!(meta, Meta::List(ml) if matches!(expects_path_decoration(&ml.path), Ok(Some(_))))
 }
 
-/// Whether `meta` is a `refine`, see [`expects_refine`].
-pub fn is_refine(meta: &Meta) -> bool {
-    matches!(meta, Meta::List(ml) if matches!(expects_refine(&ml.path), Ok(Some(_))))
+/// `meta` if it is a `refine`, see [`expects_refine`].
+pub fn as_refine(meta: &mut Meta) -> Option<&mut MetaList> {
+    match meta {
+        Meta::List(ml) if matches!(expects_refine(&ml.path), Ok(Some(_))) => Some(ml),
+        _ => None,
+    }
 }
 
-/// Whether `meta` is an `order`, see [`expects_order`].
-pub fn is_order(meta: &Meta) -> bool {
-    matches!(meta, Meta::List(ml) if matches!(expects_order(&ml.path), Ok(Some(_))))
+/// `meta` if it is an `order`, see [`expects_order`].
+pub fn as_order(meta: &mut Meta) -> Option<&mut MetaList> {
+    match meta {
+        Meta::List(ml) if matches!(expects_order(&ml.path), Ok(Some(_))) => Some(ml),
+        _ => None,
+    }
 }
 
 /// Expects a path to be `[[::]hax_lib]::refine`
@@ -113,6 +121,33 @@ pub fn retain_through_cfg_attr(
         !nested.is_empty()
     }
     attrs.retain_mut(|attr| walk(&mut attr.meta, None, &mut f));
+}
+
+/// Gates every item of `tokens` on `#[cfg(#pred)]`, if there is a `pred`.
+pub fn cfg_gate(tokens: TokenStream, pred: Option<&Meta>) -> TokenStream {
+    let Some(pred) = pred else {
+        return tokens;
+    };
+    let Ok(file) = syn::parse2::<File>(tokens.clone()) else {
+        return quote! {#[cfg(#pred)] const _: () = {#tokens};};
+    };
+    file.items
+        .iter()
+        .map(|item| quote! {#[cfg(#pred)] #item})
+        .collect()
+}
+
+/// An item raising `error`, gated like [`cfg_gate`].
+pub fn gated_error(error: Error, pred: Option<&Meta>) -> TokenStream {
+    let error = error.to_compile_error();
+    cfg_gate(quote! {const _: () = {#error};}, pred)
+}
+
+/// The error for an `order` on an unnamed field: constructors of unnamed
+/// fields are positional, so reordering the fields of the type alone would be
+/// ill-typed.
+pub fn unnamed_order_error(order: &MetaList) -> Error {
+    Error::new_spanned(order, "`order` is only supported on named fields.")
 }
 
 /// Like [`retain_through_cfg_attr`], keeping every meta.

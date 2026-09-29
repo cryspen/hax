@@ -18,11 +18,15 @@ struct DisabledError {
     x: u8,
 }
 
+#[hax_lib::attributes]
+struct DisabledUnnamedOrder(#[cfg_attr(any(), hax_lib::order(0))] u8);
+
 trait Super {
     type Item;
 }
 
 trait Sub: Super {
+    #[cfg_attr(any(), hax_lib::requires(,))]
     fn id(&self, x: Self::Item) -> Self::Item;
 }
 

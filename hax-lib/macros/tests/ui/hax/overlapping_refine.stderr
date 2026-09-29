@@ -1,0 +1,8 @@
+error: At most one `refine` may be enabled per field.
+ --> tests/ui/hax/overlapping_refine.rs:3:5
+  |
+3 | /     #[hax_lib::refine(x < 10)]
+4 | |     #[cfg_attr(all(), hax_lib::refine(x < 5))]
+5 | |     #[cfg_attr(all(), hax_lib::refine(x < 6))]
+6 | |     x: u8,
+  | |_________^

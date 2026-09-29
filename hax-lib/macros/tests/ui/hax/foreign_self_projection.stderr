@@ -1,0 +1,11 @@
+error: hax: `Self::Item` is not defined by this `impl` block, hax cannot qualify it. Write `<Type as Trait>::Item` explicitly. See https://github.com/cryspen/hax/issues/2089.
+  --> tests/ui/hax/foreign_self_projection.rs:18:21
+   |
+18 |     fn id(&self, x: Self::Item) -> Self::Item {
+   |                     ^^^^^^^^^^
+
+error: hax: `Self::Item` is not defined by this `impl` block, hax cannot qualify it. Write `<Type as Trait>::Item` explicitly. See https://github.com/cryspen/hax/issues/2089.
+  --> tests/ui/hax/foreign_self_projection.rs:18:36
+   |
+18 |     fn id(&self, x: Self::Item) -> Self::Item {
+   |                                    ^^^^^^^^^^

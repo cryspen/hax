@@ -1,0 +1,7 @@
+error: At most one `order` may be enabled per field.
+ --> tests/ui/hax/overlapping_order.rs:3:5
+  |
+3 | /     #[hax_lib::order(0)]
+4 | |     #[cfg_attr(all(), hax_lib::order(2))]
+5 | |     x: u8,
+  | |_________^

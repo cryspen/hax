@@ -1,0 +1,5 @@
+error: expected an expression
+ --> tests/ui/hax/bad_trait_spec.rs:3:41
+  |
+3 |     #[cfg_attr(all(), hax_lib::requires(,))]
+  |                                         ^
