@@ -27,6 +27,15 @@ struct Nested {
     y: u8,
 }
 
+/// `order` is rejected on unnamed fields, but only when it is enabled.
+#[hax_lib::attributes]
+struct Tuple(#[cfg_attr(any(), hax_lib::order(0))] u8, u8);
+
+#[hax_lib::attributes]
+enum Variants {
+    Unnamed(#[cfg_attr(any(), hax_lib::order(0))] u8),
+}
+
 trait Super {
     type Item;
 }

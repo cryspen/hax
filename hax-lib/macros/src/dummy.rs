@@ -61,17 +61,15 @@ pub fn attributes(item: TokenStream) -> TokenStream {
             }
             visit_mut::visit_item_impl_mut(self, item);
         }
-        fn visit_fields_named_mut(&mut self, fields: &mut FieldsNamed) {
-            visit_mut::visit_fields_named_mut(self, fields);
-            for field in fields.named.iter_mut() {
-                strip(&mut field.attrs, &["order"])
-            }
+        fn visit_field_mut(&mut self, field: &mut Field) {
+            visit_mut::visit_field_mut(self, field);
+            strip(&mut field.attrs, &["order"])
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
             if let Item::Struct(s) = item {
                 for field in s.fields.iter_mut() {
-                    strip(&mut field.attrs, &["refine", "order"])
+                    strip(&mut field.attrs, &["refine"])
                 }
             }
         }

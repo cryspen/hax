@@ -521,6 +521,20 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 errors.extend(overlap_error(span, &cfgs, "order"));
             }
         }
+        fn visit_fields_unnamed_mut(&mut self, fields: &mut FieldsUnnamed) {
+            visit_mut::visit_fields_unnamed_mut(self, fields);
+            for field in fields.unnamed.iter_mut() {
+                let errors = &mut self.extra_items;
+                retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                    let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
+                        return true;
+                    };
+                    let message = "`order` is only supported on named fields.";
+                    errors.push(gated_error(Error::new_spanned(&ml.path, message), cfg));
+                    false
+                });
+            }
+        }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
 
