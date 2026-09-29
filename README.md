@@ -121,7 +121,7 @@ The command `cargo hax` accepts the following subcommands:
 | Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `lean`.                                                                                  |
 | F\*                   | `cargo hax into fstar`       | Stable.                                                                                                                       |
 | Rocq/Coq              | `cargo hax into coq`         | Experimental.                                                                                                                 |
-| ProVerif              | `cargo hax into pro-verif`   | Experimental.                                                                                                                 |
+| ProVerif              | `cargo hax into proverif`    | Experimental. Extracts a symbolic (Dolev-Yao) model.                                                                          |
 | SSProve               | `cargo hax into ssprove`     | Experimental.                                                                                                                 |
 | EasyCrypt             | `cargo hax into easycrypt`   | Experimental.                                                                                                                 |
 
