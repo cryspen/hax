@@ -1,0 +1,38 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* DIAGNOSTIC, not part of the model. Each symbol below is       *)
+(* referenced by lib.pvl but has no definition (and is not in    *)
+(* primitives.pvl). Define it — by hand or by extracting the     *)
+(* crate that owns it — or deliberately leave it abstract, as an *)
+(* ideal-functionality boundary; a permanent residue can be      *)
+(* correct. Declared WITHOUT `[data]` because the real nature    *)
+(* (one-way fun / data constructor / letfun) is unknown.         *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+fun alloc__string__Impl__len(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+(* result destructured as: core__result__Result__Err(_); core__result__Result__Ok(_) *)
+fun core__result__Impl__or_else(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+fun core__str__Impl__len(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__Error_x20loading_x20configs_x3a_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__Starting_x20service_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__arg: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__load_configuration_files *)
+const string_lit__config: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__empty: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__error: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__error_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__no_x20msg_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
+const string_lit__ok: bitstring.

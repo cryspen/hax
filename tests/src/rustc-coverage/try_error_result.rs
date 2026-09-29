@@ -10,7 +10,6 @@ fn call(return_error: bool) -> Result<(), ()> {
         Ok(())
     }
 }
-/// @fail(extraction): proverif(HAX0008)
 
 fn test1() -> Result<(), ()> {
     let mut
@@ -59,7 +58,6 @@ impl Thing2 {
         }
     }
 }
-/// @fail(extraction): proverif(HAX0008)
 
 fn test2() -> Result<(), ()> {
     let thing1 = Thing1{};

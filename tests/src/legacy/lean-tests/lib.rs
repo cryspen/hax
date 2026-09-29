@@ -1,4 +1,5 @@
-//! @fail(tc): legacy-lean(1)
+//! @fail(extraction): proverif(HAX0008, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001)
+//! @fail(tc): legacy-lean(1), proverif(2)
 //! @off: ssprove, fstar, coq
 #![allow(dead_code)]
 #![allow(unused_variables)]
