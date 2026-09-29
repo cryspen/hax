@@ -376,8 +376,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                     let sig = fun.sig.clone();
                     let extra_items = &mut self.extra_items;
                     retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
-                        let Meta::List(ml) = meta else { return true };
-                        let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
+                        let Some((ml, decoration)) = as_hax_meta(meta, DECORATION_KINDS) else {
                             return true;
                         };
                         let decoration = syn::Ident::new(&decoration, ml.path.span());
@@ -459,40 +458,36 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    let mut cfgs = vec![];
-                    for_each_through_cfg_attr(&fun.attrs, |meta, cfg| {
-                        if is_decoration(meta) {
-                            cfgs.push(cfg.cloned());
-                        }
-                    });
-                    if cfgs.is_empty() {
-                        continue;
-                    }
-                    if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
-                        // Drop the specifications: generating them would pile
-                        // rustc errors on top of ours. The error is raised
-                        // whenever one of them is enabled.
-                        retain_through_cfg_attr(&mut fun.attrs, |meta, _| !is_decoration(meta));
-                        self.extra_items
-                            .push(cfg_gate(error, any_of(cfgs).as_ref()));
-                        continue;
-                    }
-                    visit_through_cfg_attr(&mut fun.attrs, |meta, _cfg| {
-                        let Meta::List(ml) = meta else { return };
-                        let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                            return;
+                    let (sig, mut error, mut cfgs) = (&fun.sig, None, vec![]);
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                        let Some((ml, decoration)) = as_hax_meta(meta, DECORATION_KINDS) else {
+                            return true;
                         };
+                        // On an error, drop the specifications: generating
+                        // them would pile rustc errors on top of ours. The
+                        // error is raised whenever one of them is enabled.
+                        if error
+                            .get_or_insert_with(|| foreign_self_projection_error(sig, &assoc))
+                            .is_some()
+                        {
+                            cfgs.push(cfg.cloned());
+                            return false;
+                        }
                         let decoration = syn::Ident::new(&decoration, ml.path.span());
-                        let tokens = ml.tokens.clone();
-                        ml.tokens = impl_fn_decoration_args(
+                        let args = impl_fn_decoration_args(
                             &decoration,
                             &generics,
                             &self_ty,
                             &as_trait,
-                            &tokens,
+                            &ml.tokens,
                         );
-                        ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
+                        *meta = parse_quote! {::hax_lib::impl_fn_decoration(#args)};
+                        true
                     });
+                    if let Some(Some(error)) = error {
+                        self.extra_items
+                            .push(cfg_gate(error, any_of(cfgs).as_ref()));
+                    }
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
@@ -504,11 +499,15 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
             let errors = &mut self.extra_items;
             let mut cfgs = vec![];
             retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                let Some(ml) = as_order(meta) else {
+                let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
                     return true;
                 };
                 let n = if named {
-                    syn::parse2::<LitInt>(ml.tokens.clone()).and_then(|lit| lit.base10_parse())
+                    syn::parse2::<LitInt>(ml.tokens.clone())
+                        .and_then(|lit| lit.base10_parse())
+                        .map_err(|_| {
+                            Error::new_spanned(&ml.tokens, "Expected a (base 10) i32 literal.")
+                        })
                 } else {
                     Err(unnamed_order_error(ml))
                 };
@@ -575,7 +574,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         let span = field.span();
                         let mut cfgs = vec![];
                         retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                            let Some(ml) = as_refine(meta) else {
+                            let Some((ml, _)) = as_hax_meta(meta, &["refine"]) else {
                                 return true;
                             };
                             let refine = match syn::parse2::<Expr>(ml.tokens.clone()) {
@@ -619,7 +618,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         extra.extend(overlap_error(span, &cfgs, "refine"));
                     }
                 }
-                _ => (),
+                _ => reject_non_struct_refines(item, &mut extra),
             }
             let extra: TokenStream = extra.into_iter().collect();
             *item = Item::Verbatim(quote! {#extra #item});

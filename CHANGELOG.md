@@ -15,6 +15,7 @@ Changes to the hax-lib crate:
  - Raise the `#[hax_lib::attributes]` errors about a specification only when it is enabled
  - Strip `order` from the named fields of enum variants in builds without `--cfg hax`
  - Reject overlapping `refine`s or `order`s on a field
+ - Reject `refine` on the fields of enums and unions
  - Reject `order` on unnamed fields: hax cannot reorder positional fields. This is a breaking
    change for builds without `--cfg hax`, which used to silently strip it
 

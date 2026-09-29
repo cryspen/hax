@@ -1,0 +1,17 @@
+error: `refine` is only supported on the fields of a struct.
+ --> tests/ui/common/non_struct_refine.rs:4:27
+  |
+4 |         #[cfg_attr(all(), hax_lib::refine(true))]
+  |                           ^^^^^^^^^^^^^^^^^^^^^
+
+error: `refine` is only supported on the fields of a struct.
+ --> tests/ui/common/non_struct_refine.rs:7:9
+  |
+7 |     B(#[hax_lib::refine(true)] u8),
+  |         ^^^^^^^^^^^^^^^^^^^^^
+
+error: `refine` is only supported on the fields of a struct.
+  --> tests/ui/common/non_struct_refine.rs:12:7
+   |
+12 |     #[hax_lib::refine(true)]
+   |       ^^^^^^^^^^^^^^^^^^^^^

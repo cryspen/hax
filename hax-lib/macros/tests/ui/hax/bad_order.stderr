@@ -1,5 +1,11 @@
-error: number too large to fit in target type
+error: Expected a (base 10) i32 literal.
  --> tests/ui/hax/bad_order.rs:3:22
   |
 3 |     #[hax_lib::order(99999999999)]
   |                      ^^^^^^^^^^^
+
+error: Expected a (base 10) i32 literal.
+ --> tests/ui/hax/bad_order.rs:5:22
+  |
+5 |     #[hax_lib::order(y)]
+  |                      ^

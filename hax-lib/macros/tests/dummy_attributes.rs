@@ -15,6 +15,13 @@ struct Refined {
 }
 
 #[hax_lib::attributes]
+struct Nested {
+    #[cfg_attr(all(), doc = "x", cfg_attr(all(), hax_lib::refine(x < 5), hax_lib::order(1)))]
+    x: u8,
+    y: u8,
+}
+
+#[hax_lib::attributes]
 struct Tuple(#[cfg_attr(all(), hax_lib::refine(true))] u8, u8);
 
 #[hax_lib::attributes]
@@ -33,6 +40,7 @@ impl Refined {
     #[cfg_attr(all(), hax_lib::requires(self.x < 5))]
     #[hax_lib::ensures(|result| result == self.x)]
     #[cfg_attr(all(), decreases(self.x))]
+    #[cfg_attr(all(), inline, cfg_attr(all(), hax_lib::requires(true)))]
     fn get(&self) -> u8 {
         self.x
     }

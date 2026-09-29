@@ -15,7 +15,16 @@ struct Refined {
 struct DisabledError {
     #[cfg_attr(any(), hax_lib::order(99999999999))]
     #[cfg_attr(any(), hax_lib::refine(,))]
+    #[cfg_attr(all(), cfg_attr(any(), hax_lib::order(99999999999)))]
+    #[cfg_attr(any(), cfg_attr(all(), hax_lib::refine(,)))]
     x: u8,
+}
+
+#[hax_lib::attributes]
+struct Nested {
+    #[cfg_attr(all(), doc = "x", cfg_attr(all(), hax_lib::refine(x < 5), hax_lib::order(1)))]
+    x: u8,
+    y: u8,
 }
 
 #[hax_lib::attributes]

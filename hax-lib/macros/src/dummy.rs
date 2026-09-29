@@ -45,7 +45,9 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
-                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| !is_decoration(meta))
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| {
+                        as_hax_meta(meta, DECORATION_KINDS).is_none()
+                    })
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
@@ -54,7 +56,9 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| !is_decoration(meta))
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, _| {
+                        as_hax_meta(meta, DECORATION_KINDS).is_none()
+                    })
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
@@ -64,7 +68,7 @@ pub fn attributes(item: TokenStream) -> TokenStream {
             let named = field.ident.is_some();
             let errors = &mut self.errors;
             retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
-                let Some(ml) = as_order(meta) else {
+                let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
                     return true;
                 };
                 if !named {
@@ -78,9 +82,12 @@ pub fn attributes(item: TokenStream) -> TokenStream {
 
             if let Item::Struct(s) = item {
                 for field in s.fields.iter_mut() {
-                    retain_through_cfg_attr(&mut field.attrs, |meta, _| as_refine(meta).is_none())
+                    retain_through_cfg_attr(&mut field.attrs, |meta, _| {
+                        as_hax_meta(meta, &["refine"]).is_none()
+                    })
                 }
             }
+            reject_non_struct_refines(item, &mut self.errors);
         }
     }
 
