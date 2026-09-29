@@ -80,18 +80,35 @@ runs:
           echo "$member: $dep ($label) -> $path"
         done <<<"$edges"
 
-        # Not just the members' own edges: a hax crate reached through a
-        # dependency that is not itself a hax crate lands in the graph too, and
-        # a project that then asks `cargo metadata` where hax-lib is gets two
-        # answers.
-        foreign=$(cargo metadata --format-version 1 | jq -r '
-          .packages[] | select(.name | startswith("hax-"))
-          | select(.source != null)
-          | "  \(.name) \(.version) from \(.source)"' | sort -u)
+        metadata=$(cargo metadata --format-version 1)
 
-        if [ -n "$foreign" ]; then
-          echo "::error::$project resolves hax crates outside $hax:"
-          echo "$foreign"
+        # Every hax crate a member depends on must now come from $hax.
+        published=$(jq -r '
+          (.packages | map({key: .id, value: .}) | from_entries) as $byid
+          | .workspace_members as $ws
+          | .resolve.nodes[] | select(.id | IN($ws[])) as $node
+          | $node.deps[] | $byid[.pkg]
+          | select(.name | startswith("hax-")) | select(.source != null)
+          | "  \($byid[$node.id].name) depends on \(.name) \(.version) from \(.source)"' \
+          <<<"$metadata" | sort -u)
+
+        if [ -n "$published" ]; then
+          echo "::error::these direct dependencies still resolve outside $hax:"
+          echo "$published"
           exit 1
         fi
-        echo "every hax crate in $project's resolve graph comes from $hax"
+        echo "every direct hax dependency of $project resolves to $hax"
+
+        # A hax crate reached only through a dependency that is not itself a
+        # hax crate cannot be repointed: that dependency was published against
+        # it. It is harmless unless the project looks for its F* libraries in
+        # every package of the graph, which would then find two hax-libs.
+        foreign=$(jq -r '
+          .packages[] | select(.name | startswith("hax-"))
+          | select(.source != null)
+          | "  \(.name) \(.version) from \(.source)"' <<<"$metadata" | sort -u)
+
+        if [ -n "$foreign" ]; then
+          echo "::warning::$project also resolves hax crates outside $hax, through its dependencies:"
+          echo "$foreign"
+        fi
