@@ -13702,8 +13702,8 @@ def ops.range.RangeInclusive.Insts.CoreOpsRangeRangeBounds.end_bound
   RustM (ops.range.Bound T)
   := do
   if self.exhausted
-  then ok (ops.range.Bound.Excluded self.hi)
-  else ok (ops.range.Bound.Included self.hi)
+  then ok (ops.range.Bound.Excluded self.end_)
+  else ok (ops.range.Bound.Included self.end_)
 
 /-- [core_models::ops::range::{impl core_models::ops::range::RangeBounds<T> for core_models::ops::range::RangeInclusive<T>}::start_bound]:
     Source: 'core-models/src/core/ops.rs', lines 501:8-503:9
@@ -13712,7 +13712,7 @@ def ops.range.RangeInclusive.Insts.CoreOpsRangeRangeBounds.start_bound
   {T : Type} (self : ops.range.RangeInclusive T) :
   RustM (ops.range.Bound T)
   := do
-  ok (ops.range.Bound.Included self.lo)
+  ok (ops.range.Bound.Included self.start_)
 
 /-- Trait implementation: [core_models::ops::range::{impl core_models::ops::range::RangeBounds<T> for core_models::ops::range::RangeInclusive<T>}]
     Source: 'core-models/src/core/ops.rs', lines 500:4-511:5 -/
@@ -13771,28 +13771,28 @@ def ops.range.RangeInclusive.new
   {T : Type} (start : T) («end» : T) :
   RustM (ops.range.RangeInclusive T)
   := do
-  ok { lo := start, hi := «end», exhausted := false }
+  ok { start_ := start, end_ := «end», exhausted := false }
 
 /-- [core_models::ops::range::{core_models::ops::range::RangeInclusive<T>}::start]:
     Source: 'core-models/src/core/ops.rs', lines 530:8-532:9
     Visibility: public -/
 def ops.range.RangeInclusive.start
   {T : Type} (self : ops.range.RangeInclusive T) : RustM T := do
-  ok self.lo
+  ok self.start_
 
 /-- [core_models::ops::range::{core_models::ops::range::RangeInclusive<T>}::end]:
     Source: 'core-models/src/core/ops.rs', lines 534:8-536:9
     Visibility: public -/
 def ops.range.RangeInclusive.end
   {T : Type} (self : ops.range.RangeInclusive T) : RustM T := do
-  ok self.hi
+  ok self.end_
 
 /-- [core_models::ops::range::{core_models::ops::range::RangeInclusive<T>}::into_inner]:
     Source: 'core-models/src/core/ops.rs', lines 538:8-540:9
     Visibility: public -/
 def ops.range.RangeInclusive.into_inner
   {T : Type} (self : ops.range.RangeInclusive T) : RustM (T × T) := do
-  ok (self.lo, self.hi)
+  ok (self.start_, self.end_)
 
 /-- [core_models::ops::range::{core_models::ops::range::RangeInclusive<T>}::contains]:
     Source: 'core-models/src/core/ops.rs', lines 547:8-553:9
@@ -13822,7 +13822,7 @@ def ops.range.RangeInclusive.is_empty
   if self.exhausted
   then ok true
   else
-    let o ← cmpPartialOrdInst.partial_cmp self.lo self.hi
+    let o ← cmpPartialOrdInst.partial_cmp self.start_ self.end_
     match o with
     | option.Option.Some o1 =>
       match o1 with

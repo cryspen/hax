@@ -1062,8 +1062,8 @@ def ops.range.RangeFull := Unit
     Source: 'core-models/src/core/ops.rs', lines 336:4-340:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
-  lo : T
-  hi : T
+  start_ : T
+  end_ : T
   exhausted : Bool
 
 /-- [core_models::ops::range::RangeToInclusive]

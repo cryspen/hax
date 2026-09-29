@@ -266,8 +266,8 @@ pub fn range_forms(
         exhausted.nth(end - start);
         forms.push((
             ModelRange::Inclusive(m::RangeInclusive {
-                lo: end,
-                hi: end,
+                start_: end,
+                end_: end,
                 exhausted: true,
             }),
             bounds(exhausted),

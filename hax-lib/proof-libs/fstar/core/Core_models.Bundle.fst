@@ -2906,8 +2906,8 @@ let impl_31 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
 
 /// See [`std::ops::RangeInclusive`]
 type t_RangeInclusive (v_T: Type0) = {
-  f_lo:v_T;
-  f_hi:v_T;
+  f_start_:v_T;
+  f_end_:v_T;
   f_exhausted:bool
 }
 
@@ -2928,17 +2928,17 @@ let bound_as_ref (#v_T: Type0) (bound: t_Bound v_T) : t_Bound v_T =
 
 /// See [`std::ops::RangeInclusive::new`]
 let impl_7__new (#v_T: Type0) (start v_end: v_T) : t_RangeInclusive v_T =
-  { f_lo = start; f_hi = v_end; f_exhausted = false } <: t_RangeInclusive v_T
+  { f_start_ = start; f_end_ = v_end; f_exhausted = false } <: t_RangeInclusive v_T
 
 /// See [`std::ops::RangeInclusive::start`]
-let impl_7__start (#v_T: Type0) (self: t_RangeInclusive v_T) : v_T = self.f_lo
+let impl_7__start (#v_T: Type0) (self: t_RangeInclusive v_T) : v_T = self.f_start_
 
 /// See [`std::ops::RangeInclusive::end`]
-let impl_7__end (#v_T: Type0) (self: t_RangeInclusive v_T) : v_T = self.f_hi
+let impl_7__end (#v_T: Type0) (self: t_RangeInclusive v_T) : v_T = self.f_end_
 
 /// See [`std::ops::RangeInclusive::into_inner`]
 let impl_7__into_inner (#v_T: Type0) (self: t_RangeInclusive v_T) : (v_T & v_T) =
-  self.f_lo, self.f_hi <: (v_T & v_T)
+  self.f_start_, self.f_end_ <: (v_T & v_T)
 
 /// See [`std::option::Option`]
 type t_Option (v_T: Type0) =
@@ -4857,15 +4857,17 @@ let impl_5 (#v_T: Type0) : t_RangeBounds (t_RangeInclusive v_T) v_T =
   {
     f_start_bound_pre = (fun (self: t_RangeInclusive v_T) -> true);
     f_start_bound_post = (fun (self: t_RangeInclusive v_T) (out: t_Bound v_T) -> true);
-    f_start_bound = (fun (self: t_RangeInclusive v_T) -> Bound_Included self.f_lo <: t_Bound v_T);
+    f_start_bound
+    =
+    (fun (self: t_RangeInclusive v_T) -> Bound_Included self.f_start_ <: t_Bound v_T);
     f_end_bound_pre = (fun (self: t_RangeInclusive v_T) -> true);
     f_end_bound_post = (fun (self: t_RangeInclusive v_T) (out: t_Bound v_T) -> true);
     f_end_bound
     =
     fun (self: t_RangeInclusive v_T) ->
       if self.f_exhausted
-      then Bound_Excluded self.f_hi <: t_Bound v_T
-      else Bound_Included self.f_hi <: t_Bound v_T
+      then Bound_Excluded self.f_end_ <: t_Bound v_T
+      else Bound_Included self.f_end_ <: t_Bound v_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -8237,7 +8239,7 @@ let impl_10__is_empty
   then true
   else
     match
-      f_partial_cmp #v_T #v_T #FStar.Tactics.Typeclasses.solve self.f_lo self.f_hi
+      f_partial_cmp #v_T #v_T #FStar.Tactics.Typeclasses.solve self.f_start_ self.f_end_
       <:
       t_Option t_Ordering
     with

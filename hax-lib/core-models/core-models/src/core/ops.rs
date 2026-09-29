@@ -334,8 +334,8 @@ pub mod range {
     // Not `start`/`end` as in std (where they are private): Lean would then
     // name the `start`/`end` methods apart from the ones clients call.
     pub struct RangeInclusive<T> {
-        pub lo: T,
-        pub hi: T,
+        pub start_: T,
+        pub end_: T,
         pub exhausted: bool,
     }
     /// See [`std::ops::RangeToInclusive`]
@@ -499,13 +499,13 @@ pub mod range {
     // An exhausted iterator ends with `start == end`, and must look empty.
     impl<T> RangeBounds<T> for RangeInclusive<T> {
         fn start_bound(&self) -> Bound<&T> {
-            Bound::Included(&self.lo)
+            Bound::Included(&self.start_)
         }
         fn end_bound(&self) -> Bound<&T> {
             if self.exhausted {
-                Bound::Excluded(&self.hi)
+                Bound::Excluded(&self.end_)
             } else {
-                Bound::Included(&self.hi)
+                Bound::Included(&self.end_)
             }
         }
     }
@@ -521,22 +521,22 @@ pub mod range {
         /// See [`std::ops::RangeInclusive::new`]
         pub fn new(start: T, end: T) -> Self {
             RangeInclusive {
-                lo: start,
-                hi: end,
+                start_: start,
+                end_: end,
                 exhausted: false,
             }
         }
         /// See [`std::ops::RangeInclusive::start`]
         pub fn start(&self) -> &T {
-            &self.lo
+            &self.start_
         }
         /// See [`std::ops::RangeInclusive::end`]
         pub fn end(&self) -> &T {
-            &self.hi
+            &self.end_
         }
         /// See [`std::ops::RangeInclusive::into_inner`]
         pub fn into_inner(self) -> (T, T) {
-            (self.lo, self.hi)
+            (self.start_, self.end_)
         }
     }
     // Stand-ins for real core's `impl RangeInclusive<usize>` and `Debug` impl.
@@ -560,7 +560,7 @@ pub mod range {
             if self.exhausted {
                 true
             } else {
-                match self.lo.partial_cmp(&self.hi) {
+                match self.start_.partial_cmp(&self.end_) {
                     Option::Some(Ordering::Less) => false,
                     Option::Some(Ordering::Equal) => false,
                     _ => true,
@@ -625,7 +625,7 @@ mod tests {
             prop_assert_eq!(model.contains(&item), std_range.contains(&item));
             prop_assert_eq!(model.is_empty(), std_range.is_empty());
             if start <= end {
-                let exhausted = super::range::RangeInclusive { lo: end, hi: end, exhausted: true };
+                let exhausted = super::range::RangeInclusive { start_: end, end_: end, exhausted: true };
                 let mut std_range = std_range;
                 std_range.nth((end - start) as usize);
                 prop_assert_eq!(exhausted.contains(&item), std_range.contains(&item));
