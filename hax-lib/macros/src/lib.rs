@@ -449,7 +449,7 @@ pub fn lemma(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ### `refine` (on a field in a struct)
 /// Refine a type with a logical formula.
 ///
-/// ### `order` (on a field in a struct or an enum)
+/// ### `order` (on a named field in a struct or an enum)
 /// Reorders a field in the extracted code.
 ///
 /// Rust fields order matters for bit-level representation. Similarly, in some
@@ -461,6 +461,10 @@ pub fn lemma(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// By default, the order of a field is its index, e.g. the first field has
 /// order 0, the i-th field has order i+1.
+///
+/// `refine` and `order` may also be written behind a `cfg_attr`, e.g.
+/// `#[cfg_attr(hax_backend_fstar, refine(..))]` to refine a field for one
+/// backend only. At most one `refine` and one `order` may be enabled per field.
 ///
 /// ### `decreases`, `ensures` and `requires` (on a `fn` in an `impl`)
 /// `decreases`, `ensures`, `requires`: behave exactly as documented above on

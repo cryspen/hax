@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+Changes to the hax-lib crate:
+ - Support `refine` and `order` behind `cfg_attr` in `#[hax_lib::attributes]` (#1496)
+ - Reject overlapping `refine`s or `order`s on a field
+
 ### Added
 
 Lean backend and library:
