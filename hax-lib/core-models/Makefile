@@ -54,10 +54,8 @@ ALLOC_CHARON_EXCLUDES = \
 # re-adds. The items are therefore absent from the committed Lean tree, and a
 # crate that calls them will not elaborate; what this buys over `--exclude` is
 # that no *wrong* body is extracted.
-#   - `Vec::drain` ignores its range argument: `RangeBounds` is not modelled.
 #   - `fmt::format` returns the empty string: `fmt::Arguments` is not modelled.
 ALLOC_CHARON_OPAQUE = \
-    --opaque 'alloc_models::vec::_::drain' \
     --opaque 'alloc_models::fmt::format'
 
 .PHONY: all extract patch lean build clean clean-generated tests \
@@ -372,14 +370,14 @@ endif
 
 # `--test-workspace` because a model's mutants are usually killed by *another*
 # crate's tests: with cargo-mutants' default (only the mutated package's own
-# tests) 43 of `rust_primitives`' mutants survive spuriously.
+# tests) many of `rust_primitives`' mutants survive spuriously.
 mutants:
 	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" \
 	    cargo mutants $(MUTANTS_MODE) --test-workspace true $(MUTANTS_FLAGS)
 
 # The same sweep under the other cfg. Model variants gated on
 # cfg(hax_backend_fstar) are not built by the default sweep, so their mutants are
-# never compiled and every one of them looks like a survivor (62 of alloc's 79).
+# never compiled and every one of them looks like a survivor.
 mutants-fstar:
 	$(MAKE) mutants MUTANTS_RUSTFLAGS="--cfg hax_backend_fstar" \
 	    MUTANTS_FLAGS="--output mutants-fstar $(MUTANTS_FLAGS)"

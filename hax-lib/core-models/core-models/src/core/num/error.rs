@@ -14,6 +14,14 @@ impl crate::cmp::PartialEq<TryFromIntError> for TryFromIntError {
     }
 }
 
+/// See [`std::fmt::Debug`] for [`TryFromIntError`]
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for TryFromIntError {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
 /// See [`std::num::ParseIntError`]
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub struct ParseIntError {
@@ -30,9 +38,25 @@ pub struct ParseIntError {
     Zero,
 } */
 
+/// See [`std::fmt::Debug`] for [`ParseIntError`]
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for ParseIntError {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
 /// See [`std::num::IntErrorKind`]
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub struct IntErrorKind;
+
+/// See [`std::fmt::Debug`] for [`IntErrorKind`]
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for IntErrorKind {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
 
 /// The model's kind carries no payload, so every std error maps here.
 #[cfg(test)]
@@ -48,6 +72,23 @@ impl crate::testing::Inject for std::num::ParseIntError {
 mod tests {
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    /// The three error types render nothing, like every other `Debug` in the
+    /// model.
+    #[test]
+    fn test_num_error_debug() {
+        use crate::fmt::Debug;
+        let mut f = crate::fmt::Formatter;
+        assert!(super::TryFromIntError(()).fmt(&mut f).is_ok());
+        assert!(
+            super::ParseIntError {
+                kind: super::IntErrorKind
+            }
+            .fmt(&mut f)
+            .is_ok()
+        );
+        assert!(super::IntErrorKind.fmt(&mut f).is_ok());
+    }
 
     proptest! {
         /// Every `TryFromIntError` is equal to every other, in the model and in std.

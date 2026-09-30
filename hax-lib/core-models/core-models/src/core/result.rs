@@ -12,6 +12,17 @@ use super::clone::Clone;
 use super::default::Default;
 use super::option::Option;
 
+/// See [`std::fmt::Debug`] for [`Result`]
+#[cfg(not(hax_backend_fstar))]
+impl<T: super::fmt::Debug, E: super::fmt::Debug> super::fmt::Debug for Result<T, E> {
+    fn fmt(&self, f: &mut super::fmt::Formatter) -> super::fmt::Result {
+        match self {
+            Result::Ok(x) => super::fmt::Debug::fmt(x, f),
+            Result::Err(e) => super::fmt::Debug::fmt(e, f),
+        }
+    }
+}
+
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
@@ -488,6 +499,21 @@ mod tests {
     use crate::testing::CloneWitness;
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    /// `Debug` for `Result` forwards to the payload's, on either side.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_result_debug() {
+        use crate::testing::DebugWitness;
+        let mut f = crate::fmt::Formatter;
+        for fails in [false, true] {
+            // One instantiation for both arms, so coverage sees them together.
+            let ok = super::Ok::<_, DebugWitness>(DebugWitness { fails });
+            let err = super::Err::<DebugWitness, _>(DebugWitness { fails });
+            assert_eq!(crate::fmt::Debug::fmt(&ok, &mut f).is_err(), fails);
+            assert_eq!(crate::fmt::Debug::fmt(&err, &mut f).is_err(), fails);
+        }
+    }
 
     proptest! {
         #[cfg(not(hax_backend_fstar))]

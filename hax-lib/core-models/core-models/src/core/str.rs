@@ -39,12 +39,31 @@ mod error {
     #[cfg_attr(test, derive(PartialEq, Debug))]
     pub struct Utf8Error;
 
+    /// See [`std::fmt::Debug`] for [`Utf8Error`]
+    #[cfg(not(hax_backend_fstar))]
+    impl crate::fmt::Debug for Utf8Error {
+        fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+            crate::fmt::Result::Ok(())
+        }
+    }
+
     /// The model's error carries no position, so every std one maps here.
     #[cfg(test)]
     impl crate::testing::Inject for std::str::Utf8Error {
         type Model = Utf8Error;
         fn inject(&self) -> Self::Model {
             Utf8Error
+        }
+    }
+
+    #[cfg(all(test, not(hax_backend_fstar)))]
+    mod tests {
+        /// `Debug` for `Utf8Error` renders nothing, like every other `Debug` in
+        /// the model.
+        #[test]
+        fn test_utf8_error_debug() {
+            let mut f = crate::fmt::Formatter;
+            assert!(crate::fmt::Debug::fmt(&super::Utf8Error, &mut f).is_ok());
         }
     }
 }

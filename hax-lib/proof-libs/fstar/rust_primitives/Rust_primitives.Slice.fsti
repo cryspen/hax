@@ -12,6 +12,12 @@ let slice_index (#t: Type) (s: t_Slice t) (i: usize {i <. length s}): t = Seq.in
 let slice_slice (#v_T: Type0) (s: t_Slice v_T) (start: usize {start <=. length s}) (end_: usize {start <=. end_ /\ end_ <=. length s}): t_Slice v_T =
   Seq.slice s (v start) (v end_)
 let slice_clone_from_slice (#v_T: Type0) (s: t_Slice v_T) (src: t_Slice v_T {slice_length src == slice_length s}): t_Slice v_T = src
+let slice_copy_within (#v_T: Type0) (s: t_Slice v_T)
+  (start: usize) (end_: usize {start <=. end_ /\ end_ <=. length s})
+  (dest: usize {v dest <= Seq.length s - (v end_ - v start)}): t_Slice v_T =
+  Seq.append (Seq.slice s 0 (v dest))
+    (Seq.append (Seq.slice s (v start) (v end_))
+      (Seq.slice s (v dest + (v end_ - v start)) (Seq.length s)))
 val array_map (#t: Type) (#u: Type) (l: usize) (#ft: Type)
   (s: t_Array t l) (f: t -> u): res: t_Array u l {forall i. Seq.index res i == f (Seq.index s i)}
 let array_as_slice (#t: Type) (l: usize) (s: t_Array t l): t_Slice t =

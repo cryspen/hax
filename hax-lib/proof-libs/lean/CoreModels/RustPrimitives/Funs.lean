@@ -112,6 +112,18 @@ def rust_primitives.slice.slice_swap
   let s1 ← Slice.update s a vb
   Slice.update s1 b va
 
+/-- [rust_primitives::slice::slice_copy_within]: copy `s[start..end_]` to
+    `dest`, panicking where std's `copy_within` does. -/
+@[spec]
+def rust_primitives.slice.slice_copy_within
+  {T : Type} (coremarkerCopyInst : CoreModels.core.marker.Copy T) :
+  Slice T → Std.Usize → Std.Usize → Std.Usize → RustM (Slice T) :=
+  fun s start end_ dest =>
+  if start.val ≤ end_.val ∧ end_.val ≤ s.length ∧ dest.val ≤ s.length - (end_.val - start.val) then
+    ok ⟨s.val.setSlice! dest.val ((s.val.drop start.val).take (end_.val - start.val)),
+      by have := s.property; simp only [List.length_setSlice!]; omega⟩
+  else fail .panic
+
 /-- This helper function for `array_from_fn` takes a `FnMut` closure and produces a list. A list
     is easier to produce than an array because we do not need to produce a length-proof. -/
 def rust_primitives.slice.array_from_fn_go {T F : Type}

@@ -43,6 +43,14 @@ impl<T, U: From<T>> Into<U> for T {
 /// See [`std::convert::Infallible`]
 pub struct Infallible;
 
+/// See [`std::fmt::Debug`] for [`Infallible`]
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for Infallible {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
 impl<T, U: From<T>> TryFrom<T> for U {
     type Error = Infallible;
     fn try_from(x: T) -> Result<Self, Self::Error> {
@@ -261,6 +269,15 @@ mod tests {
     use crate::testing::Inject;
     use pastey::paste;
     use proptest::prelude::*;
+
+    /// `Debug` for `Infallible` renders nothing, like every other `Debug` in
+    /// the model.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_infallible_debug() {
+        let mut f = crate::fmt::Formatter;
+        assert!(crate::fmt::Debug::fmt(&super::Infallible, &mut f).is_ok());
+    }
 
     proptest! {
         #[test]

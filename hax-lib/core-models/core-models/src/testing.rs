@@ -158,3 +158,111 @@ impl Inject for CloneWitness {
         }
     }
 }
+
+/// A value whose `Debug` fails on demand, so a model that skips formatting an
+/// inner value is observable.
+#[cfg(not(hax_backend_fstar))]
+pub struct DebugWitness {
+    pub fails: bool,
+}
+
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for DebugWitness {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        if self.fails {
+            crate::fmt::Result::Err(crate::fmt::Error)
+        } else {
+            crate::fmt::Result::Ok(())
+        }
+    }
+}
+
+/// The model's `RangeBounds` forms under one type, so a test body can loop over
+/// them. Each method delegates to the wrapped range's own impl.
+pub enum ModelRange {
+    Range(crate::ops::range::Range<usize>),
+    From(crate::ops::range::RangeFrom<usize>),
+    To(crate::ops::range::RangeTo<usize>),
+    Full(crate::ops::range::RangeFull),
+    Pair(
+        (
+            crate::ops::range::Bound<usize>,
+            crate::ops::range::Bound<usize>,
+        ),
+    ),
+}
+
+macro_rules! on_model_range {
+    ($range:expr, |$r:ident| $body:expr) => {
+        match $range {
+            ModelRange::Range($r) => $body,
+            ModelRange::From($r) => $body,
+            ModelRange::To($r) => $body,
+            ModelRange::Full($r) => $body,
+            ModelRange::Pair($r) => $body,
+        }
+    };
+}
+
+impl crate::ops::range::RangeBounds<usize> for ModelRange {
+    fn start_bound(&self) -> crate::ops::range::Bound<&usize> {
+        on_model_range!(self, |r| {
+            crate::ops::range::RangeBounds::<usize>::start_bound(r)
+        })
+    }
+    fn end_bound(&self) -> crate::ops::range::Bound<&usize> {
+        on_model_range!(
+            self,
+            |r| crate::ops::range::RangeBounds::<usize>::end_bound(r)
+        )
+    }
+}
+
+fn bound(kind: u8, x: usize) -> (crate::ops::range::Bound<usize>, std::ops::Bound<usize>) {
+    use crate::ops::range::Bound as M;
+    use std::ops::Bound as S;
+    match kind {
+        0 => (M::Included(x), S::Included(x)),
+        1 => (M::Excluded(x), S::Excluded(x)),
+        _ => (M::Unbounded, S::Unbounded),
+    }
+}
+
+/// Every `RangeBounds` form of the model built from `start` and `end`, each
+/// paired with the bounds std gives the same range.
+pub fn range_forms(
+    start: usize,
+    end: usize,
+) -> std::vec::Vec<(ModelRange, (std::ops::Bound<usize>, std::ops::Bound<usize>))> {
+    use crate::ops::range as m;
+    use std::ops::RangeBounds;
+    fn bounds<R: RangeBounds<usize>>(r: R) -> (std::ops::Bound<usize>, std::ops::Bound<usize>) {
+        (r.start_bound().cloned(), r.end_bound().cloned())
+    }
+    let mut forms = vec![
+        (
+            ModelRange::Range(m::Range { start, end }),
+            bounds(start..end),
+        ),
+        (ModelRange::From(m::RangeFrom { start }), bounds(start..)),
+        (ModelRange::To(m::RangeTo { end }), bounds(..end)),
+        (ModelRange::Full(m::RangeFull), bounds(..)),
+    ];
+    for ks in 0..3 {
+        for ke in 0..3 {
+            let (model_start, std_start) = bound(ks, start);
+            let (model_end, std_end) = bound(ke, end);
+            forms.push((
+                ModelRange::Pair((model_start, model_end)),
+                (std_start, std_end),
+            ));
+        }
+    }
+    forms
+}
+
+/// Range endpoints around the slice lengths the tests use, plus the overflow edge.
+pub fn range_endpoint() -> impl proptest::strategy::Strategy<Value = usize> {
+    use proptest::prelude::*;
+    prop_oneof![0usize..=10, Just(usize::MAX - 1), Just(usize::MAX)]
+}
