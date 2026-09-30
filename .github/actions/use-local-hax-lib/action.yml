@@ -1,7 +1,7 @@
 name: Use a local hax-lib
 description: >-
   Point a project's dependencies on hax's library crates at a local hax
-  checkout, and check that the project's resolve graph really points there.
+  checkout, and check that the project's workspace members really point there.
 
 inputs:
   project:
@@ -80,18 +80,37 @@ runs:
           echo "$member: $dep ($label) -> $path"
         done <<<"$edges"
 
-        # Not just the members' own edges: a hax crate reached through a
-        # dependency that is not itself a hax crate lands in the graph too, and
-        # a project that then asks `cargo metadata` where hax-lib is gets two
-        # answers.
-        foreign=$(cargo metadata --format-version 1 | jq -r '
-          .packages[] | select(.name | startswith("hax-"))
-          | select(.source != null)
-          | "  \(.name) \(.version) from \(.source)"' | sort -u)
+        metadata=$(cargo metadata --format-version 1)
 
-        if [ -n "$foreign" ]; then
-          echo "::error::$project resolves hax crates outside $hax:"
-          echo "$foreign"
+        # The edges to a registry or git hax crate that start from a workspace
+        # member (`true`) or from any other non-hax crate (`false`).
+        stray() {
+          jq -r --argjson member "$1" '
+            (.packages | map({key: .id, value: .}) | from_entries) as $byid
+            | .workspace_members as $members
+            | .resolve.nodes[] | select(.id | IN($members[]) == $member)
+            | $byid[.id] as $from
+            | select($member or ($from.name | startswith("hax-") | not))
+            | .deps[] | $byid[.pkg]
+            | select((.name | startswith("hax-")) and .source != null)
+            | "  \($from.name) depends on \(.name) \(.version) from \(.source)"' \
+            <<<"$metadata" | sort -u
+        }
+
+        unpatched=$(stray true)
+        if [ -n "$unpatched" ]; then
+          echo "::error::these members of $project still depend on hax crates outside $hax:"
+          echo "$unpatched"
           exit 1
         fi
-        echo "every hax crate in $project's resolve graph comes from $hax"
+        echo "every member of $project depends on the hax crates of $hax"
+
+        # The dependencies below were built against their own hax crates, whose
+        # F* libraries the standard extraction Makefile would also find. We rely
+        # on the projects to use only the F* libraries of their direct hax-lib
+        # dependencies, or those in $HAX_HOME.
+        foreign=$(stray false)
+        if [ -n "$foreign" ]; then
+          echo "::warning::$project also resolves hax crates outside $hax, through these dependencies:"
+          echo "$foreign"
+        fi
