@@ -106,8 +106,9 @@ runs:
         echo "every member of $project depends on the hax crates of $hax"
 
         # The dependencies below were built against their own hax crates, whose
-        # F* libraries the standard extraction Makefile would also find. The
-        # projects checked with this action take theirs from $hax explicitly.
+        # F* libraries the standard extraction Makefile would also find. We rely
+        # on the projects to use only the F* libraries of their direct hax-lib
+        # dependencies, or those in $HAX_HOME.
         foreign=$(stray false)
         if [ -n "$foreign" ]; then
           echo "::warning::$project also resolves hax crates outside $hax, through these dependencies:"
