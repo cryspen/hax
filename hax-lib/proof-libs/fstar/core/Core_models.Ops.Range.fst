@@ -63,7 +63,9 @@ include Core_models.Bundle {f_end_bound_post as f_end_bound_post}
 
 include Core_models.Bundle {f_end_bound as f_end_bound}
 
-include Core_models.Bundle {bounds_contain as bounds_contain}
+include Core_models.Bundle {after_start as after_start}
+
+include Core_models.Bundle {before_end as before_end}
 
 include Core_models.Bundle {bound_le as bound_le}
 

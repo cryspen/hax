@@ -8191,26 +8191,27 @@ let bound_lt
   | Option_Some (Ordering_Less ) -> true
   | _ -> false
 
-let bounds_contain
+let after_start
       (#v_T #v_U: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_U)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_U v_T)
-      (start v_end: t_Bound v_T)
+      (start: t_Bound v_T)
       (item: v_U)
     : bool =
-  let after_start:bool =
-    match start <: t_Bound v_T with
-    | Bound_Included start -> bound_le #v_T #v_U start item
-    | Bound_Excluded start -> bound_lt #v_T #v_U start item
-    | Bound_Unbounded  -> true
-  in
-  if after_start
-  then
-    match v_end <: t_Bound v_T with
-    | Bound_Included v_end -> bound_le #v_U #v_T item v_end
-    | Bound_Excluded v_end -> bound_lt #v_U #v_T item v_end
-    | Bound_Unbounded  -> true
-  else false
+  match start <: t_Bound v_T with
+  | Bound_Included start -> bound_le #v_T #v_U start item
+  | Bound_Excluded start -> bound_lt #v_T #v_U start item
+  | Bound_Unbounded  -> true
+
+let before_end
+      (#v_T #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_U v_T)
+      (v_end: t_Bound v_T)
+      (item: v_U)
+    : bool =
+  match v_end <: t_Bound v_T with
+  | Bound_Included v_end -> bound_le #v_U #v_T item v_end
+  | Bound_Excluded v_end -> bound_lt #v_U #v_T item v_end
+  | Bound_Unbounded  -> true
 
 /// See [`std::ops::RangeInclusive::contains`]
 let impl_10__contains
@@ -8221,10 +8222,13 @@ let impl_10__contains
       (self: t_RangeInclusive v_T)
       (item: v_U)
     : bool =
-  bounds_contain #v_T
+  after_start #v_T
     #v_U
     (f_start_bound #(t_RangeInclusive v_T) #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T
     )
+    item &&
+  before_end #v_T
+    #v_U
     (f_end_bound #(t_RangeInclusive v_T) #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
     item
 
@@ -8234,18 +8238,7 @@ let impl_10__is_empty
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
       (self: t_RangeInclusive v_T)
-    : bool =
-  if self.f_exhausted
-  then true
-  else
-    match
-      f_partial_cmp #v_T #v_T #FStar.Tactics.Typeclasses.solve self.f_start_ self.f_end_
-      <:
-      t_Option t_Ordering
-    with
-    | Option_Some (Ordering_Less ) -> false
-    | Option_Some (Ordering_Equal ) -> false
-    | _ -> true
+    : bool = self.f_exhausted || ~.(bound_le #v_T #v_T self.f_start_ self.f_end_ <: bool)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_4__from__result (#v_A: Type0) : t_Iterator (t_SeqIter v_A) =
@@ -8863,9 +8856,12 @@ let impl_11__from__range (#v_T #v_R: Type0) : t_RangeBoundsDefaults v_R v_T =
       (self: v_R)
       (item: v_U)
       ->
-      bounds_contain #v_T
+      after_start #v_T
         #v_U
         (f_start_bound #v_R #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
+        item &&
+      before_end #v_T
+        #v_U
         (f_end_bound #v_R #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
         item
   }

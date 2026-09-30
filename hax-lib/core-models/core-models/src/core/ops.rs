@@ -314,7 +314,7 @@ pub mod drop {
 }
 
 pub mod range {
-    use crate::cmp::{Ordering, PartialOrd};
+    use crate::cmp::PartialOrd;
     /// See [`std::ops::RangeTo`]
     pub struct RangeTo<T> {
         pub end: T,
@@ -402,28 +402,29 @@ pub mod range {
             T: PartialOrd<U>,
             U: ?Sized + PartialOrd<T>,
         {
-            bounds_contain(self.start_bound(), self.end_bound(), item)
+            after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
         }
     }
-    fn bounds_contain<T, U: ?Sized>(start: Bound<&T>, end: Bound<&T>, item: &U) -> bool
+    // Like std, `end_bound` is only called once the start check passes, via
+    // `after_start(..) && before_end(..)`.
+    fn after_start<T, U: ?Sized>(start: Bound<&T>, item: &U) -> bool
     where
         T: PartialOrd<U>,
-        U: PartialOrd<T>,
     {
-        let after_start = match start {
+        match start {
             Bound::Included(start) => bound_le(start, item),
             Bound::Excluded(start) => bound_lt(start, item),
             Bound::Unbounded => true,
-        };
-        // Like std, `end` is not compared once `start` rules `item` out.
-        if after_start {
-            match end {
-                Bound::Included(end) => bound_le(item, end),
-                Bound::Excluded(end) => bound_lt(item, end),
-                Bound::Unbounded => true,
-            }
-        } else {
-            false
+        }
+    }
+    fn before_end<T, U: ?Sized>(end: Bound<&T>, item: &U) -> bool
+    where
+        U: PartialOrd<T>,
+    {
+        match end {
+            Bound::Included(end) => bound_le(item, end),
+            Bound::Excluded(end) => bound_lt(item, end),
+            Bound::Unbounded => true,
         }
     }
     // std compares with `<=` and `<`, so a type's own `le` and `lt` are used.
@@ -440,12 +441,12 @@ pub mod range {
     fn bound_le<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
         matches!(
             a.partial_cmp(b),
-            Option::Some(Ordering::Less | Ordering::Equal)
+            Option::Some(crate::cmp::Ordering::Less | crate::cmp::Ordering::Equal)
         )
     }
     #[cfg(hax_backend_fstar)]
     fn bound_lt<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
-        matches!(a.partial_cmp(b), Option::Some(Ordering::Less))
+        matches!(a.partial_cmp(b), Option::Some(crate::cmp::Ordering::Less))
     }
     impl<T> RangeBounds<T> for RangeFull {
         fn start_bound(&self) -> Bound<&T> {
@@ -549,7 +550,7 @@ pub mod range {
             T: PartialOrd<U>,
             U: ?Sized + PartialOrd<T>,
         {
-            bounds_contain(self.start_bound(), self.end_bound(), item)
+            after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
         }
         /// See [`std::ops::RangeInclusive::is_empty`]
         // The bound repeats the impl's, as in core: clients pass both.
@@ -557,15 +558,7 @@ pub mod range {
         where
             T: PartialOrd<T>,
         {
-            if self.exhausted {
-                true
-            } else {
-                match self.start_.partial_cmp(&self.end_) {
-                    Option::Some(Ordering::Less) => false,
-                    Option::Some(Ordering::Equal) => false,
-                    _ => true,
-                }
-            }
+            self.exhausted || !bound_le(&self.start_, &self.end_)
         }
     }
 
@@ -590,7 +583,7 @@ pub mod range {
             T: PartialOrd<U>,
             U: ?Sized + PartialOrd<T>,
         {
-            bounds_contain(self.start_bound(), self.end_bound(), item)
+            after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
         }
     }
 }
@@ -673,6 +666,37 @@ mod tests {
         assert!(!RangeBoundsDefaults::contains(&model, &item));
     }
 
+    /// std does not call `end_bound` once the start rules the item out.
+    #[test]
+    fn test_contains_skips_end_bound_below_start() {
+        use crate::ops::range::{Bound, RangeBounds, RangeBoundsDefaults};
+        struct PanickyEnd(u8);
+        impl std::ops::RangeBounds<u8> for PanickyEnd {
+            fn start_bound(&self) -> std::ops::Bound<&u8> {
+                std::ops::Bound::Included(&self.0)
+            }
+            // Never called: the test checks exactly that.
+            #[cfg_attr(coverage_nightly, coverage(off))]
+            fn end_bound(&self) -> std::ops::Bound<&u8> {
+                panic!("end_bound called")
+            }
+        }
+        impl RangeBounds<u8> for PanickyEnd {
+            fn start_bound(&self) -> Bound<&u8> {
+                Bound::Included(&self.0)
+            }
+            // Never called: the test checks exactly that.
+            #[cfg_attr(coverage_nightly, coverage(off))]
+            fn end_bound(&self) -> Bound<&u8> {
+                panic!("end_bound called")
+            }
+        }
+        assert!(!std::ops::RangeBounds::contains(&PanickyEnd(2), &1));
+        #[cfg(not(hax_backend_fstar))]
+        assert!(!RangeBounds::contains(&PanickyEnd(2), &1));
+        assert!(!RangeBoundsDefaults::contains(&PanickyEnd(2), &1));
+    }
+
     // F* compares with `partial_cmp`, having no `le`/`lt` to override.
     #[cfg(not(hax_backend_fstar))]
     mod contains_uses_le_and_lt {
@@ -723,6 +747,8 @@ mod tests {
             assert!(!(Skewed..Skewed).contains(&Skewed));
             let model = (Bound::Included(Skewed), Bound::Excluded(Skewed));
             assert!(!RangeBounds::contains(&model, &Skewed));
+            assert!(!(Skewed..=Skewed).is_empty());
+            assert!(!RangeInclusive::new(Skewed, Skewed).is_empty());
         }
     }
 
