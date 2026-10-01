@@ -333,6 +333,7 @@ pub mod range {
     pub struct RangeInclusive<T> {
         pub start: T,
         pub end: T,
+        pub exhausted: bool,
     }
 
     macro_rules! impl_iterator_range_int {

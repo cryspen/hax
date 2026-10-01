@@ -2907,7 +2907,8 @@ let impl_31 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
 /// See [`std::ops::RangeInclusive`]
 type t_RangeInclusive (v_T: Type0) = {
   f_start:v_T;
-  f_end:v_T
+  f_end:v_T;
+  f_exhausted:bool
 }
 
 /// See [`std::ops::Bound`]
