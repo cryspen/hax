@@ -94,7 +94,7 @@ pub trait Debug {
 }
 
 /// See [`std::fmt::Arguments`]
-pub struct Arguments<'a>(&'a ());
+pub struct Arguments<'a>(pub &'a ());
 
 // F*-only. Real `core` has no blanket `Debug`, and keeping one here is what
 // made the concrete impls below impossible to add (`E0119`). The F* model keeps

@@ -14,12 +14,14 @@ Lean backend and library:
  - Add models for more of `clone`, `array`, `option` and `result`
  - Add models for more of `mem`, `borrow`, `convert` and `error`
  - Add models for more of `ops`
+ - Add models for more of `panicking` and `hint`
 
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
  - Add models for more of `clone`, `array`, `option` and `result`
  - Add models for more of `mem`, `borrow`, `convert` and `error`
  - Add models for more of `ops`
+ - Add models for more of `panicking` and `hint`
 
 ### Changed
 

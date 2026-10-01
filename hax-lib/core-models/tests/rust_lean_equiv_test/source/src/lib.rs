@@ -28,8 +28,10 @@
 // Unstable std items the Rust half of the tests calls.
 #![feature(
     array_into_iter_constructors,
+    cold_path,
     drop_guard,
     ergonomic_clones,
+    likely_unlikely,
     mem_copy_fn,
     option_reduce
 )]

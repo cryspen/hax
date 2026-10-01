@@ -383,7 +383,7 @@ structure error.ErrorDefaults (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 97:0-97:33
+    Source: 'core-models/src/core/fmt.rs', lines 97:0-97:37
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
@@ -433,6 +433,15 @@ structure hash.Hasher (Self : Type) where
     Visibility: public -/
 structure hash.Hash (Self : Type) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → RustM H
+
+/-- [core_models::hint::Locality]
+    Source: 'core-models/src/core/hint.rs', lines 54:0-61:1
+    Visibility: public -/
+@[discriminant isize]
+inductive hint.Locality where
+| L3 : hint.Locality
+| L2 : hint.Locality
+| L1 : hint.Locality
 
 /-- [core_models::iter::adapters::fuse::Fuse]
     Source: 'core-models/src/core/iter.rs', lines 1048:8-1051:9
@@ -1239,7 +1248,7 @@ structure panic.panic_info.PanicInfo where
   force_no_backtrace : Bool
 
 /-- [core_models::panicking::AssertKind]
-    Source: 'core-models/src/core/panicking.rs', lines 24:0-31:1
+    Source: 'core-models/src/core/panicking.rs', lines 27:0-34:1
     Visibility: public -/
 @[discriminant isize]
 inductive panicking.AssertKind where
