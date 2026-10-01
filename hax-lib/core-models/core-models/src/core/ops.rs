@@ -314,6 +314,7 @@ pub mod drop {
 }
 
 pub mod range {
+    use crate::cmp::PartialOrd;
     /// See [`std::ops::RangeTo`]
     pub struct RangeTo<T> {
         pub end: T,
@@ -330,10 +331,16 @@ pub mod range {
     /// See [`std::ops::RangeFull`]
     pub struct RangeFull;
     /// See [`std::ops::RangeInclusive`]
+    // Not `start`/`end` as in std (where they are private): Lean would then
+    // name the `start`/`end` methods apart from the ones clients call.
     pub struct RangeInclusive<T> {
-        pub start: T,
-        pub end: T,
+        pub start_: T,
+        pub end_: T,
         pub exhausted: bool,
+    }
+    /// See [`std::ops::RangeToInclusive`]
+    pub struct RangeToInclusive<T> {
+        pub end: T,
     }
 
     macro_rules! impl_iterator_range_int {
@@ -386,6 +393,60 @@ pub mod range {
         fn start_bound(&self) -> Bound<&T>;
         #[hax_lib::requires(true)]
         fn end_bound(&self) -> Bound<&T>;
+        /// See [`std::ops::RangeBounds::contains`]
+        // F* has no default methods: there, `RangeBoundsDefaults` provides it.
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(true)]
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>,
+        {
+            after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
+        }
+    }
+    // Like std, `end_bound` is only called once the start check passes, via
+    // `after_start(..) && before_end(..)`.
+    fn after_start<T, U: ?Sized>(start: Bound<&T>, item: &U) -> bool
+    where
+        T: PartialOrd<U>,
+    {
+        match start {
+            Bound::Included(start) => bound_le(start, item),
+            Bound::Excluded(start) => bound_lt(start, item),
+            Bound::Unbounded => true,
+        }
+    }
+    fn before_end<T, U: ?Sized>(end: Bound<&T>, item: &U) -> bool
+    where
+        U: PartialOrd<T>,
+    {
+        match end {
+            Bound::Included(end) => bound_le(item, end),
+            Bound::Excluded(end) => bound_lt(item, end),
+            Bound::Unbounded => true,
+        }
+    }
+    // std compares with `<=` and `<`, so a type's own `le` and `lt` are used.
+    #[cfg(not(hax_backend_fstar))]
+    fn bound_le<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        a.le(b)
+    }
+    #[cfg(not(hax_backend_fstar))]
+    fn bound_lt<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        a.lt(b)
+    }
+    // F* has no `le`/`lt` between two different types: these ignore overrides.
+    #[cfg(hax_backend_fstar)]
+    fn bound_le<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        matches!(
+            a.partial_cmp(b),
+            Option::Some(crate::cmp::Ordering::Less | crate::cmp::Ordering::Equal)
+        )
+    }
+    #[cfg(hax_backend_fstar)]
+    fn bound_lt<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        matches!(a.partial_cmp(b), Option::Some(crate::cmp::Ordering::Less))
     }
     impl<T> RangeBounds<T> for RangeFull {
         fn start_bound(&self) -> Bound<&T> {
@@ -436,6 +497,95 @@ pub mod range {
             Bound::Unbounded => Bound::Unbounded,
         }
     }
+    // An exhausted iterator ends with `start == end`, and must look empty.
+    impl<T> RangeBounds<T> for RangeInclusive<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start_)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            if self.exhausted {
+                Bound::Excluded(&self.end_)
+            } else {
+                Bound::Included(&self.end_)
+            }
+        }
+    }
+    impl<T> RangeBounds<T> for RangeToInclusive<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.end)
+        }
+    }
+    impl<T> RangeInclusive<T> {
+        /// See [`std::ops::RangeInclusive::new`]
+        pub fn new(start: T, end: T) -> Self {
+            RangeInclusive {
+                start_: start,
+                end_: end,
+                exhausted: false,
+            }
+        }
+        /// See [`std::ops::RangeInclusive::start`]
+        pub fn start(&self) -> &T {
+            &self.start_
+        }
+        /// See [`std::ops::RangeInclusive::end`]
+        pub fn end(&self) -> &T {
+            &self.end_
+        }
+        /// See [`std::ops::RangeInclusive::into_inner`]
+        pub fn into_inner(self) -> (T, T) {
+            (self.start_, self.end_)
+        }
+    }
+    // Stand-ins for real core's `impl RangeInclusive<usize>` and `Debug` impl.
+    impl RangeInclusive<usize> {}
+    impl<T> RangeInclusive<T> {}
+    impl<T: PartialOrd<T>> RangeInclusive<T> {
+        /// See [`std::ops::RangeInclusive::contains`]
+        pub fn contains<U>(&self, item: &U) -> bool
+        where
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>,
+        {
+            after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
+        }
+        /// See [`std::ops::RangeInclusive::is_empty`]
+        // The bound repeats the impl's, as in core: clients pass both.
+        pub fn is_empty(&self) -> bool
+        where
+            T: PartialOrd<T>,
+        {
+            self.exhausted || !bound_le(&self.start_, &self.end_)
+        }
+    }
+
+    // `RangeBounds::contains` for F*, where a trait cannot provide it: this
+    // blanket impl gives it to every `RangeBounds`, including clients' own.
+    // Last in the module, so that it does not shift the `impl_N` names above.
+    #[cfg(any(hax_backend_fstar, test))]
+    #[hax_lib::attributes]
+    pub(crate) trait RangeBoundsDefaults<T> {
+        #[hax_lib::requires(true)]
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            Self: RangeBounds<T>,
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>;
+    }
+    #[cfg(any(hax_backend_fstar, test))]
+    impl<T, R> RangeBoundsDefaults<T> for R {
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            Self: RangeBounds<T>,
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>,
+        {
+            after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -443,6 +593,164 @@ mod tests {
     use crate::testing::Inject;
     use pastey::paste;
     use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_range_inclusive_new(start in any::<u8>(), end in any::<u8>()) {
+            let model = super::range::RangeInclusive::new(start, end);
+            let std_range = start..=end;
+            prop_assert_eq!(*model.start(), *std_range.start());
+            prop_assert_eq!(*model.end(), *std_range.end());
+            prop_assert_eq!(model.into_inner(), std_range.into_inner());
+        }
+
+        #[test]
+        fn test_range_inclusive_contains(
+            start in any::<u8>(),
+            end in any::<u8>(),
+            same in any::<bool>(),
+            item in any::<u8>(),
+        ) {
+            // Independent draws are almost never equal: that edge is `same`.
+            let end = if same { start } else { end };
+            let model = super::range::RangeInclusive::new(start, end);
+            let std_range = start..=end;
+            prop_assert_eq!(model.contains(&item), std_range.contains(&item));
+            prop_assert_eq!(model.is_empty(), std_range.is_empty());
+            if start <= end {
+                let exhausted = super::range::RangeInclusive { start_: end, end_: end, exhausted: true };
+                let mut std_range = std_range;
+                std_range.nth((end - start) as usize);
+                prop_assert_eq!(exhausted.contains(&item), std_range.contains(&item));
+                prop_assert_eq!(exhausted.is_empty(), std_range.is_empty());
+            }
+        }
+
+        #[test]
+        fn test_range_bounds_contains(
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            item in crate::testing::range_endpoint(),
+        ) {
+            use std::ops::RangeBounds as _;
+            for (model, real) in crate::testing::range_forms(start, end) {
+                let expected = real.contains(&item);
+                #[cfg(not(hax_backend_fstar))]
+                prop_assert_eq!(
+                    crate::ops::range::RangeBounds::<usize>::contains(&model, &item),
+                    expected
+                );
+                prop_assert_eq!(
+                    crate::ops::range::RangeBoundsDefaults::<usize>::contains(&model, &item),
+                    expected
+                );
+            }
+        }
+    }
+
+    /// std does not compare against the end once the start rules the item out.
+    #[test]
+    fn test_contains_skips_end_below_start() {
+        use crate::ops::range::{Bound, RangeBoundsDefaults, RangeInclusive};
+        use crate::testing::Tripwire;
+        let item = Tripwire(1);
+        assert!(!(Tripwire(2)..=Tripwire(u8::MAX)).contains(&item));
+        let model = RangeInclusive::new(Tripwire(2), Tripwire(u8::MAX));
+        assert!(!model.contains(&item));
+        let model = (
+            Bound::Excluded(Tripwire(1)),
+            Bound::Included(Tripwire(u8::MAX)),
+        );
+        #[cfg(not(hax_backend_fstar))]
+        assert!(!crate::ops::range::RangeBounds::contains(&model, &item));
+        assert!(!RangeBoundsDefaults::contains(&model, &item));
+    }
+
+    /// std does not call `end_bound` once the start rules the item out.
+    #[test]
+    fn test_contains_skips_end_bound_below_start() {
+        use crate::ops::range::{Bound, RangeBounds, RangeBoundsDefaults};
+        struct PanickyEnd(u8);
+        impl std::ops::RangeBounds<u8> for PanickyEnd {
+            fn start_bound(&self) -> std::ops::Bound<&u8> {
+                std::ops::Bound::Included(&self.0)
+            }
+            // Never called: the test checks exactly that.
+            #[cfg_attr(coverage_nightly, coverage(off))]
+            fn end_bound(&self) -> std::ops::Bound<&u8> {
+                panic!("end_bound called")
+            }
+        }
+        impl RangeBounds<u8> for PanickyEnd {
+            fn start_bound(&self) -> Bound<&u8> {
+                Bound::Included(&self.0)
+            }
+            // Never called: the test checks exactly that.
+            #[cfg_attr(coverage_nightly, coverage(off))]
+            fn end_bound(&self) -> Bound<&u8> {
+                panic!("end_bound called")
+            }
+        }
+        assert!(!std::ops::RangeBounds::contains(&PanickyEnd(2), &1));
+        #[cfg(not(hax_backend_fstar))]
+        assert!(!RangeBounds::contains(&PanickyEnd(2), &1));
+        assert!(!RangeBoundsDefaults::contains(&PanickyEnd(2), &1));
+    }
+
+    // F* compares with `partial_cmp`, having no `le`/`lt` to override.
+    #[cfg(not(hax_backend_fstar))]
+    mod contains_uses_le_and_lt {
+        /// Incomparable, yet `le` holds and `lt` does not: std goes by the latter.
+        struct Skewed;
+        impl std::cmp::PartialEq for Skewed {
+            fn eq(&self, _: &Self) -> bool {
+                false
+            }
+        }
+        impl std::cmp::PartialOrd for Skewed {
+            fn partial_cmp(&self, _: &Self) -> Option<std::cmp::Ordering> {
+                None
+            }
+            fn le(&self, _: &Self) -> bool {
+                true
+            }
+            fn lt(&self, _: &Self) -> bool {
+                false
+            }
+        }
+        impl crate::cmp::PartialEq<Skewed> for Skewed {
+            fn eq(&self, _: &Self) -> bool {
+                false
+            }
+        }
+        impl crate::cmp::PartialOrd<Skewed> for Skewed {
+            fn partial_cmp(&self, _: &Self) -> crate::option::Option<crate::cmp::Ordering> {
+                crate::option::Option::None
+            }
+            fn le(&self, _: &Self) -> bool {
+                true
+            }
+            fn lt(&self, _: &Self) -> bool {
+                false
+            }
+        }
+
+        #[test]
+        fn test_contains_uses_le_and_lt() {
+            use crate::ops::range::{Bound, RangeBounds, RangeInclusive};
+            assert!(Skewed.partial_cmp(&Skewed).is_none());
+            assert!(Skewed != Skewed);
+            assert!(crate::cmp::PartialOrd::partial_cmp(&Skewed, &Skewed).is_none());
+            assert!(!crate::cmp::PartialEq::eq(&Skewed, &Skewed));
+            assert!((Skewed..=Skewed).contains(&Skewed));
+            assert!(RangeInclusive::new(Skewed, Skewed).contains(&Skewed));
+            assert!(!(Skewed..Skewed).contains(&Skewed));
+            let model = (Bound::Included(Skewed), Bound::Excluded(Skewed));
+            assert!(!RangeBounds::contains(&model, &Skewed));
+            assert!(!(Skewed..=Skewed).is_empty());
+            assert!(!RangeInclusive::new(Skewed, Skewed).is_empty());
+        }
+    }
 
     // `int_trait_impls!` covers u8..u64. The `requires` rules out wrapping, so
     // the domain is every non-overflowing pair, edges included.

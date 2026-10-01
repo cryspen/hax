@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+Lean backend and library:
+ - Add models of `RangeInclusive` and `RangeToInclusive`
+
+F* backend and library:
+ - Add models of `RangeInclusive` and `RangeToInclusive`
+
+### Changed
+
+Lean backend and library:
+ - Breaking: the fields `start` and `«end»` of `ops.range.RangeInclusive` are
+   now `start_` and `end_`, and `RangeInclusive.start` and `RangeInclusive.end`
+   are functions
+
+F* backend and library:
+ - Breaking: the fields `f_start` and `f_end` of `t_RangeInclusive` are now
+   `f_start_` and `f_end_`
+
 ## [0.4.2] - 2026-10-01
 
 ### Fixed
