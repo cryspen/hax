@@ -30,7 +30,7 @@ const AENEAS_WARN_FLAGS: &[&str] = &["-backend", "-dest", "-subdir", "-split-fil
 /// drops a provided method the crate never calls, and aeneas then emits the
 /// trait impl without that field, which Lean rejects (#2172); naming them as
 /// translation roots keeps them. Must match the structures' fields exactly:
-/// these are the only twelve methods the model crates give a default body.
+/// these are the only twenty-eight methods the model crates give a default body.
 /// (`Drop::drop` also has one, but an `impl Drop` cannot omit its only
 /// method, so no instance is ever emitted without the field.)
 const CHARON_DEFAULT_METHOD_ROOTS: &[&str] = &[
@@ -49,6 +49,24 @@ const CHARON_DEFAULT_METHOD_ROOTS: &[&str] = &[
     // Only a crate with its own `impl RangeBounds` reaches these.
     "core::ops::range::RangeBounds::contains",
     "core::ops::range::RangeBounds::is_empty",
+    // Only a crate with its own `impl Hasher`, `impl Hash` or `impl BuildHasher`
+    // reaches these.
+    "core::hash::Hasher::write_u8",
+    "core::hash::Hasher::write_u16",
+    "core::hash::Hasher::write_u32",
+    "core::hash::Hasher::write_u64",
+    "core::hash::Hasher::write_u128",
+    "core::hash::Hasher::write_usize",
+    "core::hash::Hasher::write_i8",
+    "core::hash::Hasher::write_i16",
+    "core::hash::Hasher::write_i32",
+    "core::hash::Hasher::write_i64",
+    "core::hash::Hasher::write_i128",
+    "core::hash::Hasher::write_isize",
+    "core::hash::Hasher::write_length_prefix",
+    "core::hash::Hasher::write_str",
+    "core::hash::Hash::hash_slice",
+    "core::hash::BuildHasher::hash_one",
 ];
 
 fn picks_roots(args: &[String]) -> bool {

@@ -39,6 +39,7 @@
 // `bound_*`, `control_flow_*`, `one_sided_range`, `range_*`: for the `ops`
 // range and `ControlFlow` items.
 // `cold_path`, `likely_unlikely`: for `hint::{cold_path, likely, unlikely}`.
+// `hasher_prefixfree_extras`: for `Hasher::{write_length_prefix, write_str}`.
 #![cfg_attr(
     test,
     feature(
@@ -50,6 +51,7 @@
         control_flow_ok,
         drop_guard,
         fmt_helpers_for_derive,
+        hasher_prefixfree_extras,
         int_roundings,
         likely_unlikely,
         mem_copy_fn,

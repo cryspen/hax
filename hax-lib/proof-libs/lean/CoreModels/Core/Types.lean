@@ -422,17 +422,48 @@ structure fmt.rt.Placeholder where
 def fmt.rt.UnsafeArg := Unit
 
 /-- Trait declaration: [core_models::hash::Hasher]
-    Source: 'core-models/src/core/hash.rs', lines 2:0-7:1
+    Source: 'core-models/src/core/hash.rs', lines 5:0-117:1
     Visibility: public -/
 structure hash.Hasher (Self : Type) where
   finish : Self → RustM Std.U64
   write : Self → Slice Std.U8 → RustM Self
+  write_u8 : Self → Std.U8 → RustM Self
+  write_u16 : Self → Std.U16 → RustM Self
+  write_u32 : Self → Std.U32 → RustM Self
+  write_u64 : Self → Std.U64 → RustM Self
+  write_u128 : Self → Std.U128 → RustM Self
+  write_usize : Self → Std.Usize → RustM Self
+  write_i8 : Self → Std.I8 → RustM Self
+  write_i16 : Self → Std.I16 → RustM Self
+  write_i32 : Self → Std.I32 → RustM Self
+  write_i64 : Self → Std.I64 → RustM Self
+  write_i128 : Self → Std.I128 → RustM Self
+  write_isize : Self → Std.Isize → RustM Self
+  write_length_prefix : Self → Std.Usize → RustM Self
+  write_str : Self → Str → RustM Self
 
 /-- Trait declaration: [core_models::hash::Hash]
-    Source: 'core-models/src/core/hash.rs', lines 11:0-16:1
+    Source: 'core-models/src/core/hash.rs', lines 121:0-137:1
     Visibility: public -/
 structure hash.Hash (Self : Type) where
-  hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → RustM H
+  hash : forall {H : Type} (HasherInst : core.hash.Hasher H), Self → H → RustM H
+  hash_slice : forall {H : Type} (HasherInst : core.hash.Hasher H), Slice Self → H
+    → RustM H
+
+/-- Trait declaration: [core_models::hash::BuildHasher]
+    Source: 'core-models/src/core/hash.rs', lines 140:0-158:1
+    Visibility: public -/
+structure hash.BuildHasher (Self : Type) (Self_Hasher : Type) where
+  HasherInst : core.hash.Hasher Self_Hasher
+  build_hasher : Self → RustM Self_Hasher
+  hash_one : forall {T : Type} (HashInst : core.hash.Hash T) (HasherInst1 :
+    core.hash.Hasher Self_Hasher), Self → T → RustM Std.U64
+
+/-- [core_models::hash::BuildHasherDefault]
+    Source: 'core-models/src/core/hash.rs', lines 163:0-163:62
+    Visibility: public -/
+@[reducible]
+def hash.BuildHasherDefault (H : Type) := core.marker.PhantomData H
 
 /-- [core_models::hint::Locality]
     Source: 'core-models/src/core/hint.rs', lines 54:0-61:1
@@ -716,6 +747,111 @@ structure marker.StructuralPartialEq (Self : Type) where
 @[reducible]
 def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
+
+/-- Trait declaration: [core_models::marker::MetaSized]
+    Source: 'core-models/src/core/marker.rs', lines 55:0-55:22
+    Visibility: public -/
+structure marker.MetaSized (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::PointeeSized]
+    Source: 'core-models/src/core/marker.rs', lines 57:0-57:25
+    Visibility: public -/
+structure marker.PointeeSized (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Unsize]
+    Source: 'core-models/src/core/marker.rs', lines 59:0-59:22
+    Visibility: public -/
+structure marker.Unsize (Self : Type) (T : Type) where
+
+/-- Trait declaration: [core_models::marker::Freeze]
+    Source: 'core-models/src/core/marker.rs', lines 61:0-61:19
+    Visibility: public -/
+structure marker.Freeze (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Unpin]
+    Source: 'core-models/src/core/marker.rs', lines 63:0-63:18
+    Visibility: public -/
+structure marker.Unpin (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Destruct]
+    Source: 'core-models/src/core/marker.rs', lines 65:0-65:21
+    Visibility: public -/
+structure marker.Destruct (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Tuple]
+    Source: 'core-models/src/core/marker.rs', lines 67:0-67:18
+    Visibility: public -/
+structure marker.Tuple (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::ConstParamTy_]
+    Source: 'core-models/src/core/marker.rs', lines 71:0-71:47
+    Visibility: public -/
+structure marker.ConstParamTy_ (Self : Type) where
+  StructuralPartialEqInst : marker.StructuralPartialEq Self
+
+/-- Trait declaration: [core_models::marker::FnPtr]
+    Source: 'core-models/src/core/marker.rs', lines 74:0-74:24
+    Visibility: public -/
+structure marker.FnPtr (Self : Type) where
+  CopyInst : marker.Copy Self
+
+/-- Trait declaration: [core_models::marker::DiscriminantKind]
+    Source: 'core-models/src/core/marker.rs', lines 77:0-80:1
+    Visibility: public -/
+structure marker.DiscriminantKind (Self : Type) (Self_Discriminant : Type)
+  where
+
+/-- [core_models::marker::PhantomPinned]
+    Source: 'core-models/src/core/marker.rs', lines 83:0-83:25
+    Visibility: public -/
+@[reducible]
+def marker.PhantomPinned := Unit
+
+/-- Trait declaration: [core_models::marker::variance::Variance]
+    Source: 'core-models/src/core/marker.rs', lines 95:4-95:50
+    Visibility: public -/
+structure marker.variance.Variance (Self : Type) where
+  defaultDefaultInst : default.Default Self
+
+/-- [core_models::marker::variance::PhantomCovariant]
+    Source: 'core-models/src/core/marker.rs', lines 103:4-103:64
+    Visibility: public -/
+@[reducible]
+def marker.variance.PhantomCovariant (T : Type) := core.marker.PhantomData T
+
+/-- [core_models::marker::variance::PhantomContravariant]
+    Source: 'core-models/src/core/marker.rs', lines 105:4-105:68
+    Visibility: public -/
+@[reducible]
+def marker.variance.PhantomContravariant (T : Type) :=
+  core.marker.PhantomData T
+
+/-- [core_models::marker::variance::PhantomInvariant]
+    Source: 'core-models/src/core/marker.rs', lines 107:4-107:64
+    Visibility: public -/
+@[reducible]
+def marker.variance.PhantomInvariant (T : Type) := core.marker.PhantomData T
+
+/-- [core_models::marker::variance::PhantomCovariantLifetime]
+    Source: 'core-models/src/core/marker.rs', lines 109:4-109:70
+    Visibility: public -/
+@[reducible]
+def marker.variance.PhantomCovariantLifetime :=
+  marker.variance.PhantomCovariant Unit
+
+/-- [core_models::marker::variance::PhantomContravariantLifetime]
+    Source: 'core-models/src/core/marker.rs', lines 111:4-111:78
+    Visibility: public -/
+@[reducible]
+def marker.variance.PhantomContravariantLifetime :=
+  marker.variance.PhantomContravariant Unit
+
+/-- [core_models::marker::variance::PhantomInvariantLifetime]
+    Source: 'core-models/src/core/marker.rs', lines 113:4-113:70
+    Visibility: public -/
+@[reducible]
+def marker.variance.PhantomInvariantLifetime :=
+  marker.variance.PhantomInvariant Unit
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
     Source: 'core-models/src/core/mem.rs', lines 165:4-167:5

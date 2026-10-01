@@ -39,3 +39,46 @@ let impl_3
     : t_Copy v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 type t_PhantomData (v_T: Type0) = | PhantomData : t_PhantomData v_T
+
+/// See [`std::marker::MetaSized`]
+class t_MetaSized (v_Self: Type0) = { __marker_trait_t_MetaSized:Prims.unit }
+
+/// See [`std::marker::PointeeSized`]
+class t_PointeeSized (v_Self: Type0) = { __marker_trait_t_PointeeSized:Prims.unit }
+
+/// See [`std::marker::Unsize`]
+class t_Unsize (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Unsize:Prims.unit }
+
+/// See [`std::marker::Freeze`]
+class t_Freeze (v_Self: Type0) = { __marker_trait_t_Freeze:Prims.unit }
+
+/// See [`std::marker::Unpin`]
+class t_Unpin (v_Self: Type0) = { __marker_trait_t_Unpin:Prims.unit }
+
+/// See [`std::marker::Destruct`]
+class t_Destruct (v_Self: Type0) = { __marker_trait_t_Destruct:Prims.unit }
+
+/// See [`std::marker::Tuple`]
+class t_Tuple (v_Self: Type0) = { __marker_trait_t_Tuple:Prims.unit }
+
+/// See [`std::marker::ConstParamTy_`]
+class t_ConstParamTy_ (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_StructuralPartialEq v_Self
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) {|i: t_ConstParamTy_ v_Self|} -> i._super_i0
+
+/// See [`std::marker::FnPtr`]
+class t_FnPtr (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Copy v_Self }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) {|i: t_FnPtr v_Self|} -> i._super_i0
+
+/// See [`std::marker::DiscriminantKind`]
+class t_DiscriminantKind (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Discriminant:Type0
+}
+
+/// See [`std::marker::PhantomPinned`]
+type t_PhantomPinned = | PhantomPinned : t_PhantomPinned
