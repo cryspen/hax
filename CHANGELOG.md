@@ -15,6 +15,7 @@ Lean backend and library:
  - Add models for more of `mem`, `borrow`, `convert` and `error`
  - Add models for more of `ops`
  - Add models for more of `panicking` and `hint`
+ - Add models for more of `marker` and `hash`
 
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
@@ -22,6 +23,7 @@ F* backend and library:
  - Add models for more of `mem`, `borrow`, `convert` and `error`
  - Add models for more of `ops`
  - Add models for more of `panicking` and `hint`
+ - Add models for more of `marker` and `hash`
 
 ### Changed
 

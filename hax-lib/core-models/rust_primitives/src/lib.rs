@@ -237,6 +237,10 @@ pub mod string {
             Err(_) => (false, ""),
         }
     }
+    /// The UTF-8 encoding of `s`.
+    pub fn str_as_bytes(s: &str) -> &[u8] {
+        s.as_bytes()
+    }
 }
 
 pub mod float {

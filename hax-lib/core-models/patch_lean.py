@@ -220,6 +220,27 @@ def rewrite_alloc_imports(text: str) -> str:
         text, flags=re.MULTILINE,
     )
     return text
+
+
+# A `structure hash.{Hash,BuildHasher}` header and its field lines.
+_HASH_TRAIT_BLOCK = re.compile(
+    r"^(structure hash\.(?:Hash|BuildHasher) [^\n]*\n)((?:[ \t]+[^\n]*\n)*)",
+    re.MULTILINE,
+)
+
+
+def qualify_hash_trait_refs(text: str) -> str:
+    """Qualify `hash.{Hash,Hasher}` as `core.hash.…` inside the `hash` traits' fields.
+
+    Lean brings the `hash` field into scope for later fields, shadowing the namespace.
+    """
+    return _HASH_TRAIT_BLOCK.sub(
+        lambda m: m.group(1)
+        + re.sub(r"\bhash\.(Hasher|Hash)\b", r"core.hash.\1", m.group(2)),
+        text,
+    )
+
+
 # Defs matching on a scrutinee that repeats a type variable (`ControlFlow<T, T>`).
 _DUPLICATE_BINDER_DEFS = ("def ops.control_flow.ControlFlow.into_value",)
 
@@ -726,6 +747,7 @@ def main() -> int:
                 end_marker="end CoreModels.core",
             )
         if path == types_path:
+            text = qualify_hash_trait_refs(text)
             text = comment_out_types(text)
         write(path, text)
         print(f"patched {CORE_DIR}.")

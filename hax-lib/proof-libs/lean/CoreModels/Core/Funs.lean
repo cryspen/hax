@@ -5189,231 +5189,580 @@ def fmt.Arguments.write_fmt
 def fmt.rt.Argument.none : RustM (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 
+/-- [core_models::hash::Hasher::write_u8]:
+    Source: 'core-models/src/core/hash.rs', lines 13:4-15:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_u8.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.U8) :
+  RustM Self
+  := do
+  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  HasherInst.write self s
+
+/-- [core_models::hash::Hasher::write_u16]:
+    Source: 'core-models/src/core/hash.rs', lines 18:4-20:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_u16.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.U16) :
+  RustM Self
+  := do
+  let i1 ← lift (UScalar.cast .U8 i)
+  let i2 ← i >>> 8#i32
+  let i3 ← lift (UScalar.cast .U8 i2)
+  let s ← lift (Array.to_slice (Array.make 2#usize [ i1, i3 ]))
+  HasherInst.write self s
+
+/-- [core_models::hash::Hasher::write_u32]:
+    Source: 'core-models/src/core/hash.rs', lines 23:4-25:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_u32.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.U32) :
+  RustM Self
+  := do
+  let i1 ← lift (UScalar.cast .U8 i)
+  let i2 ← i >>> 8#i32
+  let i3 ← lift (UScalar.cast .U8 i2)
+  let i4 ← i >>> 16#i32
+  let i5 ← lift (UScalar.cast .U8 i4)
+  let i6 ← i >>> 24#i32
+  let i7 ← lift (UScalar.cast .U8 i6)
+  let s ← lift (Array.to_slice (Array.make 4#usize [ i1, i3, i5, i7 ]))
+  HasherInst.write self s
+
+/-- [core_models::hash::Hasher::write_u64]:
+    Source: 'core-models/src/core/hash.rs', lines 28:4-39:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_u64.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.U64) :
+  RustM Self
+  := do
+  let i1 ← lift (UScalar.cast .U8 i)
+  let i2 ← i >>> 8#i32
+  let i3 ← lift (UScalar.cast .U8 i2)
+  let i4 ← i >>> 16#i32
+  let i5 ← lift (UScalar.cast .U8 i4)
+  let i6 ← i >>> 24#i32
+  let i7 ← lift (UScalar.cast .U8 i6)
+  let i8 ← i >>> 32#i32
+  let i9 ← lift (UScalar.cast .U8 i8)
+  let i10 ← i >>> 40#i32
+  let i11 ← lift (UScalar.cast .U8 i10)
+  let i12 ← i >>> 48#i32
+  let i13 ← lift (UScalar.cast .U8 i12)
+  let i14 ← i >>> 56#i32
+  let i15 ← lift (UScalar.cast .U8 i14)
+  let s ←
+    lift (Array.to_slice
+      (Array.make 8#usize [ i1, i3, i5, i7, i9, i11, i13, i15 ]))
+  HasherInst.write self s
+
+/-- [core_models::hash::Hasher::write_u128]:
+    Source: 'core-models/src/core/hash.rs', lines 42:4-61:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_u128.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.U128) :
+  RustM Self
+  := do
+  let i1 ← lift (UScalar.cast .U8 i)
+  let i2 ← i >>> 8#i32
+  let i3 ← lift (UScalar.cast .U8 i2)
+  let i4 ← i >>> 16#i32
+  let i5 ← lift (UScalar.cast .U8 i4)
+  let i6 ← i >>> 24#i32
+  let i7 ← lift (UScalar.cast .U8 i6)
+  let i8 ← i >>> 32#i32
+  let i9 ← lift (UScalar.cast .U8 i8)
+  let i10 ← i >>> 40#i32
+  let i11 ← lift (UScalar.cast .U8 i10)
+  let i12 ← i >>> 48#i32
+  let i13 ← lift (UScalar.cast .U8 i12)
+  let i14 ← i >>> 56#i32
+  let i15 ← lift (UScalar.cast .U8 i14)
+  let i16 ← i >>> 64#i32
+  let i17 ← lift (UScalar.cast .U8 i16)
+  let i18 ← i >>> 72#i32
+  let i19 ← lift (UScalar.cast .U8 i18)
+  let i20 ← i >>> 80#i32
+  let i21 ← lift (UScalar.cast .U8 i20)
+  let i22 ← i >>> 88#i32
+  let i23 ← lift (UScalar.cast .U8 i22)
+  let i24 ← i >>> 96#i32
+  let i25 ← lift (UScalar.cast .U8 i24)
+  let i26 ← i >>> 104#i32
+  let i27 ← lift (UScalar.cast .U8 i26)
+  let i28 ← i >>> 112#i32
+  let i29 ← lift (UScalar.cast .U8 i28)
+  let i30 ← i >>> 120#i32
+  let i31 ← lift (UScalar.cast .U8 i30)
+  let s ←
+    lift (Array.to_slice
+      (Array.make 16#usize [
+        i1, i3, i5, i7, i9, i11, i13, i15, i17, i19, i21, i23, i25, i27, i29,
+        i31
+        ]))
+  HasherInst.write self s
+
+/-- [core_models::hash::Hasher::write_usize]:
+    Source: 'core-models/src/core/hash.rs', lines 64:4-75:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_usize.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.Usize) :
+  RustM Self
+  := do
+  let i1 ← lift (UScalar.cast .U8 i)
+  let i2 ← i >>> 8#i32
+  let i3 ← lift (UScalar.cast .U8 i2)
+  let i4 ← i >>> 16#i32
+  let i5 ← lift (UScalar.cast .U8 i4)
+  let i6 ← i >>> 24#i32
+  let i7 ← lift (UScalar.cast .U8 i6)
+  let i8 ← i >>> 32#i32
+  let i9 ← lift (UScalar.cast .U8 i8)
+  let i10 ← i >>> 40#i32
+  let i11 ← lift (UScalar.cast .U8 i10)
+  let i12 ← i >>> 48#i32
+  let i13 ← lift (UScalar.cast .U8 i12)
+  let i14 ← i >>> 56#i32
+  let i15 ← lift (UScalar.cast .U8 i14)
+  let s ←
+    lift (Array.to_slice
+      (Array.make 8#usize [ i1, i3, i5, i7, i9, i11, i13, i15 ]))
+  HasherInst.write self s
+
+/-- [core_models::hash::Hasher::write_i8]:
+    Source: 'core-models/src/core/hash.rs', lines 78:4-80:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_i8.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.I8) :
+  RustM Self
+  := do
+  let i1 ← lift (IScalar.hcast .U8 i)
+  HasherInst.write_u8 self i1
+
+/-- [core_models::hash::Hasher::write_i16]:
+    Source: 'core-models/src/core/hash.rs', lines 83:4-85:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_i16.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.I16) :
+  RustM Self
+  := do
+  let i1 ← lift (IScalar.hcast .U16 i)
+  HasherInst.write_u16 self i1
+
+/-- [core_models::hash::Hasher::write_i32]:
+    Source: 'core-models/src/core/hash.rs', lines 88:4-90:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_i32.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.I32) :
+  RustM Self
+  := do
+  let i1 ← lift (IScalar.hcast .U32 i)
+  HasherInst.write_u32 self i1
+
+/-- [core_models::hash::Hasher::write_i64]:
+    Source: 'core-models/src/core/hash.rs', lines 93:4-95:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_i64.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.I64) :
+  RustM Self
+  := do
+  let i1 ← lift (IScalar.hcast .U64 i)
+  HasherInst.write_u64 self i1
+
+/-- [core_models::hash::Hasher::write_i128]:
+    Source: 'core-models/src/core/hash.rs', lines 98:4-100:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_i128.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.I128) :
+  RustM Self
+  := do
+  let i1 ← lift (IScalar.hcast .U128 i)
+  HasherInst.write_u128 self i1
+
+/-- [core_models::hash::Hasher::write_isize]:
+    Source: 'core-models/src/core/hash.rs', lines 103:4-105:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_isize.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (i : Std.Isize) :
+  RustM Self
+  := do
+  let i1 ← lift (IScalar.hcast .Usize i)
+  HasherInst.write_usize self i1
+
+/-- [core_models::hash::Hasher::write_length_prefix]:
+    Source: 'core-models/src/core/hash.rs', lines 108:4-110:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_length_prefix.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (len : Std.Usize)
+  :
+  RustM Self
+  := do
+  HasherInst.write_usize self len
+
+/-- [core_models::hash::Hasher::write_str]:
+    Source: 'core-models/src/core/hash.rs', lines 113:4-116:5
+    Visibility: public -/
+@[trait_default]
+def hash.Hasher.write_str.default
+  {Self : Type} (HasherInst : hash.Hasher Self) (self : Self) (s : Str) :
+  RustM Self
+  := do
+  let s1 ← rust_primitives.string.str_as_bytes s
+  let self1 ← HasherInst.write self s1
+  HasherInst.write_u8 self1 255#u8
+
+/-- [core_models::hash::Hash::hash_slice]: loop body 0:
+    Source: 'core-models/src/core/hash.rs', lines 132:8-135:9
+    Visibility: public -/
+@[rust_loop_body, trait_default]
+def hash.Hash.hash_slice.default_loop.body
+  {Self : Type} {H : Type} (HashInst : hash.Hash Self) (HasherInst :
+  hash.Hasher H) (data : Slice Self) (state : H) (i : Std.Usize) :
+  RustM (ControlFlow (H × Std.Usize) H)
+  := do
+  let i1 ← rust_primitives.slice.slice_length data
+  if i < i1
+  then
+    let t ← rust_primitives.slice.slice_index data i
+    let state1 ← HashInst.hash HasherInst t state
+    let i2 ← i + 1#usize
+    ok (cont (state1, i2))
+  else ok (done state)
+
+/-- [core_models::hash::Hash::hash_slice]: loop 0:
+    Source: 'core-models/src/core/hash.rs', lines 132:8-135:9
+    Visibility: public -/
+@[rust_loop, trait_default]
+def hash.Hash.hash_slice.default_loop
+  {Self : Type} {H : Type} (HashInst : hash.Hash Self) (HasherInst :
+  hash.Hasher H) (data : Slice Self) (state : H) (i : Std.Usize) :
+  RustM H
+  := do
+  loop
+    (fun (state1, i1) => hash.Hash.hash_slice.default_loop.body HashInst
+      HasherInst data state1 i1)
+    (state, i)
+
+/-- [core_models::hash::Hash::hash_slice]:
+    Source: 'core-models/src/core/hash.rs', lines 127:4-136:5
+    Visibility: public -/
+@[reducible, trait_default]
+def hash.Hash.hash_slice.default
+  {Self : Type} {H : Type} (HashInst : hash.Hash Self) (HasherInst :
+  hash.Hasher H) (data : Slice Self) (state : H) :
+  RustM H
+  := do
+  hash.Hash.hash_slice.default_loop HashInst HasherInst data state 0#usize
+
+/-- [core_models::hash::BuildHasher::hash_one]:
+    Source: 'core-models/src/core/hash.rs', lines 149:4-157:5
+    Visibility: public -/
+@[trait_default]
+def hash.BuildHasher.hash_one.default
+  {Self : Type} {T : Type} {Clause0_Hasher : Type} (BuildHasherInst :
+  hash.BuildHasher Self Clause0_Hasher) (HashInst : hash.Hash T) (HasherInst :
+  hash.Hasher Clause0_Hasher) (self : Self) (x : T) :
+  RustM Std.U64
+  := do
+  let hasher ← BuildHasherInst.build_hasher self
+  let hasher1 ← HashInst.hash HasherInst x hasher
+  HasherInst.finish hasher1
+
+/-- [core_models::hash::{core_models::hash::BuildHasherDefault<H>}::new]:
+    Source: 'core-models/src/core/hash.rs', lines 170:4-172:5
+    Visibility: public -/
+def hash.BuildHasherDefault.new
+  (H : Type) : RustM (hash.BuildHasherDefault H) := do
+  ok ()
+
+/-- [core_models::hash::{impl core_models::hash::BuildHasher<H> for core_models::hash::BuildHasherDefault<H>}::build_hasher]:
+    Source: 'core-models/src/core/hash.rs', lines 177:4-179:5
+    Visibility: public -/
+def hash.BuildHasherDefault.Insts.CoreHashBuildHasher.build_hasher
+  {H : Type} (defaultDefaultInst : default.Default H) (HasherInst : hash.Hasher
+  H) (self : hash.BuildHasherDefault H) :
+  RustM H
+  := do
+  defaultDefaultInst.default
+
+/-- Trait implementation: [core_models::hash::{impl core_models::hash::BuildHasher<H> for core_models::hash::BuildHasherDefault<H>}]
+    Source: 'core-models/src/core/hash.rs', lines 175:0-180:1 -/
+@[reducible]
+impl_def hash.BuildHasherDefault.Insts.CoreHashBuildHasher {H : Type}
+  (defaultDefaultInst : default.Default H) (HasherInst1 : hash.Hasher H) :
+  hash.BuildHasher (hash.BuildHasherDefault H) H := {
+  HasherInst := HasherInst1
+  build_hasher :=
+    hash.BuildHasherDefault.Insts.CoreHashBuildHasher.build_hasher
+    defaultDefaultInst HasherInst1
+  hash_one := fun {T : Type} (HashInst : hash.Hash T) (HasherInst2 :
+    hash.Hasher H) => hash.BuildHasher.hash_one.default
+    (hash.BuildHasherDefault.Insts.CoreHashBuildHasher
+    defaultDefaultInst HasherInst1) HashInst HasherInst2
+}
+
 /-- [core_models::hash::{impl core_models::hash::Hash for u8}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def U8.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U8) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U8) (state : H) :
   RustM H
   := do
   let s ← lift (Array.to_slice (Array.make 1#usize [ self ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u8}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def U8.Insts.CoreHashHash : hash.Hash Std.U8 := {
+impl_def U8.Insts.CoreHashHash : hash.Hash Std.U8 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     U8.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default U8.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for u16}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def U16.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U16) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U16) (state : H) :
   RustM H
   := do
   let i ← lift (UScalar.cast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u16}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def U16.Insts.CoreHashHash : hash.Hash Std.U16 := {
+impl_def U16.Insts.CoreHashHash : hash.Hash Std.U16 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     U16.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default U16.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for u32}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def U32.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U32) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U32) (state : H) :
   RustM H
   := do
   let i ← lift (UScalar.cast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u32}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def U32.Insts.CoreHashHash : hash.Hash Std.U32 := {
+impl_def U32.Insts.CoreHashHash : hash.Hash Std.U32 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     U32.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default U32.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for u64}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def U64.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U64) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U64) (state : H) :
   RustM H
   := do
   let i ← lift (UScalar.cast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u64}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def U64.Insts.CoreHashHash : hash.Hash Std.U64 := {
+impl_def U64.Insts.CoreHashHash : hash.Hash Std.U64 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     U64.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default U64.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for u128}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def U128.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U128) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.U128) (state : H) :
   RustM H
   := do
   let i ← lift (UScalar.cast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u128}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def U128.Insts.CoreHashHash : hash.Hash Std.U128 := {
+impl_def U128.Insts.CoreHashHash : hash.Hash Std.U128 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     U128.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default U128.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for usize}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def Usize.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.Usize) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.Usize) (state : H) :
   RustM H
   := do
   let i ← lift (UScalar.cast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for usize}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def Usize.Insts.CoreHashHash : hash.Hash Std.Usize := {
+impl_def Usize.Insts.CoreHashHash : hash.Hash Std.Usize := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     Usize.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default Usize.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for i8}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def I8.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I8) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I8) (state : H) :
   RustM H
   := do
   let i ← lift (IScalar.hcast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i8}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def I8.Insts.CoreHashHash : hash.Hash Std.I8 := {
+impl_def I8.Insts.CoreHashHash : hash.Hash Std.I8 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     I8.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default I8.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for i16}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def I16.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I16) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I16) (state : H) :
   RustM H
   := do
   let i ← lift (IScalar.hcast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i16}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def I16.Insts.CoreHashHash : hash.Hash Std.I16 := {
+impl_def I16.Insts.CoreHashHash : hash.Hash Std.I16 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     I16.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default I16.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for i32}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def I32.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I32) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I32) (state : H) :
   RustM H
   := do
   let i ← lift (IScalar.hcast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i32}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def I32.Insts.CoreHashHash : hash.Hash Std.I32 := {
+impl_def I32.Insts.CoreHashHash : hash.Hash Std.I32 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     I32.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default I32.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for i64}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def I64.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I64) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I64) (state : H) :
   RustM H
   := do
   let i ← lift (IScalar.hcast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i64}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def I64.Insts.CoreHashHash : hash.Hash Std.I64 := {
+impl_def I64.Insts.CoreHashHash : hash.Hash Std.I64 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     I64.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default I64.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for i128}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def I128.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I128) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.I128) (state : H) :
   RustM H
   := do
   let i ← lift (IScalar.hcast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i128}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def I128.Insts.CoreHashHash : hash.Hash Std.I128 := {
+impl_def I128.Insts.CoreHashHash : hash.Hash Std.I128 := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     I128.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default I128.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hash::{impl core_models::hash::Hash for isize}::hash]:
-    Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
+    Source: 'core-models/src/core/hash.rs', lines 191:16-193:17
     Visibility: public -/
 def Isize.Insts.CoreHashHash.hash
-  {H : Type} (HasherInst : hash.Hasher H) (self : Std.Isize) (h : H) :
+  {H : Type} (HasherInst : hash.Hasher H) (self : Std.Isize) (state : H) :
   RustM H
   := do
   let i ← lift (IScalar.hcast .U8 self)
   let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
-  HasherInst.write h s
+  HasherInst.write state s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for isize}]
-    Source: 'core-models/src/core/hash.rs', lines 26:12-31:13 -/
+    Source: 'core-models/src/core/hash.rs', lines 190:12-194:13 -/
 @[reducible]
-def Isize.Insts.CoreHashHash : hash.Hash Std.Isize := {
+impl_def Isize.Insts.CoreHashHash : hash.Hash Std.Isize := {
   hash := fun {H : Type} (HasherInst : hash.Hasher H) =>
     Isize.Insts.CoreHashHash.hash HasherInst
+  hash_slice := fun {H : Type} (HasherInst : hash.Hasher H) =>
+    hash.Hash.hash_slice.default Isize.Insts.CoreHashHash HasherInst
 }
 
 /-- [core_models::hint::black_box]:
@@ -8928,6 +9277,222 @@ def I128.Insts.CoreMarkerCopy : marker.Copy Std.I128 := {
 @[reducible]
 def Isize.Insts.CoreMarkerCopy : marker.Copy Std.Isize := {
   cloneCloneInst := Isize.Insts.CoreCloneClone
+}
+
+/-- [core_models::marker::variance::variance]:
+    Source: 'core-models/src/core/marker.rs', lines 98:4-100:5
+    Visibility: public -/
+def marker.variance.variance
+  {T : Type} (VarianceInst : marker.variance.Variance T) : RustM T := do
+  VarianceInst.defaultDefaultInst.default
+
+/-- [core_models::marker::variance::{core_models::marker::variance::PhantomCovariant<T>}::new]:
+    Source: 'core-models/src/core/marker.rs', lines 226:8-228:9
+    Visibility: public -/
+def marker.variance.PhantomCovariant.new
+  (T : Type) : RustM (marker.variance.PhantomCovariant T) := do
+  ok ()
+
+/-- [core_models::marker::variance::{core_models::marker::variance::PhantomCovariantLifetime<'a>}::new]:
+    Source: 'core-models/src/core/marker.rs', lines 120:8-122:9
+    Visibility: public -/
+def marker.variance.PhantomCovariantLifetime.new
+  : RustM marker.variance.PhantomCovariantLifetime := do
+  let _ ← marker.variance.PhantomCovariant.new Unit
+  ok ()
+
+/-- [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomCovariantLifetime<'a>}::default]:
+    Source: 'core-models/src/core/marker.rs', lines 126:8-128:9
+    Visibility: public -/
+def
+  marker.variance.PhantomCovariantLifetime.Insts.CoreDefaultDefault.default
+  : RustM marker.variance.PhantomCovariantLifetime := do
+  let _ ← marker.variance.PhantomCovariantLifetime.new
+  ok ()
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomCovariantLifetime<'a>}]
+    Source: 'core-models/src/core/marker.rs', lines 125:4-129:5 -/
+@[reducible]
+def marker.variance.PhantomCovariantLifetime.Insts.CoreDefaultDefault :
+  default.Default marker.variance.PhantomCovariantLifetime := {
+  default :=
+    marker.variance.PhantomCovariantLifetime.Insts.CoreDefaultDefault.default
+}
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::marker::variance::Variance for core_models::marker::variance::PhantomCovariantLifetime<'a>}]
+    Source: 'core-models/src/core/marker.rs', lines 131:4-131:57 -/
+@[reducible]
+def
+  marker.variance.PhantomCovariantLifetime.Insts.CoreMarkerVarianceVariance
+  : marker.variance.Variance marker.variance.PhantomCovariantLifetime := {
+  defaultDefaultInst :=
+    marker.variance.PhantomCovariantLifetime.Insts.CoreDefaultDefault
+}
+
+/-- [core_models::marker::variance::{core_models::marker::variance::PhantomContravariant<T>}::new]:
+    Source: 'core-models/src/core/marker.rs', lines 259:8-261:9
+    Visibility: public -/
+def marker.variance.PhantomContravariant.new
+  (T : Type) : RustM (marker.variance.PhantomContravariant T) := do
+  ok ()
+
+/-- [core_models::marker::variance::{core_models::marker::variance::PhantomContravariantLifetime<'a>}::new]:
+    Source: 'core-models/src/core/marker.rs', lines 137:8-139:9
+    Visibility: public -/
+def marker.variance.PhantomContravariantLifetime.new
+  : RustM marker.variance.PhantomContravariantLifetime := do
+  let _ ← marker.variance.PhantomContravariant.new Unit
+  ok ()
+
+/-- [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomContravariantLifetime<'a>}::default]:
+    Source: 'core-models/src/core/marker.rs', lines 143:8-145:9
+    Visibility: public -/
+def
+  marker.variance.PhantomContravariantLifetime.Insts.CoreDefaultDefault.default
+  : RustM marker.variance.PhantomContravariantLifetime := do
+  let _ ← marker.variance.PhantomContravariantLifetime.new
+  ok ()
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomContravariantLifetime<'a>}]
+    Source: 'core-models/src/core/marker.rs', lines 142:4-146:5 -/
+@[reducible]
+def
+  marker.variance.PhantomContravariantLifetime.Insts.CoreDefaultDefault
+  : default.Default marker.variance.PhantomContravariantLifetime := {
+  default :=
+    marker.variance.PhantomContravariantLifetime.Insts.CoreDefaultDefault.default
+}
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::marker::variance::Variance for core_models::marker::variance::PhantomContravariantLifetime<'a>}]
+    Source: 'core-models/src/core/marker.rs', lines 148:4-148:61 -/
+@[reducible]
+def
+  marker.variance.PhantomContravariantLifetime.Insts.CoreMarkerVarianceVariance
+  : marker.variance.Variance marker.variance.PhantomContravariantLifetime := {
+  defaultDefaultInst :=
+    marker.variance.PhantomContravariantLifetime.Insts.CoreDefaultDefault
+}
+
+/-- [core_models::marker::variance::{core_models::marker::variance::PhantomInvariant<T>}::new]:
+    Source: 'core-models/src/core/marker.rs', lines 292:8-294:9
+    Visibility: public -/
+def marker.variance.PhantomInvariant.new
+  (T : Type) : RustM (marker.variance.PhantomInvariant T) := do
+  ok ()
+
+/-- [core_models::marker::variance::{core_models::marker::variance::PhantomInvariantLifetime<'a>}::new]:
+    Source: 'core-models/src/core/marker.rs', lines 154:8-156:9
+    Visibility: public -/
+def marker.variance.PhantomInvariantLifetime.new
+  : RustM marker.variance.PhantomInvariantLifetime := do
+  let _ ← marker.variance.PhantomInvariant.new Unit
+  ok ()
+
+/-- [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomInvariantLifetime<'a>}::default]:
+    Source: 'core-models/src/core/marker.rs', lines 160:8-162:9
+    Visibility: public -/
+def
+  marker.variance.PhantomInvariantLifetime.Insts.CoreDefaultDefault.default
+  : RustM marker.variance.PhantomInvariantLifetime := do
+  let _ ← marker.variance.PhantomInvariantLifetime.new
+  ok ()
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomInvariantLifetime<'a>}]
+    Source: 'core-models/src/core/marker.rs', lines 159:4-163:5 -/
+@[reducible]
+def marker.variance.PhantomInvariantLifetime.Insts.CoreDefaultDefault :
+  default.Default marker.variance.PhantomInvariantLifetime := {
+  default :=
+    marker.variance.PhantomInvariantLifetime.Insts.CoreDefaultDefault.default
+}
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::marker::variance::Variance for core_models::marker::variance::PhantomInvariantLifetime<'a>}]
+    Source: 'core-models/src/core/marker.rs', lines 165:4-165:57 -/
+@[reducible]
+def
+  marker.variance.PhantomInvariantLifetime.Insts.CoreMarkerVarianceVariance
+  : marker.variance.Variance marker.variance.PhantomInvariantLifetime := {
+  defaultDefaultInst :=
+    marker.variance.PhantomInvariantLifetime.Insts.CoreDefaultDefault
+}
+
+/-- [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomCovariant<T>}::default]:
+    Source: 'core-models/src/core/marker.rs', lines 232:8-234:9
+    Visibility: public -/
+def marker.variance.PhantomCovariant.Insts.CoreDefaultDefault.default
+  (T : Type) : RustM (marker.variance.PhantomCovariant T) := do
+  marker.variance.PhantomCovariant.new T
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomCovariant<T>}]
+    Source: 'core-models/src/core/marker.rs', lines 231:4-235:5 -/
+@[reducible]
+def marker.variance.PhantomCovariant.Insts.CoreDefaultDefault (T : Type)
+  : default.Default (marker.variance.PhantomCovariant T) := {
+  default :=
+    marker.variance.PhantomCovariant.Insts.CoreDefaultDefault.default T
+}
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::marker::variance::Variance for core_models::marker::variance::PhantomCovariant<T>}]
+    Source: 'core-models/src/core/marker.rs', lines 237:4-237:47 -/
+@[reducible]
+def marker.variance.PhantomCovariant.Insts.CoreMarkerVarianceVariance (T
+  : Type) : marker.variance.Variance (marker.variance.PhantomCovariant T) := {
+  defaultDefaultInst :=
+    marker.variance.PhantomCovariant.Insts.CoreDefaultDefault T
+}
+
+/-- [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomContravariant<T>}::default]:
+    Source: 'core-models/src/core/marker.rs', lines 265:8-267:9
+    Visibility: public -/
+def
+  marker.variance.PhantomContravariant.Insts.CoreDefaultDefault.default
+  (T : Type) : RustM (marker.variance.PhantomContravariant T) := do
+  marker.variance.PhantomContravariant.new T
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomContravariant<T>}]
+    Source: 'core-models/src/core/marker.rs', lines 264:4-268:5 -/
+@[reducible]
+def marker.variance.PhantomContravariant.Insts.CoreDefaultDefault (T :
+  Type) : default.Default (marker.variance.PhantomContravariant T) := {
+  default :=
+    marker.variance.PhantomContravariant.Insts.CoreDefaultDefault.default
+    T
+}
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::marker::variance::Variance for core_models::marker::variance::PhantomContravariant<T>}]
+    Source: 'core-models/src/core/marker.rs', lines 270:4-270:51 -/
+@[reducible]
+def
+  marker.variance.PhantomContravariant.Insts.CoreMarkerVarianceVariance
+  (T : Type) : marker.variance.Variance (marker.variance.PhantomContravariant
+  T) := {
+  defaultDefaultInst :=
+    marker.variance.PhantomContravariant.Insts.CoreDefaultDefault T
+}
+
+/-- [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomInvariant<T>}::default]:
+    Source: 'core-models/src/core/marker.rs', lines 298:8-300:9
+    Visibility: public -/
+def marker.variance.PhantomInvariant.Insts.CoreDefaultDefault.default
+  (T : Type) : RustM (marker.variance.PhantomInvariant T) := do
+  marker.variance.PhantomInvariant.new T
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::default::Default for core_models::marker::variance::PhantomInvariant<T>}]
+    Source: 'core-models/src/core/marker.rs', lines 297:4-301:5 -/
+@[reducible]
+def marker.variance.PhantomInvariant.Insts.CoreDefaultDefault (T : Type)
+  : default.Default (marker.variance.PhantomInvariant T) := {
+  default :=
+    marker.variance.PhantomInvariant.Insts.CoreDefaultDefault.default T
+}
+
+/-- Trait implementation: [core_models::marker::variance::{impl core_models::marker::variance::Variance for core_models::marker::variance::PhantomInvariant<T>}]
+    Source: 'core-models/src/core/marker.rs', lines 303:4-303:47 -/
+@[reducible]
+def marker.variance.PhantomInvariant.Insts.CoreMarkerVarianceVariance (T
+  : Type) : marker.variance.Variance (marker.variance.PhantomInvariant T) := {
+  defaultDefaultInst :=
+    marker.variance.PhantomInvariant.Insts.CoreDefaultDefault T
 }
 
 /-- [core_models::mem::drop]:

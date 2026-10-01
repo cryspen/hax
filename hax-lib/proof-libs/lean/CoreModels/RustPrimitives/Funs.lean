@@ -244,6 +244,12 @@ def rust_primitives.slice.array_from_mut
   {T : Type} : T → RustM ((Array T 1#usize) × (Array T 1#usize → T)) :=
   fun x => ok (Array.repeat 1#usize x, fun a => a.val.headD x)
 
+-- Aeneas represents `str` as `Slice U8` (`Aeneas.Std.Str`), i.e. already as its
+-- UTF-8 bytes, so taking those bytes is the identity.
+@[spec]
+def rust_primitives.string.str_as_bytes : Str → RustM (Slice Std.U8) :=
+  fun s => ok s
+
 @[spec]
 def rust_primitives.slice.array_slice
   {T : Type} {N : Std.Usize} :
