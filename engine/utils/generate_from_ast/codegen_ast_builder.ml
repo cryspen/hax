@@ -48,15 +48,15 @@ let mk_builder (provided_fields : string list)
         | VariantPayload.Record fields ->
             fields
             |> List.map ~f:(fun (name, ty) ->
-                   ( true,
-                     (if List.mem ~equal:[%eq: string] record_names name then (
-                        let name' = "inner_" ^ name in
-                        (* if not ([%eq: string] field_name_raw name) then *)
-                        extra_lb :=
-                          !extra_lb ^ "let " ^ name ^ " = " ^ name' ^ " in\n";
-                        name')
-                      else name),
-                     ty ))
+                ( true,
+                  (if List.mem ~equal:[%eq: string] record_names name then (
+                     let name' = "inner_" ^ name in
+                     (* if not ([%eq: string] field_name_raw name) then *)
+                     extra_lb :=
+                       !extra_lb ^ "let " ^ name ^ " = " ^ name' ^ " in\n";
+                     name')
+                   else name),
+                  ty ))
         | Tuple types ->
             List.mapi ~f:(fun i ty -> (false, "x" ^ Int.to_string i, ty)) types
         | None -> []

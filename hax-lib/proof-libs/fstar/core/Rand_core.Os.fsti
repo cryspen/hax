@@ -12,7 +12,7 @@ let _ =
 type t_OsRng = | OsRng : t_OsRng
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl:Rand_core.t_RngCore t_OsRng
+val impl_1:Rand_core.t_RngCore t_OsRng
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl_1:Rand_core.t_CryptoRng t_OsRng
+val impl:Rand_core.t_CryptoRng t_OsRng

@@ -1,0 +1,12 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+New_tests_Legacy__lean_core_models__lib_Result.v
+New_tests_Legacy__lean_core_models__lib_Phantom.v
+New_tests_Legacy__lean_core_models__lib_Option.v
+New_tests_Legacy__lean_core_models__lib_Function.v
+New_tests_Legacy__lean_core_models__lib_Default_Structs.v
+New_tests_Legacy__lean_core_models__lib_Default_Enums.v
+New_tests_Legacy__lean_core_models__lib_Default.v
+New_tests_Legacy__lean_core_models__lib.v

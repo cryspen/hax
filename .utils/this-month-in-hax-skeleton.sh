@@ -63,6 +63,7 @@ authors_and_handles() {
 maxime:maximebuyse
 clement:clementblaudeau
 alex:abentkamp
+tobias:treiher
 AUTHORS
 }
 authors() {

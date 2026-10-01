@@ -1,0 +1,174 @@
+name: core-models mutants
+
+# Mutation testing of the core/alloc models: does the test suite notice when a
+# model's behaviour changes? Coverage (the `test-coverage` job in
+# core_models.yml) only proves the code ran.
+#
+# A full sweep is many hours per cfg serially, and still hours with the
+# `MUTANTS_JOBS` parallelism below, so the sweep is sharded across runners and
+# runs weekly.
+#
+# Not run per-PR: an in-diff sweep on a model PR covers much of the crate,
+# which no amount of within-job parallelism fits into a PR-sized window.
+#
+# `schedule:` only fires from the default branch, so none of this runs until
+# this file is on main.
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+
+env:
+  RUST_TOOLCHAIN: nightly-2026-02-07
+  # Must match the length of the `shard` matrix below.
+  SHARDS: 16
+  # One mutant build uses under half of a 4-vCPU runner (183% of 400%), so
+  # cargo-mutants can run two at once. Each needs its own target dir, so raising
+  # this costs ~4.5G of runner disk per job -- watch the `df` either side of the
+  # sweep. Shard count can come down once a real run shows the per-shard time.
+  MUTANTS_JOBS: 2
+
+defaults:
+  run:
+    working-directory: hax-lib/core-models
+
+jobs:
+  sweep:
+    name: mutants (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both cfgs are needed: a model variant gated on cfg(hax_backend_fstar)
+        # is not built by the default sweep, so its mutants never compile and
+        # every one of them looks like a survivor. The two
+        # sweeps are intersected in `report` below.
+        cfg: [default, fstar]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    env:
+      OUT: ${{ matrix.cfg == 'fstar' && 'mutants-fstar/mutants.out' || 'mutants.out' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants@27.1.0
+
+      # Survivors are judged by the `report` job below, so a sweep that finds
+      # some is not itself a failure. cargo-mutants' exit codes are
+      # undocumented, so completion is asserted on the summary line instead: a
+      # sweep that never ran must not pass silently.
+      - run: |
+          df -h / | tail -1
+          make ${{ matrix.cfg == 'fstar' && 'mutants-fstar' || 'mutants' }} \
+              MUTANTS_JOBS=$MUTANTS_JOBS \
+              MUTANTS_FLAGS="--shard ${{ matrix.shard }}/$SHARDS --annotations none" 2>&1 \
+            | tee sweep.log || true
+          df -h / | tail -1
+
+      - run: |
+          grep -qE '[0-9]+ mutants tested' sweep.log || {
+            echo "::error::the mutants sweep did not complete"; tail -40 sweep.log; exit 1; }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: missed-${{ matrix.cfg }}-${{ matrix.shard }}
+          path: hax-lib/core-models/${{ env.OUT }}/missed.txt
+          if-no-files-found: error
+
+  report:
+    name: survivors common to both cfgs
+    needs: sweep
+    if: github.repository == 'cryspen/hax' && always() && needs.sweep.result != 'skipped'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: missed-*
+          path: hax-lib/core-models/shards
+
+      # One survivor set per cfg, at the paths `mutants-genuine` reads. A shard
+      # uploads only once its sweep completed, and only shards complete in both
+      # cfgs are intersected, so a failed shard does not hide the others.
+      - name: Merge the shards complete in both cfgs
+        id: merge
+        run: |
+          complete= incomplete=
+          for shard in $(seq 0 $((SHARDS - 1))); do
+            if [ -f shards/missed-default-$shard/missed.txt ] &&
+               [ -f shards/missed-fstar-$shard/missed.txt ]; then
+              complete="$complete $shard"
+            else
+              incomplete="$incomplete $shard"
+            fi
+          done
+          for cfg in default fstar; do
+            case $cfg in
+              default) out=mutants.out ;;
+              fstar)   out=mutants-fstar/mutants.out ;;
+            esac
+            mkdir -p "$out"
+            for shard in $complete; do
+              cat shards/missed-$cfg-$shard/missed.txt
+            done | sort -u > "$out/missed.txt"
+            echo "$cfg: $(wc -l < $out/missed.txt) missed"
+          done
+          echo "incomplete=${incomplete# }" >> "$GITHUB_OUTPUT"
+
+      - name: Intersect the two sweeps
+        id: genuine
+        run: make mutants-genuine
+
+      - name: List the survivors
+        id: survivors
+        if: always() && steps.genuine.outcome == 'failure'
+        run: |
+          { echo 'list<<EOF'; cat mutants-genuine.txt; echo EOF; } >> "$GITHUB_OUTPUT"
+
+      - name: Open an issue on the survivors
+        if: always() && steps.genuine.outcome == 'failure' && github.event_name == 'schedule'
+        uses: ./.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          label: tests
+          title: Mutants are surviving in every configuration
+          on-existing: comment
+          body: |-
+            The scheduled [core-models mutants](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) sweep found mutants that no test kills in any configuration that compiles them:
+
+            ```
+            ${{ steps.survivors.outputs.list }}
+            ```
+            ${{ steps.merge.outputs.incomplete && format('Shards {0} did not complete, so this list may be missing some survivors.', steps.merge.outputs.incomplete) || '' }}
+
+            Each one has two exits: strengthen a test until it fails on the mutated model, or record the mutant as accepted, with `#[cfg_attr(test, mutants::skip)]` on the function or a per-mutant regex in `hax-lib/core-models/.cargo/mutants.toml`.
+
+      - name: The sweep must have completed
+        if: always() && needs.sweep.result != 'success'
+        run: |
+          echo "::error::shards ${{ steps.merge.outputs.incomplete }} did not complete; the results are partial"; exit 1
+
+      - name: Report an incomplete sweep
+        if: always() && needs.sweep.result != 'success' && github.event_name == 'schedule'
+        uses: ./.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          label: ci
+          title: The core-models mutants sweep is not completing
+          body: |-
+            A shard of the scheduled [core-models mutants](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) sweep did not finish, so the run says nothing about the mutants in that shard.

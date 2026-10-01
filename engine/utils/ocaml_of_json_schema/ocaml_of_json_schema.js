@@ -121,7 +121,7 @@ let ocaml_of_type_expr = (o, path) => {
         array: type => `(${ocaml_of_type_expr(type, [...path, 'array'])} list)`,
         boolean: _ => `bool`,
         string: _ => `string`,
-        char: _ => `char`,
+        char: _ => `string`,
         integer: _ => ({
             int64: 'Base.Int64.t',
             string: 'string',
@@ -168,7 +168,7 @@ let ocaml_yojson_of_type_expr = (o, subject, path) => {
             int64: `\`Intlit (Int64.to_string ${subject})`,
             int: `\`Int ${subject}`
         })[o.repr],
-        char: _ => `\`String (Base.Char.to_string ${subject})`,
+        char: _ => `\`String ${subject}`,
         name: payload => `yojson_of_${typeNameOf(payload)} ${subject}`,
     })[kind] || (_ => {
         log_full(o);
@@ -203,7 +203,7 @@ let ocaml_arms_of_type_expr = (o, path) => {
         ],
         boolean: _ => [[`\`Bool b`, 'b']],
         string: _ => [[`\`String s`, 's']],
-        char: _ => [[`\`String s`, 'String.get s 0']],
+        char: _ => [[`\`String s`, 's']],
         integer: _ => ({
             int64: [
                 [`\`Int i`, 'Base.Int64.of_int i'],

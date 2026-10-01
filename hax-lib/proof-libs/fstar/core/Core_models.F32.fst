@@ -3,6 +3,7 @@ module Core_models.F32
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::primitive::f32::abs`]
 assume
 val impl_f32__abs': x: float -> float
 

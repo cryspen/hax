@@ -177,82 +177,82 @@ val impl_Duration__div_duration_f32 (self rhs: t_Duration)
 val impl_Duration__from_nanos__v_NANOS_PER_SEC: u64
 
 val impl_Duration__from_secs_f64__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val impl_Duration__from_secs_f32__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val impl_Duration__mul_f64__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val impl_Duration__mul_f32__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val impl_Duration__div_f64__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val impl_Duration__div_f32__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val f_add__impl_1__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_2:Core_models.Ops.Arith.t_AddAssign t_Duration t_Duration
 
 val f_add_assign__impl_2__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val f_sub__impl_3__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_4:Core_models.Ops.Arith.t_SubAssign t_Duration t_Duration
 
 val f_sub_assign__impl_4__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val f_mul__impl_5__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val f_mul__impl_6__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_7:Core_models.Ops.Arith.t_MulAssign t_Duration u32
 
 val f_mul_assign__impl_7__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val f_div__impl_8__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_9:Core_models.Ops.Arith.t_DivAssign t_Duration u32
 
 val f_div_assign__impl_9__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 (* [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_10:Core_models.Iter.Traits.Accum.t_Sum t_Duration t_Duration *)
 
 val f_sum__impl_10__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 (* [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_11:Core_models.Iter.Traits.Accum.t_Sum t_Duration t_Duration *)
 
 val f_sum__impl_11__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_12:Core_models.Fmt.t_Debug t_Duration
 
 val f_fmt__impl_12__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val f_fmt__impl_14__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 type t_TryFromFloatSecsErrorKind =
   | TryFromFloatSecsErrorKind_Negative : t_TryFromFloatSecsErrorKind
@@ -310,10 +310,10 @@ val impl_Duration__try_from_secs_f64 (secs: float)
       (fun _ -> Prims.l_True)
 
 val impl_Duration__try_from_secs_f32__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 val impl_Duration__try_from_secs_f64__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 (* [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_1: Core_models.Ops.Arith.t_Add t_Duration t_Duration =

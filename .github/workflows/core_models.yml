@@ -1,0 +1,253 @@
+name: core-models
+
+# Both extractions run through `cargo hax`, built from this checkout — the
+# Lean one via the charon and aeneas versions it pins. Any change to hax can
+# therefore move the extraction, hence the broad paths below.
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'hax-lib/**'
+      - 'cli/**'
+      - 'engine/**'
+      - 'rust-engine/**'
+      - 'frontend/**'
+      - 'flake.nix'
+      - 'flake.lock'
+      - '.github/workflows/core_models.yml'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'hax-lib/**'
+      - 'cli/**'
+      - 'engine/**'
+      - 'rust-engine/**'
+      - 'frontend/**'
+      - 'flake.nix'
+      - 'flake.lock'
+      - '.github/workflows/core_models.yml'
+
+env:
+  RUST_TOOLCHAIN: nightly-2026-02-07
+
+defaults:
+  run:
+    working-directory: hax-lib/core-models
+
+jobs:
+  # ---------------------------------------------------------------- formatting
+  rust-fmt:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: rustfmt
+
+      - run: cargo fmt -- --check
+
+      # `tests/` is a separate workspace; `cargo fmt` from the
+      # root doesn't reach it.
+      - run: cargo fmt -- --check
+        working-directory: hax-lib/core-models/tests
+
+  # ---------------------------------------------------------------- rust tests
+  rust-test:
+    name: cargo test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - run: cargo test --workspace
+        env:
+          RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
+
+      # Both crates have cfg-exclusive models the default-cfg run can't reach.
+      - run: cargo test -p alloc
+        env:
+          RUSTFLAGS: "--cfg hax_backend_fstar"
+
+      - run: cargo test -p core-models
+        env:
+          RUSTFLAGS: "--cfg hax_backend_fstar"
+
+      # NOTE: the `tests/` workspace (client_test + rust_lean_equiv_test)
+      # has already been refactored to use `cargo hax into lean`. That is
+      # why it is part of the `core-models-tests` job below.
+
+  # ------------------------------------------------------------- test coverage
+  # Every line of the model must be exercised by the test suite. An item that
+  # cannot be (a `panic!()`-bodied intrinsic, say) is marked
+  # `#[cfg_attr(coverage_nightly, coverage(off))]` at the item, so this gate is
+  # an absolute 100% and needs no threshold or baseline file.
+  test-coverage:
+    name: llvm-cov test coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: llvm-tools-preview
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      # COV_TOOLCHAIN is passed explicitly so the Makefile default cannot drift
+      # from RUST_TOOLCHAIN.
+      - run: make COV_TOOLCHAIN=${{ env.RUST_TOOLCHAIN }} test-coverage-check
+
+  # ----------------------------------------------------------- lean extraction
+  lean-build:
+    name: aeneas extraction + lake build
+    runs-on: ubuntu-latest
+    needs: [rust-fmt]   # don't waste cycles on a formatting-broken PR
+    steps:
+      - uses: actions/checkout@v5
+      - name: Free disk space by removing preinstalled packages
+        uses: jlumbroso/free-disk-space@main
+
+      # ---- hax, built from this checkout; it downloads charon and aeneas
+      # into its own tool cache. Same setup as `fstar-build` below and as the
+      # `examples` job of `verify_extraction.yml`, which also runs
+      # `cargo hax into lean`.
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+
+      - name: Install hax + rustc
+        working-directory: ${{ github.workspace }}
+        run: |
+          nix profile install .#rustc
+          nix profile install .
+
+      - name: Install elan
+        # Bypass elan-init.sh: it does its own curl with no retries, so a
+        # transient 502 from github.com/.../releases/latest/download/...
+        # fails the whole job. Download the tarball ourselves with curl
+        # retries, then run the bundled elan-init binary directly.
+        run: |
+          set -euo pipefail
+          curl -sSfL --retry 5 --retry-delay 5 --retry-all-errors \
+            -o /tmp/elan.tar.gz \
+            https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf /tmp/elan.tar.gz -C /tmp
+          /tmp/elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      # NOTE: no Lean/mathlib or cargo cache here — a cache that size crowds
+      # everything else out of the 10 GiB per-repo cap.
+
+      # ---- The actual pipeline ------------------------------------------
+      # Only the core-models library extraction + build. The `tests/`
+      # crates run in the `core-models-tests` job below (it has already
+      # been refactored to use `cargo hax into lean`).
+      - name: Extract Lean library, build Lean library
+        run: |
+          unset CI # Allows us to use Aeneas's olean cache
+          make lean
+
+      # The `Tests` lean_lib is deliberately excluded from `defaultTargets`
+      # (library consumers should not pay for it), so the `lake build` above
+      # skips it. Build it explicitly here to keep the end-to-end tactic
+      # tests (e.g. the signed for_loop_with_invariant specs) green.
+      - name: Build Lean tactic tests
+        working-directory: hax-lib/proof-libs/lean
+        run: lake build Tests
+
+      # ---- Enforce that committed extraction matches re-extraction ------
+      # If this fails: someone changed Rust source / patcher without
+      # re-running `make lean` and committing the resulting diff.
+      # Whole tree, not a file list: `git diff` on a pathspec matching
+      # nothing exits 0, so a list goes stale silently.
+      - name: Committed extraction must match a fresh re-extraction
+        run: |
+          if [ -n "$(git status --porcelain -- ../proof-libs/lean)" ]; then
+            echo "::error::Committed Lean extraction is stale — run 'make lean' in hax-lib/core-models and commit the result."
+            git status --porcelain -- ../proof-libs/lean
+            git diff -- ../proof-libs/lean
+            exit 1
+          fi
+
+  fstar-build:
+    name: hax F* extraction + typecheck
+    runs-on: ubuntu-latest
+    needs: [rust-fmt]
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+          extraPullNames: fstar-nix-versions, z3-nix-versions
+
+      - name: Install hax + rustc
+        run: |
+          nix profile install .#rustc
+          nix profile install .
+
+      - name: F* extraction of core-models
+        run: make -C hax-lib/core-models fstar
+
+      - name: Committed F* extraction must match a fresh re-extraction
+        run: |
+          if [ -n "$(git status --porcelain -- hax-lib/proof-libs/fstar/core)" ]; then
+            echo "::error::Committed F* extraction is stale — run 'make fstar' in hax-lib/core-models and commit the result."
+            git status --porcelain -- hax-lib/proof-libs/fstar/core
+            git diff -- hax-lib/proof-libs/fstar/core
+            exit 1
+          fi
+
+      - name: F* library type-checks
+        run: nix develop .#fstar --command make -C hax-lib/proof-libs/fstar/core
+
+  core-models-tests:
+    name: core-models-tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Free disk space by removing preinstalled packages
+      uses: jlumbroso/free-disk-space@main
+    - uses: DeterminateSystems/nix-installer-action@main
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
+        extraPullNames: fstar-nix-versions, z3-nix-versions
+
+    - name: Build & run the core-models tests
+      run: |
+        unset CI # Allows us to use Aeneas's olean cache
+        nix develop .#ci-examples --command make -C hax-lib/core-models/tests clean
+        nix develop .#ci-examples --command make -C hax-lib/core-models/tests
+
+    # Inverted: a `skip_lean` test that PASSES means its blocker is gone.
+    # Runs here, not in `lean-build`: `check-skipped` re-extracts with
+    # `cargo hax`, which only this job's nix shell provides.
+    - name: Skipped equivalence tests must still be failing
+      run: |
+        unset CI
+        nix develop .#ci-examples --command \
+          make -C hax-lib/core-models/tests/rust_lean_equiv_test check-skipped

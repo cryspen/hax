@@ -45,16 +45,16 @@ module Make (F : Features.T) =
             }
               when Local_ident.is_side_effect_hoist_var var ->
                 let body, count =
-                  (object
-                     inherit [_] Visitors.mapreduce as super
-                     method zero = 0
-                     method plus = ( + )
+                  object
+                    inherit [_] Visitors.mapreduce as super
+                    method zero = 0
+                    method plus = ( + )
 
-                     method! visit_expr () e =
-                       match e.e with
-                       | LocalVar v when [%eq: Local_ident.t] v var -> (rhs, 1)
-                       | _ -> super#visit_expr () e
-                  end)
+                    method! visit_expr () e =
+                      match e.e with
+                      | LocalVar v when [%eq: Local_ident.t] v var -> (rhs, 1)
+                      | _ -> super#visit_expr () e
+                  end
                     #visit_expr
                     () body
                 in

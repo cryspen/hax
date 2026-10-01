@@ -154,29 +154,28 @@ class virtual ['self] reduce =
   end
 
 let collect_defined_types =
-  (object
-     inherit [_] reduce as _super
-     method plus = Set.union
-     method zero = Set.empty (module String)
-     method! visit_Datatype__t () dt = Set.singleton (module String) dt.name
-  end)
-    #visit_datatypes
-    ()
+  object
+    inherit [_] reduce as _super
+    method plus = Set.union
+    method zero = Set.empty (module String)
+    method! visit_Datatype__t () dt = Set.singleton (module String) dt.name
+  end
+    #visit_datatypes ()
 
 let collect_used_types =
-  (object (self)
-     inherit [_] reduce as super
-     method plus = Set.union
-     method zero = Set.empty (module String)
+  object (self)
+    inherit [_] reduce as super
+    method plus = Set.union
+    method zero = Set.empty (module String)
 
-     method! visit_Type__t () t =
-       let typ = t.typ in
-       self#plus
-         (if String.is_prefix ~prefix:"'" typ || String.equal typ "list" then
-            self#zero
-          else Set.singleton (module String) typ)
-         (super#visit_Type__t () t)
-  end)
+    method! visit_Type__t () t =
+      let typ = t.typ in
+      self#plus
+        (if String.is_prefix ~prefix:"'" typ || String.equal typ "list" then
+           self#zero
+         else Set.singleton (module String) typ)
+        (super#visit_Type__t () t)
+  end
     #visit_datatypes
     ()
 

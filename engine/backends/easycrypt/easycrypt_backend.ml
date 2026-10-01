@@ -120,30 +120,30 @@ let translate' (_bo : BackendOptions.t) (items : AST.item list) :
   let rec doit (fmt : Formatter.t) (the : nmtree) =
     the.subnms
     |> Map.Poly.iteri ~f:(fun ~key ~data ->
-           Stdlib.Format.fprintf fmt "theory %s.@." key;
-           doit fmt data;
-           Stdlib.Format.fprintf fmt "end.@.");
+        Stdlib.Format.fprintf fmt "theory %s.@." key;
+        doit fmt data;
+        Stdlib.Format.fprintf fmt "end.@.");
 
     let doitems (fmt : Formatter.t) =
       the.items
       |> List.iter ~f:(fun item ->
-             match item.v with
-             | Fn { name; generics; body; params }
-               when List.is_empty generics.params ->
-                 let name = (RenderId.render name).name in
+          match item.v with
+          | Fn { name; generics; body; params }
+            when List.is_empty generics.params ->
+              let name = (RenderId.render name).name in
 
-                 doit_fn fmt (name, params, body)
-             | Fn _ -> assert false
-             | TyAlias _ -> assert false
-             | Type _ -> assert false
-             | Trait _ -> assert false
-             | Impl _ -> assert false
-             | HaxError _ -> ()
-             | IMacroInvokation _ -> ()
-             | Use _ -> ()
-             | Alias _ -> ()
-             | NotImplementedYet -> ()
-             | _ -> .)
+              doit_fn fmt (name, params, body)
+          | Fn _ -> assert false
+          | TyAlias _ -> assert false
+          | Type _ -> assert false
+          | Trait _ -> assert false
+          | Impl _ -> assert false
+          | HaxError _ -> ()
+          | IMacroInvokation _ -> ()
+          | Use _ -> ()
+          | Alias _ -> ()
+          | NotImplementedYet -> ()
+          | _ -> .)
     in
 
     if not (List.is_empty the.items) then

@@ -49,6 +49,10 @@ expand *FLAGS:
     | ocamlformat --impl - \
     | just _pager
 
+# Run core models tests
+core-models-test:
+  cargo test --manifest-path hax-lib/core-models/Cargo.toml --workspace
+
 # Regenerate names in the Rust engine. Writes to `rust-engine/src/names/generated.rs`.
 regenerate-names:
   #!/usr/bin/env bash
@@ -61,20 +65,107 @@ fmt:
   cargo fmt
   cd engine && dune fmt
 
-# Run hax tests: each test crate has a snapshot, so that we track changes in extracted code. If a snapshot changed, please review them with `just test-review`.
+# Type-check the committed F* snapshots. The optional argument narrows to
+# snapshots whose path matches, e.g. `just verify-fstar legacy/tuples`.
+verify-fstar MATCHING='':
+  #!/usr/bin/env bash
+  set -euo pipefail
+  # `--keep-going` reports every failing snapshot, not just the first.
+  make -C tests/verify/fstar -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
+
+# Type-check the committed Lean snapshots. The optional argument narrows to
+# snapshots whose path matches, e.g. `just verify-lean legacy/tuples`.
+verify-lean MATCHING='':
+  #!/usr/bin/env bash
+  set -euo pipefail
+  make -C tests/verify/lean -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
+
+# Run hax tests
 test *FLAGS:
-  cargo test --test toolchain {{FLAGS}}
+  cargo run --release --bin test-driver -- ./tests {{FLAGS}}
 
-_test *FLAGS:
-  CARGO_TESTS_ASSUME_BUILT=1 cargo test --test toolchain {{FLAGS}}
+# Check the tool version manifest against the artifacts it names, downloading the *default* versions only. Reaches the network.
+test-tools-manifest:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored manifest_artifacts \
+    --skip every_listed_artifact_verifies
 
-# Review snapshots
-test-review: (_ensure_command_in_path "cargo-insta" "Insta (https://insta.rs)")
-  cargo insta review
+# Check the tool version manifest against the artifacts it names, downloading *every* listed version. Reaches the network.
+test-tools-manifest-all:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored every_listed_artifact_verifies
+
+# Print the `tools-manifest.toml` entries for one version of a managed tool, e.g. `just add-tool-version aeneas nightly-2026.07.21-52fd438`. Each artifact is downloaded, hashed, and put through the checks a listed entry has to pass. Reaches the network.
+add-tool-version tool version:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  # Only the entries reach stdout, so the output can be appended to the tool's
+  # section of the manifest as it is. Making the version a default is a
+  # separate edit to `defaults.toml`.
+  entries=$(mktemp)
+  trap 'rm -f "$entries"' EXIT
+  HAX_ADD_TOOL_VERSION="{{tool}}@{{version}}" HAX_ADD_TOOL_VERSION_OUT="$entries" \
+    cargo test -q -p cargo-hax --bin cargo-hax -- \
+      --ignored --exact --nocapture tools::install::add_version::add_version >&2
+  # A filter matching no test is not a test failure, so an empty result is.
+  if [ ! -s "$entries" ]; then
+    echo "no entries were generated" >&2
+    exit 1
+  fi
+  cat "$entries"
+
+# Install the managed tools from their real artifacts and run them. Reaches the network, and installs into the tool cache.
+test-tools-install:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored host_install
+
+# Extract an example to Lean with the managed tools: a full charon and aeneas run, beyond the launch checks of `test-tools-install`. Reaches the network, and installs into the tool cache.
+test-tools-extract:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cargo build -q -p cargo-hax --bin cargo-hax
+  # `examples/` is its own workspace, so the binary is invoked by path.
+  HAX="$PWD/target/debug/cargo-hax"
+  cd examples/barrett
+  "$HAX" into lean
+
+# Walk the documented tool setup flow from inside an example project, the way a user would: resolution, the `hax-lib` check, and the install of what the project resolves to. Reaches the network.
+test-tools-cli:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cargo build -q -p cargo-hax --bin cargo-hax
+  # `examples/` is its own workspace, so the binary is invoked by path.
+  HAX="$PWD/target/debug/cargo-hax"
+  cd examples/barrett
+  "$HAX" tools show
+  "$HAX" tools install
+  "$HAX" tools list --installed
 
 # Serve documentation
 docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")
   mkdocs serve
+
+# List the names of every example
+list-examples:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  shopt -s nullglob
+  makefiles=(examples/*/Makefile)
+  [ ${#makefiles[@]} -gt 0 ] || { >&2 echo "no examples found"; exit 1; }
+  for makefile in "${makefiles[@]}"; do
+    basename "$(dirname "$makefile")"
+  done
+
+# Extract and verify one example, from scratch (e.g. `just check-example barrett`)
+check-example NAME:
+  make -C "examples/{{NAME}}" clean
+  make -C "examples/{{NAME}}"
+
+# Extract and verify every example, from scratch
+check-examples:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  examples=$({{just_executable()}} list-examples)
+  while IFS= read -r example; do
+    {{just_executable()}} check-example "$example"
+  done <<< "$examples"
 
 # Check the coherency between issues labeled `marked-unimplemented` on GitHub and issues mentionned in the engine in the `Unimplemented {issue_id: ...}` errors.
 @check-issues:

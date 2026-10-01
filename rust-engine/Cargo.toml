@@ -6,7 +6,7 @@ license.workspace = true
 homepage.workspace = true
 edition.workspace = true
 repository.workspace = true
-readme.workspace = true
+readme = "README.md"
 description = "The engine of the hax toolchain."
 
 [dependencies]
@@ -18,7 +18,7 @@ serde = { workspace = true, features = ["derive"] }
 hax-types.workspace = true
 schemars.workspace = true
 itertools.workspace = true
-serde_stacker = "0.1.12"
+serde_stacker = "0.1.14"
 pretty = "0.12"
 derive_generic_visitor = "0.3.0"
 pastey = "0.1.0"

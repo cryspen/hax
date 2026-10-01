@@ -33,6 +33,6 @@ let lookup span (impl : Concrete_ident.t) : t option =
     in
     List.filter_mapi ~f clauses
     |> List.filter_map ~f:(fun (c : Ast.Rust.generic_constraint) ->
-           match c with GCType i -> Some i.goal | _ -> None)
+        match c with GCType i -> Some i.goal | _ -> None)
   in
   Some { trait_goal; typ; clauses }

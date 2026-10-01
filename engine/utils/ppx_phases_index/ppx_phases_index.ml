@@ -17,7 +17,7 @@ let locate_phases_directory () : string =
         Stdlib.Sys.readdir path
         |> Array.filter ~f:(fun name -> not (String.is_prefix ~prefix:"." name))
         |> Array.find_map ~f:(fun name ->
-               find @@ Stdlib.Filename.concat path name)
+            find @@ Stdlib.Filename.concat path name)
     | _ -> None
   in
   find (Stdlib.Sys.getcwd ())
@@ -28,35 +28,33 @@ let list_phases loc : (string * string * string * _ option) list =
   let dir = locate_phases_directory () in
   Stdlib.Sys.readdir dir |> Array.to_list
   |> List.filter_map ~f:(fun filename ->
-         let* module_name = String.chop_suffix ~suffix:".mli" filename in
-         let* _ =
-           match String.chop_suffix ~suffix:".pp" module_name with
-           | Some _ -> None
-           | None -> Some ()
-         in
-         let* phase_name = String.chop_prefix ~prefix:"phase_" module_name in
-         let module_name = uppercase_first_char module_name in
-         let phase_name = uppercase_first_char phase_name in
-         Some (filename, module_name, phase_name))
+      let* module_name = String.chop_suffix ~suffix:".mli" filename in
+      let* _ =
+        match String.chop_suffix ~suffix:".pp" module_name with
+        | Some _ -> None
+        | None -> Some ()
+      in
+      let* phase_name = String.chop_prefix ~prefix:"phase_" module_name in
+      let module_name = uppercase_first_char module_name in
+      let phase_name = uppercase_first_char phase_name in
+      Some (filename, module_name, phase_name))
   |> List.map ~f:(fun (filename, module_name, phase_name) ->
-         let path = Stdlib.Filename.concat dir filename in
-         let str =
-           Stdlib.open_in path |> Lexing.from_channel |> Parse.interface
-         in
-         let str =
-           List.filter
-             ~f:(function { psig_desc = Psig_open _; _ } -> false | _ -> true)
-             str
-         in
-         match str with
-         | [ _ ] -> (filename, module_name, phase_name, None)
-         | [ { psig_desc = Psig_attribute attr; _ }; _ ] ->
-             (filename, module_name, phase_name, Some attr)
-         | [] -> failwith ("Empty phase" ^ filename)
-         | _ ->
-             failwith
-               ("Invalid phase" ^ filename ^ ": got "
-               ^ Int.to_string (List.length str)))
+      let path = Stdlib.Filename.concat dir filename in
+      let str = Stdlib.open_in path |> Lexing.from_channel |> Parse.interface in
+      let str =
+        List.filter
+          ~f:(function { psig_desc = Psig_open _; _ } -> false | _ -> true)
+          str
+      in
+      match str with
+      | [ _ ] -> (filename, module_name, phase_name, None)
+      | [ { psig_desc = Psig_attribute attr; _ }; _ ] ->
+          (filename, module_name, phase_name, Some attr)
+      | [] -> failwith ("Empty phase" ^ filename)
+      | _ ->
+          failwith
+            ("Invalid phase" ^ filename ^ ": got "
+            ^ Int.to_string (List.length str)))
 
 let rename (l : (string * string) list) =
   let h (s : string) =
@@ -86,27 +84,25 @@ let expand_phases_index ~(ctxt : Expansion_context.Extension.t)
   let modules =
     list_phases loc
     |> List.map ~f:(fun (_, module_name, phase_name, attrs) ->
-           let h x = { txt = Lident x; loc } in
-           let original =
-             S.pmod_ident { txt = Ldot (Lident module_name, "Make"); loc }
-           in
-           let b =
-             S.module_binding
-               ~name:{ txt = Some phase_name; loc }
-               ~expr:original
-           in
-           let attrs = Option.to_list attrs in
-           let attrs =
-             List.map
-               ~f:(fun attr ->
-                 let n = attr.attr_name in
-                 if String.equal n.txt "ocaml.text" then
-                   { attr with attr_name = { n with txt = "ocaml.doc" } }
-                 else attr)
-               attrs
-           in
-           let b = { b with pmb_attributes = attrs } in
-           S.pstr_module b)
+        let h x = { txt = Lident x; loc } in
+        let original =
+          S.pmod_ident { txt = Ldot (Lident module_name, "Make"); loc }
+        in
+        let b =
+          S.module_binding ~name:{ txt = Some phase_name; loc } ~expr:original
+        in
+        let attrs = Option.to_list attrs in
+        let attrs =
+          List.map
+            ~f:(fun attr ->
+              let n = attr.attr_name in
+              if String.equal n.txt "ocaml.text" then
+                { attr with attr_name = { n with txt = "ocaml.doc" } }
+              else attr)
+            attrs
+        in
+        let b = { b with pmb_attributes = attrs } in
+        S.pstr_module b)
   in
   S.pstr_include (S.include_infos (S.pmod_structure modules))
 

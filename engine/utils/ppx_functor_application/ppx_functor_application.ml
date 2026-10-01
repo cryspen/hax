@@ -68,9 +68,9 @@ let rec elab ~loc (t : module_dsl) : module_expr =
             E.pmod_ident { txt = Lident (nth_arg @@ (i + 1)); loc })
           funs
         |> List.fold_left ~init:arg0 ~f:(fun x y ->
-               let bind = E.pmod_ident { loc; txt = Lident "BindPhase" } in
-               let ( <| ) = E.pmod_apply in
-               bind <| x <| y)
+            let bind = E.pmod_ident { loc; txt = Lident "BindPhase" } in
+            let ( <| ) = E.pmod_apply in
+            bind <| x <| y)
       in
       E.pmod_structure
       @@ [%stri module ARG0 = [%m x]]

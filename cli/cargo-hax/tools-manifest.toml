@@ -1,0 +1,214 @@
+# Version manifest of hax's managed external tools, embedded into the
+# `cargo-hax` binary at build time.
+#
+# It maps tool name, version, and platform to a download URL and SHA-256
+# checksum, plus `entry_points` where the archive layout deviates from the
+# `bin/<name>` convention. Only versions listed here install with checksum
+# verification; other versions go through the `[fallback]` templates below,
+# unverified and with a warning.
+#
+# Entries are only added, never removed: every version ever published stays
+# installable with verification on the supported platforms. Append new versions
+# at the end of their tool's section: file order is release order, and
+# `tools list` relies on it. Adding a version is a single reviewed
+# commit; generate its entries with `just add-tool-version <tool> <version>`,
+# which hashes the artifacts themselves and checks them the way an install
+# does, and record the provenance in a comment when it is not obvious from
+# the URL.
+#
+# The `tools_manifest` CI workflow checks these entries against the artifacts
+# they name: a pull request touching this file verifies every version listed
+# here, the nightly run verifies the defaults and checks the rest still resolve.
+
+# ---- aeneas -----------------------------------------------------------------
+# Provenance: pre-built archives published by the cryspen/aeneas fork's
+# releases (upstream: AeneasVerif/aeneas): `nightly-YYYY.MM.DD-<shortsha>`
+# tags from the scheduled nightly builds, `build-<shortsha>` tags from
+# on-demand builds of a specific commit. Archives are flat, with the
+# executable at the archive root.
+
+[tools.aeneas."nightly-2026.07.21-52fd438".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-x86_64.tar.gz"
+sha256 = "5efe308ae41bd195b17bd40d64efef83510698657c8e3964af45827a788d209d"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.07.21-52fd438".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-aarch64.tar.gz"
+sha256 = "53b2907dc12c3b92b30a43fab6f146b1b8f41ef1257f89a675823d5a0cdf9b2f"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.07.21-52fd438".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-macos-aarch64.tar.gz"
+sha256 = "791ea4a091f02aa628375a796c76ef33b161fb19d0a45c830aa22af18c74d3d5"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.04-8125bcf".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-linux-x86_64.tar.gz"
+sha256 = "18c467bbf415f02e8ab24960084f05ea81eaa2103c2284ff081c74b8e8223220"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.04-8125bcf".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-linux-aarch64.tar.gz"
+sha256 = "f64e8ad17b41a00d8d514114a2e0533551641f5910396631047e053b0370f145"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.04-8125bcf".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-macos-aarch64.tar.gz"
+sha256 = "5094612d66e58f091bd5fb2b549a70af989a39cce369c59e2a9a099dd58cd081"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.18-ae2f343".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-linux-x86_64.tar.gz"
+sha256 = "cbc7f4865e62c9929be3ee6ff21fae84a4b37f0d90033759ad367392b9e78ee3"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.18-ae2f343".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-linux-aarch64.tar.gz"
+sha256 = "6be2852c4b4790bb7395229e7bf8ac622591d9477bea8af44cf920f9e3f778fb"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.18-ae2f343".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-macos-aarch64.tar.gz"
+sha256 = "324a0bfda891a0196af186645cc5eb219ee29b833415eb567085b75ee4cf9e62"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.24-f8a0eb8".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-x86_64.tar.gz"
+sha256 = "e268e3c18e9d024821b8144ccce388ae335dd6a800913da3f0018532390e1a85"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.24-f8a0eb8".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-aarch64.tar.gz"
+sha256 = "7fb030721d5f052fcf6578af6a3d0d61e5e89cf7e1dc0272e2b98520b6ad37fa"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.24-f8a0eb8".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-macos-aarch64.tar.gz"
+sha256 = "6c25dc83c77df970550ce50b1071cdbe265324df99f038532853291c580f1b93"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.09.03-6852e64".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-linux-x86_64.tar.gz"
+sha256 = "ab069d2ed036afcc6456fd497b6428e708cd3afa1c5e0607152b54ff56efaf16"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.09.03-6852e64".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-linux-aarch64.tar.gz"
+sha256 = "037b68ab50fadee3dd961a4547a0754c90d34961cb4cb9edba326d33271edc87"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.09.03-6852e64".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-macos-aarch64.tar.gz"
+sha256 = "6da3ec50ffad504cc9b97f39f55e79a5af1efe811b27471f9383aaa07b41d3de"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."build-183e4f0".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-linux-x86_64.tar.gz"
+sha256 = "9d3670021746fa911f7e6d767c521e521d03c3bf51cec0176a18f3f06faea44d"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."build-183e4f0".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-linux-aarch64.tar.gz"
+sha256 = "ee913f37e247b01f5c473166811efe31246347eef09f288f863e322f2a510ece"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."build-183e4f0".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-macos-aarch64.tar.gz"
+sha256 = "dd6be33b9f21a8bcfd089f4da9b36ad89be3848d877d812b8ca1ea0f28be86ca"
+entry_points = { aeneas = "aeneas" }
+
+# ---- charon -----------------------------------------------------------------
+# Provenance: upstream AeneasVerif/charon nightly releases. Archives are
+# flat: `charon`, `charon-driver` and a `rust-toolchain` file at the root.
+
+[tools.charon."nightly-2026.07.16".linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.16/charon-linux-x86_64.tar.gz"
+sha256 = "21e42e2ff23ef96f3c342c5232d2e1cbfbd836008791adeb6d267ab188a1eb7a"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.16".linux-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.16/charon-linux-aarch64.tar.gz"
+sha256 = "0a1c9d4d04e2d4bc60564323f18778b3a210f29f39cbd03316c5aab1c260d628"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.16".macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.16/charon-macos-aarch64.tar.gz"
+sha256 = "beade7d7d0a3618c3fae4c242741c1575e376fd709a124273a73207f28ceef15"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.24".linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.24/charon-linux-x86_64.tar.gz"
+sha256 = "0d98c893ad89ab083e55a07f53f3eaf4e9dab1541fd6a926abeaa149f7c64871"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.24".linux-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.24/charon-linux-aarch64.tar.gz"
+sha256 = "3178b2bba550fec945516dee893e12cf31be7821d740956f390c5401a5b95352"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.24".macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.24/charon-macos-aarch64.tar.gz"
+sha256 = "a8d2c82dd6988f4283666b00eae9092403cbe6c0f7c2e88bc6de8d242a50e2b4"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.08.20".linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.08.20/charon-linux-x86_64.tar.gz"
+sha256 = "0ce0f9ab5c59e391b4039ebc25a06db673e1f1a1aaed986ec260fa00b07192fa"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.08.20".linux-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.08.20/charon-linux-aarch64.tar.gz"
+sha256 = "aca007539188040d8c0584a3cee5c302687a3ef4e32302c405244f9ed823eef8"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.08.20".macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.08.20/charon-macos-aarch64.tar.gz"
+sha256 = "e6e5450c3193f1782e5ccd88fdd5222f1efd1bc88c2997bdbe07f1da32c2309b"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.09.02".linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.09.02/charon-linux-x86_64.tar.gz"
+sha256 = "a812bad35e0934a6d2b8daf5d5d674037a18d6cc27638b426911128b445fbc5d"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.09.02".linux-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.09.02/charon-linux-aarch64.tar.gz"
+sha256 = "ec8e3cce558aefd4011a02cdc2a7b2d1e3d3f66819a249eb02c1a07ad33a7920"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.09.02".macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.09.02/charon-macos-aarch64.tar.gz"
+sha256 = "9d63612aec6558a534a37b9a3ab1b7ed4dce75e6f7e7fbff19cde82a1b8f4c83"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+# ---- fallback templates -----------------------------------------------------
+# Used for versions this manifest does not list (typically ones published
+# after this release of hax): `{version}` is substituted with the requested
+# version, the download is not checksum-verified, and a warning is printed.
+# The aeneas template points at the repository the defaults come from
+# (the cryspen fork); versions published only upstream are not reachable
+# through it.
+
+[fallback.aeneas.linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-linux-x86_64.tar.gz"
+entry_points = { aeneas = "aeneas" }
+
+[fallback.aeneas.linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-linux-aarch64.tar.gz"
+entry_points = { aeneas = "aeneas" }
+
+[fallback.aeneas.macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-macos-aarch64.tar.gz"
+entry_points = { aeneas = "aeneas" }
+
+[fallback.charon.linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-linux-x86_64.tar.gz"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[fallback.charon.linux-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-linux-aarch64.tar.gz"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[fallback.charon.macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-macos-aarch64.tar.gz"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }

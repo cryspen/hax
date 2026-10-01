@@ -2,7 +2,7 @@
 
 (name hax-engine)
 
-(version 0.3.6)
+(version 0.4.1)
 
 (generate_opam_files true)
 
@@ -38,15 +38,10 @@
         cmdliner
         angstrom
         re
-        ppx_matches
         ppx_string
         logs
         (ocamlgraph (>= "2.2.0"))
 
-        js_of_ocaml-compiler
-        js_of_ocaml
-        js_of_ocaml-ppx
-        
         ; F*-specific dependencies
         batteries
         stdint

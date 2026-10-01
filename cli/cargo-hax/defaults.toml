@@ -1,0 +1,34 @@
+# Built-in default versions of hax's external tools, embedded into the
+# `cargo-hax` binary at build time. This file follows the schema of a
+# project's `hax.toml`: a project without a `hax.toml` (or without an
+# entry for a given tool) resolves to these versions.
+#
+# These are the versions this release of hax is tested against. Every
+# `[tools]` entry must be installable through `tools-manifest.toml`
+# (enforced by a test).
+
+[tools]
+# Managed tools, pinned by upstream release tag.
+aeneas = "build-183e4f0"
+charon = "nightly-2026.09.02"
+
+[versions]
+# Declared-only versions: known to hax, but not installed by it.
+# The Lean toolchain, written verbatim into generated `lean-toolchain` files.
+lean = "leanprover/lean4:v4.31.0"
+# The Lean library that extracted code builds against. This is a tag in
+# `cryspen/hax-lean`, pushed by `.github/workflows/deploy_hax_lean.yml`; it
+# must match `version` in `hax-lib/proof-libs/lean/lakefile.toml`.
+hax-lean-lib = "v0.3.29"
+
+# The default opaque set for proof scenarios: trait impls that are
+# routinely derived but rarely worth translating. Applied to every Lean
+# scenario unless it sets `default-opaques = false`; project-level
+# `[scenario-defaults.lean]` tables extend this set.
+[scenario-defaults.lean]
+opaque = [
+    "{impl serde::ser::Serialize for _}",
+    "{impl serde::de::Deserialize for _}",
+    "{impl core::fmt::Debug for _}",
+    "{impl core::fmt::Display for _}",
+]

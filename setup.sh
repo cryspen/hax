@@ -24,9 +24,14 @@ while [ $# -gt 0 ]; do
         echo "Usage: $0 [OPTIONS]"
         echo ""
         echo "Options:"
-        echo ' -j <JOBS>     The number of opam jobs to run in parallel'
-        echo ' --no-cleanup  Disables the default behavior that runs `cargo clean` and `opam clean`'
+        echo ' -j <JOBS>        The number of opam jobs to run in parallel'
+        echo ' --no-cleanup     Disables the default behavior that runs `cargo clean` and `opam clean`'
         exit
+        ;;
+    *)
+        printf '\e[31mError: unrecognized option \e[1m%s\e[0m\n' "$1"
+        printf '\e[37mRun \e[1m%s --help\e[0m\e[37m for usage.\e[0m\n' "$0"
+        exit 1
         ;;
     esac
     shift
@@ -79,15 +84,9 @@ ensure_node_is_recent_enough() {
     fi
 }
 
-# Installs the Rust CLI & frontend, providing `cargo-hax` and `driver-hax`
-install_rust_binaries() {
-    for i in driver subcommands ../engine/names/extract ../rust-engine; do
-        (
-            set -x
-            cargo install --locked --force --path "cli/$i"
-        )
-    done
-}
+# Provides `install_rust_binaries`, installing `cargo-hax`, the frontend
+# driver, and the other Rust binaries of the workspace
+source "$SCRIPTPATH/.utils/install-rust-binaries.sh"
 
 # Provides the `hax-engine` binary
 install_ocaml_engine() {
@@ -106,16 +105,33 @@ install_ocaml_engine() {
     (
         set -x
         opam uninstall hax-engine || true
+        # Lift the soft stack limit for ocamlopt: large preprocessed
+        # files (e.g. `lib/types.pp.ml`) overflow the default stack on
+        # recent GitHub Actions runner images. macOS rejects
+        # `unlimited`, so try `hard` first.
+        ulimit -s hard 2>/dev/null || ulimit -s unlimited 2>/dev/null || true
         opam install --yes ./engine
     )
 }
 
 warn_if_dirty
 
+REQUIRED_OCAML_VERSION="5.4.1"
+ensure_ocaml_version() {
+    CURRENT_VERSION=$(opam exec -- ocamlc --version 2>/dev/null || echo "none")
+    if [ "$CURRENT_VERSION" != "$REQUIRED_OCAML_VERSION" ]; then
+        printf '\e[31mError: OCaml version \e[1m%s\e[0m\e[31m is required, but the current switch has \e[1m%s\e[0m\e[31m.\e[0m\n' \
+            "$REQUIRED_OCAML_VERSION" "$CURRENT_VERSION"
+        printf '\e[37mHint: run \e[1mopam switch create hax %s && eval $(opam env)\e[0m\e[37m\e[0m\n' "$REQUIRED_OCAML_VERSION"
+        exit 1
+    fi
+}
+
 for binary in opam node rustup jq; do
     ensure_binary_available $binary
 done
 ensure_node_is_recent_enough
+ensure_ocaml_version
 
 # Make sure the correct rust toolchain is installed
 rustup show active-toolchain || rustup toolchain install 
@@ -124,5 +140,5 @@ if [ "$CLEANUP_WORKSPACE" = "on" ]; then
     cleanup_workspace
 fi
 
-install_rust_binaries
+install_rust_binaries --force
 install_ocaml_engine

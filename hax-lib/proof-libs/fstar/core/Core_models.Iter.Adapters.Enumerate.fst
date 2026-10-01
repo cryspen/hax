@@ -3,8 +3,8 @@ module Core_models.Iter.Adapters.Enumerate
 open FStar.Mul
 open Rust_primitives
 
-include Core_models.Iter.Bundle {t_Enumerate as t_Enumerate}
+include Core_models.Bundle {t_Enumerate as t_Enumerate}
 
-include Core_models.Iter.Bundle {impl__new as impl__new}
+include Core_models.Bundle {impl__new as impl__new}
 
-include Core_models.Iter.Bundle {impl_1 as impl_1}
+include Core_models.Bundle {impl_1__from__enumerate as impl_1}

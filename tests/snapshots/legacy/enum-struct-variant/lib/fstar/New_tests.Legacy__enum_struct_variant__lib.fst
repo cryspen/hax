@@ -1,0 +1,23 @@
+module New_tests.Legacy__enum_struct_variant__lib
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+type t_Money = { f_value:u64 }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl': Core_models.Fmt.t_Debug t_Money
+
+unfold
+let impl = impl'
+
+type t_EnumWithStructVariant =
+  | EnumWithStructVariant_Funds { f_balance:t_Money }: t_EnumWithStructVariant
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1': Core_models.Fmt.t_Debug t_EnumWithStructVariant
+
+unfold
+let impl_1 = impl_1'

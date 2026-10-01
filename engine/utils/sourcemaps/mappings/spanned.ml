@@ -8,23 +8,23 @@ let to_points (pts : t list) : point list =
   List.map pts ~f:Option.some
   |> Fn.flip List.append [ None ]
   |> List.folding_map ~init:None ~f:(fun acc x ->
-         let prev_end =
-           match (acc, x) with
-           | Some end_, Some (start, _, _)
-             when [%eq: Location.t] start.Dual.gen end_.Dual.gen |> not ->
-               Some end_
-           | Some end_, None -> Some end_
-           | _ -> None
-         in
-         let out, end_ =
-           match x with
-           | Some (start, end_, meta) ->
-               ([ (start, Some meta) ], Dual.transpose ~default:start end_)
-           | None -> ([], None)
-         in
-         ( end_,
-           (prev_end |> Option.map ~f:(fun e -> (e, None)) |> Option.to_list)
-           @ out ))
+      let prev_end =
+        match (acc, x) with
+        | Some end_, Some (start, _, _)
+          when [%eq: Location.t] start.Dual.gen end_.Dual.gen |> not ->
+            Some end_
+        | Some end_, None -> Some end_
+        | _ -> None
+      in
+      let out, end_ =
+        match x with
+        | Some (start, end_, meta) ->
+            ([ (start, Some meta) ], Dual.transpose ~default:start end_)
+        | None -> ([], None)
+      in
+      ( end_,
+        (prev_end |> Option.map ~f:(fun e -> (e, None)) |> Option.to_list) @ out
+      ))
   |> List.concat
 
 let from_points : point list -> t list =

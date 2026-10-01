@@ -4,5 +4,7 @@ This crate contains the type definitions that are used to communicate between:
  - the custom rustc driver;
  - the hax engine (the `hax-engine` binary).
  
-Those three component send and receive messages in JSON or CBOR on
-stdin and stdout.
+Those three components exchange JSON messages: the CLI drives the
+engine over its stdin and stdout, and the driver writes `haxmeta`
+files to the target directory, announcing them as JSON lines on its
+stderr.

@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
     crane = { url = "github:ipetkov/crane"; };
     rust-overlay = {
@@ -56,13 +56,13 @@
           fi
         '';
         ocamlPackages = pkgs.ocamlPackages;
-        ocamlformat = ocamlPackages.ocamlformat_0_27_0;
+        ocamlformat = ocamlPackages.ocamlformat;
         proverif = pkgs.proverif.overrideDerivation
           (_: { patches = [ examples/proverif-psk/pv_div_by_zero_fix.diff ]; });
       in rec {
         packages = {
           inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs proverif;
-          docs = pkgs.python312Packages.callPackage ./docs {
+          docs = pkgs.python3Packages.callPackage ./docs {
             hax-frontend-docs = packages.hax-rust-frontend.docs;
           };
           hax-engine = pkgs.callPackage ./engine {
@@ -89,8 +89,6 @@
           default = packages.hax;
 
           check-toolchain = checks.toolchain;
-          check-examples = checks.examples;
-          check-coq-coverage = checks.coverage;
           check-readme-coherency = checks.readme-coherency;
 
           rust-by-example-hax-extraction = pkgs.stdenv.mkDerivation {
@@ -116,15 +114,6 @@
         };
         checks = {
           toolchain = packages.hax.tests;
-          examples = pkgs.callPackage ./examples {
-            inherit (packages) hax;
-            inherit craneLib fstar hacl-star hax-env;
-          };
-          coverage = pkgs.callPackage ./examples/coverage {
-            inherit (packages) hax;
-            inherit craneLib;
-            coqPackages = pkgs.coqPackages_8_19;
-          };
           readme-coherency =
             let src = pkgs.lib.sourceFilesBySuffices ./. [ ".md" ];
             in pkgs.stdenv.mkDerivation {
@@ -199,29 +188,34 @@
             pkgs.just
             pkgs.cargo-expand
             pkgs.cargo-release
-            pkgs.cargo-insta
             pkgs.openssl.dev
-            pkgs.libz.dev
+            pkgs.zlib.dev
             pkgs.pkg-config
             pkgs.rust-analyzer
             pkgs.toml2json
+            pkgs.zstd
             rustfmt
             utils
 
             pkgs.go-grip
           ];
           LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
-          DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libz rustc ];
+          DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.zlib rustc ];
         in {
           examples = pkgs.mkShell {
-            inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            inherit LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            inputsFrom = [ devShells.fstar ];
             HACL_HOME = "${hacl-star}";
             shellHook = ''
               HAX_ROOT=$(git rev-parse --show-toplevel)
               export HAX_PROOF_LIBS_HOME="$HAX_ROOT/proof-libs/fstar"
               export HAX_LIBS_HOME="$HAX_ROOT/hax-lib"
             '';
-            packages = defaultPackages ++ [ fstar pkgs.proverif ];
+            packages = [
+              proverif
+              pkgs.elan
+              pkgs.jq
+            ];
           };
           ci-examples = pkgs.mkShell {
             shellHook = ''
@@ -229,19 +223,34 @@
               export CACHE_DIR=$(mktemp -d)
               export HINT_DIR=$(mktemp -d)
               export SHELL=${pkgs.bash}/bin/bash
+              # Ensure locally-compiled crates (e.g. the test-driver)
+              # embed the same HAX_VERSION as the Nix-built cargo-hax.
+              export HAX_VERSION=${(builtins.fromTOML (builtins.readFile ./Cargo.toml)).workspace.package.version}
             '';
             packages = [
               packages.hax
               packages.hax-env
+              packages.rustc
               packages.fstar
               packages.proverif
               pkgs.jq
+              pkgs.just
               pkgs.elan
+              # `rust_lean_equiv_test`'s `gen_lean_tests.py` runs inside this shell.
+              pkgs.python3
             ];
           };
           default = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             packages = defaultPackages;
+          };
+          # For `tests/verify`: the provers and nothing else, since verifying
+          # the committed snapshots needs no hax, rustc or engine.
+          verify-fstar = pkgs.mkShell {
+            packages = [ packages.fstar pkgs.gnumake pkgs.just pkgs.git ];
+          };
+          verify-lean = pkgs.mkShell {
+            packages = [ pkgs.elan pkgs.gnumake pkgs.just pkgs.git ];
           };
           fstar = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;

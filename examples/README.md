@@ -1,109 +1,144 @@
 # Examples
 
-| Name               | Status of the F\* extraction |
-| ------------------ | ---------------------------- |
-| chacha20           | Typechecks                   |
-| limited-order-book | Typechecks                   |
-| sha256             | Lax-typechecks               |
-| barrett            | Typechecks                   |
-| kyber_compress     | Typechecks                   |
+The sections below describe what each example shows and how to run its backend.
 
-## How to generate the F\* code and typecheck it for the examples
-
-<details>
-  <summary><b>Requirements</b></summary>
-
-  First, make sure to have hax installed in PATH. Then:
-
-  * With Nix, `nix develop .#examples` setups a shell automatically for you.
-
-  * Without Nix:
-    1. install F* `v2025.10.06`<!---FSTAR_VERSION--> manually (see https://github.com/FStarLang/FStar/blob/master/INSTALL.md);
-       1. make sure to have `fstar.exe` in PATH;
-       2. or set the `FSTAR_HOME` environment variable.
-    2. clone [Hacl*](https://github.com/hacl-star/hacl-star) somewhere;
-    3. `export HACL_HOME=THE_DIRECTORY_WHERE_YOU_HAVE_HACL_STAR`.
-</details>
-
-To generate F\* code for all the example and then typecheck
-everything, just run `make` in this directory.
-
-Running `make` will run `make` in each example directory, which in
-turn will generate F\* modules using hax and then typecheck those
-modules using F\*.
-
-Note the generated modules live in the
-`<EXAMPLE>/proofs/fstar/extraction` folders.
-
-## Coq
-
-For those examples, we generated Coq modules without typechecking them.
-The `<EXAMPLE>/proofs/coq/extraction` folders contain the generated Coq modules.
+Each example declares its extraction as a proof scenario (a `[scenario.<name>]`
+table in its `hax.toml`, see the [tools manual](../docs/manual/tools.md)), so
+the generated files live in `<EXAMPLE>/proofs/<scenario>/<backend>/`.
 
 ## Lean
 
-Three examples are fine-tuned to showcase the Lean backend: `lean_barrett`,
-`lean_chacha20`, and `lean_adc`. For all of them, the lean extraction can be
-obtained by running `cargo hax into lean`.
+### Barrett reduction
 
-### Barrett
-
-The *Barrett reduction* allows to compute remainders without using divisions. It
+Barrett reduction allows to compute remainders without using divisions. It
 showcases arithmetic operations, conversions between integer types (namely `i32`
-and `i64`). The Lean backend provides *panicking* arithmetic operations `+?`,
-`-?`, etc, that panic on overflows.
+and `i64`).
+We prove that the code does not panic and that it correctly computes the remainder,
+provided that the input is small enough.
 
-For the Lean extracted code, we prove panic freedom with regards to those
-arithmetic operations, and then we prove that the result is indeed the modulus
-(as long as the absolute value of the input is lower than the bound
-`BARRETT_R`). The proof is made via bit-blasting (using Lean's `bv_decide`). To
-limit the computation time, the bound `BARRETT_R` was lowered compared to the
-normal example in the `barrett` folder.
-
-The proofs are backported in the rust code (in `lean_barrett/src/lib.rs`): doing
-`cargo hax into lean` extracts a valid lean file that contains the proof.
-
-The proof can be run by doing (requires `lake`):
-
+The extraction and proofs can be run as follows:
 ```sh
-cd lean_barrett/
-make
+cd barrett/
+make lean
+```
+
+This extracts the Rust code from `src/lib.rs` into
+`proofs/barrett/lean/Barrett/Extraction/`. The Lean proof can be found in
+`proofs/barrett/lean/Barrett/Verification/ProofObligations.lean`.
+
+### SHA-3
+
+The SHA-3 example contains two small parts of a real-world implementation of SHA-3.
+It also contains a Rust specification of these two parts, closely following the
+official FIPS standard of the algorithm.
+
+The example showcases array access, bit vector arithmetic, how
+to prove equivalence to a specification, and how to verify nested
+functions one by one.
+
+The two parts that we consider are: 
+- **Part 1:** the `iota` function, and
+- **Part 2:** a single round of `keccak_f`.
+
+We prove that the implementation is equivalent to the specification.
+
+Note that this is only a very small part of SHA-3. Some of the functions that are part of
+a round of `keccak_f`, but that we ignore in this example are simply `unimplemented!()`.
+
+The extraction and proofs can be run as follows:
+```sh
+cd sha3/
+make lean
+```
+
+This extracts the Rust code from `src/lib.rs` into
+`proofs/sha3/lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
+`proofs/sha3/lean/Sha3/Verification/Equivalence.lean`.
+
+### Loop Equivalence
+
+The loop equivalence example contains two artificially crafted functions that implement a loop
+operating on an array in two different styles. We prove them to be equivalent.
+
+The extraction and proofs can be run as follows:
+```sh
+cd loop_equivalence/
+make lean
 ```
 
 ### ADC (Addition with Carry)
 
 The *ADC* (addition with carry) example verifies a 32-bit limb addition with
 carry, a fundamental building block in multi-precision (bignum) arithmetic.
-It uses `#[hax_lib::lean::after(...)]` to embed a Lean 4 correctness theorem
-directly after the extracted function definition. The precondition and
-postcondition are expressed as pure Lean propositions in a Hoare triple, and
-the proof is fully automated via `hax_mvcgen` and Lean's `bv_decide`
-bit-blasting procedure.
 
 The verified property states that the 64-bit sum `a + b + carry_in` is correctly
 split into a 32-bit sum and a 1-bit carry output.
 
-The proof can be run by doing (requires `lake`):
-
+The extraction and proofs can be run as follows:
 ```sh
-cd lean_adc/
+cd adc/
+make lean
+```
+
+### Lean tutorial
+
+The `lean_tutorial` example accompanies the
+[Lean tutorial](../docs/manual/lean/tutorial/index.md): it contains the code
+the tutorial develops. The extraction and proofs can be run as follows:
+```sh
+cd lean_tutorial/
+make lean
+```
+
+## F*
+
+### Requirements
+
+  First, make sure to have hax installed in PATH. Then:
+
+  * With Nix, `nix develop .#examples` setups a shell automatically for you.
+
+  * Without Nix: Install [Hax](../README.md#installation) 
+  and [F*](https://github.com/FStarLang/FStar/blob/master/INSTALL.md) `v2025.10.06`<!---FSTAR_VERSION-->
+
+### Run the examples
+
+Running `make fstar` in one of the example directories will
+generate F\* modules using hax and then typecheck those
+modules using F\*.
+
+Note the generated modules live in the
+`<EXAMPLE>/proofs/<scenario>/fstar/extraction` folders.
+
+| Name               | Description                                                              | Status of the F\* extraction |
+| ------------------ | ------------------------------------------------------------------------ | ---------------------------- |
+| chacha20           | An implementation of the ChaCha20 stream cipher.                          | Typechecks                   |
+| limited-order-book | A limited order book, the matching component of an exchange.              | Typechecks                   |
+| sha256             | An implementation of the SHA-256 hash function.                           | Lax-typechecks               |
+| barrett            | Barrett reduction (see the [Lean section](#barrett-reduction) above).     | Typechecks                   |
+| kyber_compress     | The coefficient compression function of Kyber (ML-KEM).                   | Typechecks                   |
+
+## ProVerif
+
+The `proverif-psk` example implements the initiator and responder logic of a
+simplistic pre-shared-key (PSK) based protocol, and analyzes it with the
+ProVerif backend; a handwritten ProVerif model of the same protocol is included
+for comparison. See its [Readme](./proverif-psk/Readme.md) for the protocol and
+the modeling choices.
+
+With [ProVerif](https://bblanche.gitlabpages.inria.fr/proverif/) installed, the
+extraction and analysis can be run as follows:
+```sh
+cd proverif-psk/
 make
 ```
 
-### Chacha20
+## Checking examples
 
-The Chacha20 example extracts to Lean, but requires a manual edit to be
-wellformed. It showcases array, vector and slices accesses, as well as loops
-(with loop invariants). For the Lean extracted code, we prove panic freedom,
-which involves arithmetic on size of arrays.
+From the repository root, `just check-example <name>` extracts and verifies a
+single example, and `just check-examples` does so for all of them. This is what
+CI runs.
 
-This edit and the proofs of panic freedom can be found in
-`lean_chacha20/proofs/lean/extraction/lean_chacha20_manual_edit.lean`.
-
-The extraction (in `lean_chacha20.lean`) and rerun of the proofs (in
-`lean_chacha20_manual_edit.lean`) can be done by doing (requires `lake`):
-
-```sh
-cd lean_chacha20/
-make
-```
+Both commands start from a clean state: they first delete the generated files,
+including the extractions tracked in git. Restore the tracked files with
+`git checkout examples/*/proofs`.

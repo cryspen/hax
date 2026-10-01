@@ -1,7 +1,0 @@
-[package]
-name = "statics"
-version = "0.1.0"
-edition = "2021"
-
-[package.metadata.hax-tests]
-into."fstar" = { snapshot = "stdout" }

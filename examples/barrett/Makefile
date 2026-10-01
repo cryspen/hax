@@ -1,17 +1,26 @@
-.PHONY: default fstar rust clean
+.PHONY: default fstar rust lean clean
 
-default: fstar rust
-	make -C proofs/fstar/extraction
+default: fstar rust lean
+	make -C proofs/barrett/fstar/extraction
 
 fstar:
-	cargo hax into fstar
+	cargo hax extract barrett-fstar
 
+# The rust backend has no proof-scenario support.
 rust:
 	cargo hax into rust
-	cd proofs/rust/extraction
-	cargo build
+	cd proofs/rust/extraction && cargo build
+
+lean:
+	cargo hax extract barrett
+	(cd proofs/barrett/lean && \
+		elan default v4.31.0 && \
+		lake exe cache get && \
+		lake build)
 
 clean:
-	rm -f proofs/fstar/extraction/.depend
-	rm -f proofs/fstar/extraction/*.fst
+	rm -f proofs/barrett/fstar/extraction/.depend
+	rm -f proofs/barrett/fstar/extraction/*.fst
 	rm -f proofs/rust/extraction/*.rs
+	-rm -rf proofs/barrett/lean/Barrett/Extraction
+	-cd proofs/barrett/lean && lake clean

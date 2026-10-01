@@ -1,0 +1,7 @@
+[scenario.barrett]
+backend = "lean"
+
+[scenario.barrett-fstar]
+backend = "fstar"
+z3rlimit = 100
+output-dir = "proofs/barrett/fstar"

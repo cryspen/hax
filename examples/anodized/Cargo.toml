@@ -1,0 +1,12 @@
+[package]
+name = "anodized-example"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hax-lib.workspace = true
+# Pinned by `rev`, not `branch`: a branch moving under us would not fail to
+# build, it would silently change what gets extracted.
+anodized = { git = "https://github.com/mkovaxx/anodized.git", rev = "f9334c40e4e3afd0a01ed88747e9f5932d3ac35a" }

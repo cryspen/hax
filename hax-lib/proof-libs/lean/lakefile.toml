@@ -1,17 +1,19 @@
-name = "Hax"
-version = "0.1.0"
-defaultTargets = ["Hax"]
-
-[leanOptions]
-autoImplicit = false
-relaxedAutoImplicit = false
-weak.linter.mathlibStandardSet = true
-maxSynthPendingDepth = 3
+name = "hax"
+version = "0.3.29"
+defaultTargets = ["Hax", "CoreModels"]
 
 [[lean_lib]]
 name = "Hax"
 
+[[lean_lib]]
+name = "CoreModels"
+
+# Test module. Deliberately excluded from `defaultTargets` so it is not part of the
+# regular build; build it explicitly with `lake build Tests`.
+[[lean_lib]]
+name = "Tests"
+
 [[require]]
-name = "Qq"
-git = "https://github.com/leanprover-community/quote4"
-rev = "v4.29.0-rc1"
+name = "aeneas"
+git = { url = "https://github.com/cryspen/aeneas", subDir = "backends/lean" }
+rev = "6852e6474ec508930acba4df79977b3483a10d10"

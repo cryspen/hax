@@ -19,17 +19,19 @@ trait_alias!(
         + serde::Serialize
         + JsonSchema
         + Clone
+        + Eq
+        + PartialEq
 );
 
 trait_alias!(SubcommandExtensionPoint = ExtensionPoint + clap::Subcommand);
 trait_alias!(ArgsExtensionPoint = ExtensionPoint + clap::Args);
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct EmptyArgsExtension {}
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
 pub enum EmptySubcommandExtension {}
 
 pub trait Extension: 'static {
@@ -37,6 +39,7 @@ pub trait Extension: 'static {
     type Command: SubcommandExtensionPoint;
     type BackendOptions: ArgsExtensionPoint;
     type FStarOptions: ArgsExtensionPoint;
+    type LeanOptions: ArgsExtensionPoint;
 }
 
 impl Extension for () {
@@ -44,4 +47,5 @@ impl Extension for () {
     type Command = EmptySubcommandExtension;
     type BackendOptions = EmptyArgsExtension;
     type FStarOptions = EmptyArgsExtension;
+    type LeanOptions = EmptyArgsExtension;
 }

@@ -172,9 +172,9 @@ module Make (F : Features.T) = struct
         let mut_rec_bundles, non_mut_rec =
           SCC.scc_list g
           |> List.partition_map ~f:(function
-               | [] -> failwith "scc_list returned empty cluster"
-               | [ x ] when is_mut_rec_with_itself x |> not -> Second x
-               | bundle -> First bundle)
+            | [] -> failwith "scc_list returned empty cluster"
+            | [ x ] when is_mut_rec_with_itself x |> not -> Second x
+            | bundle -> First bundle)
         in
         { mut_rec_bundles; non_mut_rec }
 
@@ -425,13 +425,13 @@ module Make (F : Features.T) = struct
     in
     let show_inclusion_clause Types.{ kind; namespace } =
       (match kind with
-      | Excluded -> "-"
-      | SignatureOnly -> "+:"
-      | Included deps_kind -> (
-          match deps_kind with
-          | Transitive -> "+"
-          | Shallow -> "+~"
-          | None' -> "+!"))
+        | Excluded -> "-"
+        | SignatureOnly -> "+:"
+        | Included deps_kind -> (
+            match deps_kind with
+            | Transitive -> "+"
+            | Shallow -> "+~"
+            | None' -> "+!"))
       ^ "["
       ^ (List.map
            ~f:(function Glob One -> "*" | Glob Many -> "**" | Exact s -> s)
@@ -520,6 +520,20 @@ module Make (F : Features.T) = struct
     let fresh_module =
       Concrete_ident.fresh_module ~label:"bundle" (List.map ~f:ident_of bundle)
     in
+    (* Items whose definition is supplied by a `Replace` quote living in this
+       same bundle (i.e. `#[hax_lib::<backend>::replace(..)]`). Such an item is
+       late-skipped — the quote's verbatim text is emitted in its stead — but the
+       name it declares *is* still defined, and other modules reference it. So
+       its re-export must survive even though the item it aliases does not; see
+       the `attrs` computation below. *)
+    let replaced_by_quote =
+      List.filter_map bundle ~f:(fun item ->
+          match item.v with
+          | Quote { origin = { position = `Replace; item_ident; _ }; _ } ->
+              Some item_ident
+          | _ -> None)
+      |> Set.of_list (module Concrete_ident)
+    in
     let renamings =
       bundle
       (* Exclude `Use` items: we exclude those from bundling since they are only
@@ -528,14 +542,13 @@ module Make (F : Features.T) = struct
       |> List.filter ~f:(function { v = Use _; _ } -> false | _ -> true)
       (* Exclude `NotImplementedYet` items *)
       |> List.filter ~f:(function
-           | { v = NotImplementedYet; _ } -> false
-           | _ -> true)
+        | { v = NotImplementedYet; _ } -> false
+        | _ -> true)
       |> List.concat_map ~f:(fun item ->
-             List.map
-               ~f:(fun id ->
-                 ( item,
-                   (id, Concrete_ident.move_to_fresh_module fresh_module id) ))
-               (idents_of item))
+          List.map
+            ~f:(fun id ->
+              (item, (id, Concrete_ident.move_to_fresh_module fresh_module id)))
+            (idents_of item))
     in
     let aliases =
       let inspect_view_last id =
@@ -543,9 +556,15 @@ module Make (F : Features.T) = struct
       in
       List.filter_map renamings ~f:(fun (origin_item, (from_id, to_id)) ->
           let attrs =
-            List.filter
-              ~f:(fun att -> Attrs.late_skip [ att ])
-              origin_item.attrs
+            (* An alias inherits its origin's `late_skip` so that a skipped item
+               does not leave a dangling re-export behind. A quote-replaced item
+               is the exception: it is skipped precisely because the quote
+               defines the name in its place, so the re-export has to stay. *)
+            if Set.mem replaced_by_quote from_id then []
+            else
+              List.filter
+                ~f:(fun att -> Attrs.late_skip [ att ])
+                origin_item.attrs
           in
           let v = Alias { name = from_id; item = to_id } in
           match origin_item.v with
@@ -595,10 +614,9 @@ module Make (F : Features.T) = struct
     let items_of_ns = Map.find items_per_ns >> Option.value ~default:[] in
     module_level_scc
     |> List.concat_map ~f:(fun nss ->
-           let multiple_heterogeneous_modules = Set.length nss > 1 in
-           let items = Set.to_list nss |> List.concat_map ~f:items_of_ns in
-           if multiple_heterogeneous_modules then fresh_module_for items
-           else items)
+        let multiple_heterogeneous_modules = Set.length nss > 1 in
+        let items = Set.to_list nss |> List.concat_map ~f:items_of_ns in
+        if multiple_heterogeneous_modules then fresh_module_for items else items)
 
   let recursive_bundles (items : item list) : item list list * item list =
     let g = ItemGraph.of_items ~original_items:items items in

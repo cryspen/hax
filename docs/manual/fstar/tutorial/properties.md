@@ -72,7 +72,7 @@ zero. -->
 The proof for the code above uses the Z3 SMT solver to prove the
 post-condition.  Since the SMT solver needs to reason about non-linear
 arithmetic (multiplication, modulus, division) it needs more
-resources, hence we bump up the `rlimit` to 100 in an annotation above
+resources, hence we bump up the `rlimit` to 500 in an annotation above
 the function. With this annotation F\* and Z3 are able to automatically
 verify this function. However, it is worth noting that the heuristic
 strategies used by Z3 for non-linear arithmetic may sometimes fail to
@@ -125,7 +125,7 @@ property about both of them. Better, we want this property to be
 stated directly in Rust: just as with pre and post-conditions, the
 Rust sources should clearly state what is to be proven.
 
-To this end, Hax provides a macro `lemma`. Below, the Rust function
+To this end, hax provides a macro `lemma`. Below, the Rust function
 `encrypt_decrypt_identity` takes a key and a plaintext, and then
 states the inverse property. The body is empty: the details of the
 proof itself are not relevant, at this stage, we only care about the

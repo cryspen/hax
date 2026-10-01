@@ -179,12 +179,16 @@ pub struct ImplExpr {
     pub r#impl: ImplExprAtom,
 }
 
-/// Given a clause `clause` in the context of some impl block `impl_did`, susbts correctly `Self`
-/// from `clause` and (1) derive a `Clause` and (2) resolve an `ImplExpr`.
+/// Given a clause `clause` declared on `item_did`'s counterpart in the trait that `impl_did`
+/// implements, substitutes the impl's arguments into it and (1) derives a `Clause` and (2)
+/// resolves an `ImplExpr`. `item_did` is `impl_did` itself for a clause of the trait, or one of
+/// the impl's associated items for a clause of that item; the latter appends a generic associated
+/// type's own parameters, which is the arity the declared clause expects.
 #[cfg(feature = "rustc")]
 pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     impl_did: rustc_span::def_id::DefId,
+    item_did: rustc_span::def_id::DefId,
     clause: rustc_middle::ty::Clause<'tcx>,
     span: rustc_span::Span,
 ) -> Option<(Clause, ImplExpr, Span)> {
@@ -195,15 +199,19 @@ pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
     ) {
         return None;
     }
-    let impl_trait_ref =
-        rustc_middle::ty::Binder::dummy(tcx.impl_trait_ref(impl_did).instantiate_identity());
+    let impl_trait_ref = tcx.impl_trait_ref(impl_did).instantiate_identity();
     let original_predicate_id = {
         // We don't want the id of the substituted clause id, but the
         // original clause id (with, i.e., `Self`)
-        let s = &s.with_owner_id(impl_trait_ref.def_id());
+        let s = &s.with_owner_id(impl_trait_ref.def_id);
         clause.sinto(s).id
     };
-    let new_clause = clause.instantiate_supertrait(tcx, impl_trait_ref);
+    let args = ty::GenericArgs::identity_for_item(tcx, item_did).rebase_onto(
+        tcx,
+        impl_did,
+        impl_trait_ref.args,
+    );
+    let new_clause = ty::EarlyBinder::bind(clause).instantiate(tcx, args);
     let impl_expr = solve_trait(
         s,
         new_clause

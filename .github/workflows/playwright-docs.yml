@@ -5,11 +5,19 @@ on:
   workflow_dispatch:
 jobs:
   test:
-    timeout-minutes: 45
+    if: github.repository == 'cryspen/hax'
+    permissions:
+      contents: read
+      issues: write
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
     - uses: DeterminateSystems/determinate-nix-action@v3
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
     - uses: actions/setup-node@v5
       with:
         node-version: lts/*
@@ -20,7 +28,11 @@ jobs:
       working-directory: docs/.test
       run: npx playwright install --with-deps
     - name: Replace version with commit hash
-      run: sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"${GITHUB_SHA}\";/" hax_playground.js
+      run: |
+        js=hax_playground.js
+        grep -q 'const HAX_PLAYGROUND_FORCED_VERSION = false;' "$js" \
+          || { echo "::error::no HAX_PLAYGROUND_FORCED_VERSION line to replace in $js"; exit 1; }
+        sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"${GITHUB_SHA}\";/" "$js"
       working-directory: docs/javascripts
     - name: Playground warmup and build docs
       run: |
@@ -40,10 +52,22 @@ jobs:
         exit ${exit_code1:-0} || exit ${exit_code2:-0}
     - name: Run Playwright tests
       working-directory: docs/.test
-      run: npx playwright test --reporter github,html --trace on 
+      run: npx playwright test --reporter github,html
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
         path: docs/.test/playwright-report/
         retention-days: 30
+    - name: Open an issue on failure
+      if: failure() && github.event_name == 'schedule'
+      uses: ./.github/actions/open-issue-once
+      env:
+        GH_TOKEN: ${{ github.token }}
+      with:
+        label: tests
+        title: Scheduled Playwright docs tests are failing
+        body: |-
+          The scheduled [Playwright Docs Tests](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
+
+          Download the `playwright-report` artifact from that run to see which checks failed.

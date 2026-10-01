@@ -26,11 +26,6 @@
  (modules native_driver)
  (libraries lib))
 
-; The following line is commented: by default, we don't want to
-; generate javascript.
-
-; (include dune-js)
-
 (env
  (_
   (flags

@@ -1,0 +1,2 @@
+[scenario.loop-equivalence]
+backend = "lean"

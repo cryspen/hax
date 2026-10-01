@@ -1,67 +1,42 @@
-mod hax_paths;
-mod impl_fn_decoration;
-mod quote;
-mod rewrite_self;
-mod syn_ext;
-mod utils;
+//! Implementations of the proc-macros that are too big to sit next to their
+//! documentation in `lib.rs`, and the machinery they share.
 
-mod prelude {
-    pub use crate::hax_paths::*;
-    pub use crate::syn_ext::*;
-    pub use proc_macro as pm;
-    pub use proc_macro_error2::*;
-    pub use proc_macro2::*;
-    pub use quote::*;
-    pub use std::collections::HashSet;
-    pub use syn::spanned::Spanned;
-    pub use syn::{visit_mut::VisitMut, *};
+use crate::impl_fn_decoration::*;
+use crate::prelude::*;
+use crate::rewrite_self::SelfProjection;
+use crate::utils::*;
 
-    pub use AttrPayload::Language as AttrHaxLang;
-    pub use hax_lib_macros_types::*;
-    pub type FnLike = syn::ImplItemFn;
+/// Reports a compile error at `$span` and returns from the enclosing
+/// proc-macro function. The message is either a single value or a `format!`
+/// string with arguments. `$span` may be a `proc_macro::Span` or a
+/// `proc_macro2::Span`.
+macro_rules! abort {
+    ($span:expr, $fmt:literal, $($arg:expr),+ $(,)?) => {
+        return ::syn::Error::new($span.into(), format!($fmt, $($arg),+))
+            .to_compile_error()
+            .into()
+    };
+    ($span:expr, $msg:expr $(,)?) => {
+        return ::syn::Error::new($span.into(), $msg)
+            .to_compile_error()
+            .into()
+    };
 }
 
-use impl_fn_decoration::*;
-use prelude::*;
-use utils::*;
-
-/// When extracting to F*, wrap this item in `#push-options "..."` and
-/// `#pop-options`.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn fstar_options(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let lit_str = parse_macro_input!(attr as LitStr);
-    let payload = format!(r#"#push-options "{}""#, lit_str.value());
-    let payload = LitStr::new(&payload, lit_str.span());
-    quote! {
-        #[::hax_lib::fstar::before(#payload)]
-        #[::hax_lib::fstar::after(r#"#pop-options"#)]
-        #item
-    }
-    .into()
+/// Like [`abort!`], but reports the error at the macro call site.
+macro_rules! abort_call_site {
+    ($fmt:literal, $($arg:expr),+ $(,)?) => {
+        return ::syn::Error::new(::proc_macro2::Span::call_site(), format!($fmt, $($arg),+))
+            .to_compile_error()
+            .into()
+    };
+    ($msg:expr $(,)?) => {
+        return ::syn::Error::new(::proc_macro2::Span::call_site(), $msg)
+            .to_compile_error()
+            .into()
+    };
 }
 
-/// Add an invariant to a loop which deals with an index. The
-/// invariant cannot refer to any variable introduced within the
-/// loop. An invariant is a closure that takes one argument, the
-/// index, and returns a proposition.
-///
-/// Note that loop invariants are unstable (this will be handled in a
-/// better way in the future, see
-/// https://github.com/hacspec/hax/issues/858) and only supported on
-/// specific `for` loops with specific iterators:
-///
-///  - `for i in start..end {...}`
-///  - `for i in (start..end).step_by(n) {...}`
-///  - `for i in slice.enumerate() {...}`
-///  - `for i in slice.chunks_exact(n).enumerate() {...}`
-///
-/// This function must be called on the first line of a loop body to
-/// be effective. Note that in the invariant expression, `forall`,
-/// `exists`, and `BACKEND!` (`BACKEND` can be `fstar`, `proverif`,
-/// `coq`...) are in scope.
-#[proc_macro]
 pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
     let predicate2: TokenStream = predicate.clone().into();
     let predicate_expr: syn::Expr = parse_macro_input!(predicate);
@@ -86,12 +61,6 @@ pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
     ts
 }
 
-/// Must be used to prove termination of while loops. This takes an
-/// expression that should be a usize that decreases at every iteration
-///
-/// This function must be called just after `loop_invariant`, or at the first
-/// line of the loop if there is no invariant.
-#[proc_macro]
 pub fn loop_decreases(predicate: pm::TokenStream) -> pm::TokenStream {
     let predicate: TokenStream = predicate.into();
     let ts: pm::TokenStream = quote! {
@@ -108,11 +77,6 @@ pub fn loop_decreases(predicate: pm::TokenStream) -> pm::TokenStream {
     ts
 }
 
-/// When extracting to F*, inform about what is the current
-/// verification status for an item. It can either be `lax` or
-/// `panic_free`.
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn fstar_verification_status(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let action = format!("{}", parse_macro_input!(attr as Ident));
     match action.as_str() {
@@ -151,47 +115,9 @@ pub fn fstar_verification_status(attr: pm::TokenStream, item: pm::TokenStream) -
                 #item
             }
         }
-        _ => abort_call_site!(format!("Expected `lax` or `panic_free`")),
+        _ => abort_call_site!("Expected `lax` or `panic_free`"),
     }
     .into()
-}
-
-/// Postprocess an item with a given tactic. This macro takes the tactic in
-/// parameter: this may be a Rust identifier or a raw snippet of F* code as a
-/// string literal.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn fstar_postprocess_with(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let payload: String = if let Ok(s) = syn::parse::<LitStr>(attr.clone()) {
-        s.value()
-    } else {
-        let e = parse_macro_input!(attr as Expr);
-        format!(" ${{ {} }} ", e.to_token_stream())
-    };
-    let payload = format!("[@@FStar.Tactics.postprocess_with ({payload})]");
-    let payload: Lit = Lit::Str(syn::LitStr::new(&payload, Span::call_site()));
-    quote! {#[::hax_lib::fstar::before(#payload)] #item}.into()
-}
-
-/// Include this item in the Hax translation. This overrides any exclusion resulting of `-i` flag.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn include(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let _ = parse_macro_input!(attr as parse::Nothing);
-    let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: false });
-    quote! {#attr #item}.into()
-}
-
-/// Exclude this item from the Hax translation.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn exclude(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let _ = parse_macro_input!(attr as parse::Nothing);
-    let attr = AttrPayload::ItemStatus(ItemStatus::Excluded { modeled_by: None });
-    quote! {#attr #item}.into()
 }
 
 /*
@@ -210,7 +136,6 @@ TODO: no support in any backends (see #297)
 ///   println!("{}", line)
 /// }
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn modeled_by(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     use quote::ToTokens;
@@ -223,30 +148,6 @@ pub fn modeled_by(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
 }
 */
 
-/// Mark a `Proof<{STATEMENT}>`-returning function as a lemma, where
-/// `STATEMENT` is a `Prop` expression capturing any input
-/// variable.
-/// In the backends, this will generate a lemma with an empty proof.
-///
-/// # Example
-///
-/// ```
-/// use hax_lib_macros::*;
-// #[decreases((m, n))] (TODO: see #297)
-/// pub fn ackermann(m: u64, n: u64) -> u64 {
-///     match (m, n) {
-///         (0, _) => n + 1,
-///         (_, 0) => ackermann(m - 1, 1),
-///         _ => ackermann(m - 1, ackermann(m, n - 1)),
-///     }
-/// }
-///
-/// #[lemma]
-/// /// $`\forall n \in \mathbb{N}, \textrm{ackermann}(2, n) = 2 (n + 3) - 3`$
-/// pub fn ackermann_property_m1(n: u64) -> Proof<{ ackermann(2, n) == 2 * (n + 3) - 3 }> {}
-/// ```
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn lemma(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let mut item: syn::ItemFn = parse_macro_input!(item as ItemFn);
     use syn::{GenericArgument, PathArguments, ReturnType, spanned::Spanned};
@@ -305,120 +206,6 @@ pub fn lemma(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     )
 }
 
-/// Provide a measure for a function: this measure will be used once
-/// extracted in a backend for checking termination. The expression
-/// that decreases can be of any type. (TODO: this is probably as it
-/// is true only for F*, see #297)
-///
-/// # Example
-///
-/// ```
-/// use hax_lib_macros::*;
-/// #[decreases((m, n))]
-/// pub fn ackermann(m: u64, n: u64) -> u64 {
-///     match (m, n) {
-///         (0, _) => n + 1,
-///         (_, 0) => ackermann(m - 1, 1),
-///         _ => ackermann(m - 1, ackermann(m, n - 1)),
-///     }
-/// }
-/// ```
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) = make_fn_decoration(
-        phi,
-        item.sig.clone(),
-        FnDecorationKind::Decreases,
-        None,
-        None,
-    );
-    quote! {#requires #attr #item}.into()
-}
-
-/// Allows to add SMT patterns to a lemma.
-/// For more informations about SMT patterns, please take a look here: https://fstar-lang.org/tutorial/book/under_the_hood/uth_smt.html#designing-a-library-with-smt-patterns.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) =
-        make_fn_decoration(phi, item.sig.clone(), FnDecorationKind::SMTPat, None, None);
-    quote! {#requires #attr #item}.into()
-}
-
-/// Add a logical precondition to a function.
-// Note you can use the `forall` and `exists` operators. (TODO: commented out for now, see #297)
-/// In the case of a function that has one or more `&mut` inputs, in
-/// the `ensures` clause, you can refer to such an `&mut` input `x` as
-/// `x` for its "past" value and `future(x)` for its "future" value.
-///
-/// You can use the (unqualified) macro `fstar!` (`BACKEND!` for any
-/// backend `BACKEND`) to inline F* (or Coq, ProVerif, etc.) code in
-/// the precondition, e.g. `fstar!("true")`.
-///
-/// # Example
-///
-/// ```
-/// use hax_lib_macros::*;
-/// #[requires(x.len() == y.len())]
-// #[requires(x.len() == y.len() && forall(|i: usize| i >= x.len() || y[i] > 0))] (TODO: commented out for now, see #297)
-/// pub fn div_pairwise(x: Vec<u64>, y: Vec<u64>) -> Vec<u64> {
-///     x.iter()
-///         .copied()
-///         .zip(y.iter().copied())
-///         .map(|(x, y)| x / y)
-///         .collect()
-/// }
-/// ```
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) = make_fn_decoration(
-        phi.clone(),
-        item.sig.clone(),
-        FnDecorationKind::Requires,
-        None,
-        None,
-    );
-    let mut item_with_debug = item.clone();
-    item_with_debug
-        .block
-        .stmts
-        .insert(0, parse_quote! {debug_assert!(#phi);});
-    quote! {
-        #requires #attr
-        // TODO: disable `assert!`s for now (see #297)
-        #item
-        // #[cfg(    all(not(#HaxCfgOptionName),     debug_assertions )) ] #item_with_debug
-        // #[cfg(not(all(not(#HaxCfgOptionName),     debug_assertions )))] #item
-    }
-    .into()
-}
-
-/// Add a logical postcondition to a function. Note you can use the
-/// `forall` and `exists` operators.
-///
-/// You can use the (unqualified) macro `fstar!` (`BACKEND!` for any
-/// backend `BACKEND`) to inline F* (or Coq, ProVerif, etc.) code in
-/// the postcondition, e.g. `fstar!("true")`.
-///
-/// # Example
-///
-/// ```
-/// use hax_lib_macros::*;
-/// #[ensures(|result| result == x * 2)]
-/// pub fn twice(x: u64) -> u64 {
-///     x + x
-/// }
-/// ```
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ExprClosure1 {
         arg: ret_binder,
@@ -427,8 +214,16 @@ pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     let item: FnLike = parse_macro_input!(item);
     let kind = FnDecorationKind::Ensures {
         ret_binder: ret_binder.clone(),
+        by_ref: false,
     };
-    let (ensures, attr) = make_fn_decoration(phi.clone(), item.sig.clone(), kind, None, None);
+    let (ensures, attr) = make_fn_decoration(
+        phi.clone(),
+        item.sig.clone(),
+        kind,
+        None,
+        None,
+        SelfProjection::Unknown,
+    );
     let mut item_with_debug = item.clone();
     let body = item.block.clone();
     item_with_debug.block.stmts =
@@ -443,6 +238,31 @@ pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     .into()
 }
 
+pub fn ensures_ref(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let ExprClosure1 {
+        arg: ret_binder,
+        body: phi,
+    } = parse_macro_input!(attr);
+    let item: FnLike = parse_macro_input!(item);
+    let kind = FnDecorationKind::Ensures {
+        ret_binder: ret_binder.clone(),
+        by_ref: true,
+    };
+    let (ensures, attr) = make_fn_decoration(
+        phi.clone(),
+        item.sig.clone(),
+        kind,
+        None,
+        None,
+        SelfProjection::Unknown,
+    );
+    quote! {
+        #ensures #attr
+        #item
+    }
+    .into()
+}
+
 mod kw {
     syn::custom_keyword!(hax_lib);
     syn::custom_keyword!(decreases);
@@ -451,41 +271,53 @@ mod kw {
     syn::custom_keyword!(refine);
 }
 
-/// Internal macro for dealing with function decorations
-/// (`#[decreases(...)]`, `#[ensures(...)]`, `#[requires(...)]`) on
-/// `fn` items within an `impl` block. There is special handling since
-/// such functions might have a `self` argument: in such cases, we
-/// rewrite function decorations as `#[impl_fn_decoration(<KIND>,
-/// <GENERICS>, <WHERE CLAUSE>, <SELF TYPE>, <BODY>)]`.
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ImplFnDecoration {
         kind,
         phi,
         generics,
         self_ty,
+        self_trait,
     } = parse_macro_input!(attr);
     let mut item: FnLike = parse_macro_input!(item);
-    let (decoration, attr) =
-        make_fn_decoration(phi, item.sig.clone(), kind, Some(generics), Some(self_ty));
+    let projection = match self_trait {
+        Some(trait_) => SelfProjection::Trait(trait_),
+        None => SelfProjection::Unknown,
+    };
+    let (decoration, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        kind,
+        Some(generics),
+        Some(self_ty),
+        projection,
+    );
     let decoration = Stmt::Item(Item::Verbatim(decoration));
     item.block.stmts.insert(0, decoration);
     quote! {#attr #item}.into()
 }
 
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ImplFnDecoration {
         kind,
         phi,
         generics,
         self_ty,
+        self_trait,
     } = parse_macro_input!(attr);
     let mut item: syn::TraitItemFn = parse_macro_input!(item);
-    let (decoration, attr) =
-        make_fn_decoration(phi, item.sig.clone(), kind, Some(generics), Some(self_ty));
+    let projection = match self_trait {
+        Some(_) => SelfProjection::Unsupported,
+        None => SelfProjection::Unknown,
+    };
+    let (decoration, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        kind,
+        Some(generics),
+        Some(self_ty),
+        projection,
+    );
     let decoration = Stmt::Item(Item::Verbatim(decoration));
     item.sig
         .generics
@@ -496,53 +328,35 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     quote! {#attr #item}.into()
 }
 
-/// Enable the following attrubutes in the annotated item and sub-items.
-///
-/// ### `refine` (on a field in a struct)
-/// Refine a type with a logical formula.
-///
-/// ### `order` (on a field in a struct or an enum)
-/// Reorders a field in the extracted code.
-///
-/// Rust fields order matters for bit-level representation. Similarly, in some
-/// situations, fields order matters in the backends: for instance in F*, one
-/// may refine a field with a formula referring to a later field.
-///
-/// Those two orders may conflict. Adding `#[hax_lib::order(n)]` on a field with
-/// override its order at extraction time.
-///
-/// By default, the order of a field is its index, e.g. the first field has
-/// order 0, the i-th field has order i+1.
-///
-/// ### `decreases`, `ensures` and `requires` (on a `fn` in an `impl`)
-/// `decreases`, `ensures`, `requires`: behave exactly as documented above on
-/// the proc attributes of the same name.
-///
-/// # Example
-///
-/// ```
-/// #[hax_lib_macros::attributes]
-/// mod foo {
-///     pub struct Hello {
-///         pub x: u32,
-///         #[refine(y > 3)]
-///         pub y: u32,
-///         #[refine(y + x + z > 3)]
-///         pub z: u32,
-///     }
-///     impl Hello {
-///         fn sum(&self) -> u32 {
-///             self.x + self.y + self.z
-///         }
-///         #[ensures(|result| result - n == self.sum())]
-///         fn plus(self, n: u32) -> u32 {
-///             self.sum() + n
-///         }
-///     }
-/// }
-/// ```
-#[proc_macro_error]
-#[proc_macro_attribute]
+/// The disjunction of `preds`, where `None` stands for an always enabled
+/// predicate.
+fn any_of(preds: impl IntoIterator<Item = Option<Meta>>) -> Option<Meta> {
+    let preds = preds.into_iter().collect::<Option<Vec<_>>>()?;
+    Some(parse_quote! {any(#(#preds),*)})
+}
+
+/// An error raised when two of the `attr`s of a field are enabled at once,
+/// given the predicates of their `cfg_attr` wrappers.
+fn overlap_error(span: Span, cfgs: &[Option<Meta>], attr: &str) -> Option<TokenStream> {
+    if cfgs.len() < 2 {
+        return None;
+    }
+    let pairs = (0..cfgs.len())
+        .flat_map(|j| (0..j).map(move |i| (i, j)))
+        .map(|(i, j)| match (&cfgs[i], &cfgs[j]) {
+            (None, None) => None,
+            (a, b) => {
+                let preds = a.iter().chain(b);
+                Some(parse_quote! {all(#(#preds),*)})
+            }
+        });
+    let message = format!("At most one `{attr}` may be enabled per field.");
+    Some(gated_error(
+        Error::new(span, message),
+        any_of(pairs).as_ref(),
+    ))
+}
+
 pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
 
@@ -555,106 +369,202 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
     impl VisitMut for AttrVisitor {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             let span = item.span();
+            let self_trait = self_trait_path(item);
+            let (trait_generics, supertraits) = (item.generics.clone(), item.supertraits.clone());
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
-                    for attr in &mut fun.attrs {
-                        let Meta::List(ml) = attr.meta.clone() else {
-                            continue;
-                        };
-                        let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                            continue;
+                    let sig = fun.sig.clone();
+                    let extra_items = &mut self.extra_items;
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                        let Some((ml, decoration)) = as_hax_meta(meta, DECORATION_KINDS) else {
+                            return true;
                         };
                         let decoration = syn::Ident::new(&decoration, ml.path.span());
 
-                        let mut generics = item.generics.clone();
+                        let mut generics = trait_generics.clone();
+                        // `Self_` needs the trait itself among its bounds, not
+                        // just the supertraits, else `Self::Assoc` has nothing
+                        // to resolve against (#2089).
+                        let mut bounds = supertraits.clone();
+                        bounds.push(TypeParamBound::Trait(TraitBound {
+                            paren_token: None,
+                            modifier: TraitBoundModifier::None,
+                            lifetimes: None,
+                            path: self_trait.clone(),
+                        }));
                         let predicate = WherePredicate::Type(PredicateType {
                             lifetimes: None,
                             bounded_ty: parse_quote! {Self_},
                             colon_token: Token![:](span),
-                            bounds: item.supertraits.clone(),
+                            bounds,
                         });
                         let mut where_clause = generics
                             .where_clause
                             .clone()
                             .unwrap_or(parse_quote! {where});
-                        where_clause.predicates.push(predicate.clone());
-                        generics.where_clause = Some(where_clause.clone());
+                        where_clause.predicates.push(predicate);
+                        generics.where_clause = Some(where_clause);
                         let self_ty: Type = parse_quote! {Self_};
                         let tokens = ml.tokens.clone();
                         let generics = merge_generics(parse_quote! {<Self_>}, generics);
                         let ImplFnDecoration {
                             kind, phi, self_ty, ..
-                        } = parse_quote! {#decoration, #generics, where, #self_ty, #tokens};
+                        } = match syn::parse2(
+                            quote! {#decoration, #generics, where, #self_ty, #tokens},
+                        ) {
+                            Ok(decoration) => decoration,
+                            Err(error) => {
+                                extra_items.push(gated_error(error, cfg));
+                                return false;
+                            }
+                        };
                         let (decoration, relation_attr) = make_fn_decoration(
                             phi,
-                            fun.sig.clone(),
+                            sig.clone(),
                             kind,
                             Some(generics),
                             Some(self_ty),
+                            SelfProjection::TypeParam,
                         );
-                        *attr = parse_quote! {#relation_attr};
-                        self.extra_items.push(decoration);
-                    }
+                        // Replacing the meta (and not the whole attribute) keeps any
+                        // enclosing `cfg_attr` wrapper: the relation attribute and the
+                        // sibling item below appear under the very same conditions.
+                        let relation_attr: Attribute = parse_quote! {#relation_attr};
+                        *meta = relation_attr.meta;
+                        extra_items.push(cfg_gate(decoration, cfg));
+                        true
+                    });
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
         }
         fn visit_type_mut(&mut self, _type: &mut Type) {}
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
+            let (generics, self_ty) = (item.generics.clone(), item.self_ty.clone());
+            // The trait implemented by this block, if any: it qualifies the
+            // `Self::Assoc` projections of the decorated methods.
+            let as_trait = item
+                .trait_
+                .as_ref()
+                .and_then(|(not, path, _)| not.is_none().then(|| quote! {as #path}));
+            // Only the associated types this block defines can be qualified.
+            let assoc: Vec<String> = item
+                .items
+                .iter()
+                .filter_map(|item| match item {
+                    ImplItem::Type(ty) => Some(ty.ident.to_string()),
+                    _ => None,
+                })
+                .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    for attr in fun.attrs.iter_mut() {
-                        if let Meta::List(ml) = &mut attr.meta {
-                            let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                                continue;
-                            };
-                            let decoration = syn::Ident::new(&decoration, ml.path.span());
-                            let tokens = ml.tokens.clone();
-                            let (generics, self_ty) = (&item.generics, &item.self_ty);
-                            let where_clause = &generics.where_clause;
-                            ml.tokens =
-                                quote! {#decoration, #generics, #where_clause, #self_ty, #tokens};
-                            ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
+                    let (sig, mut error, mut cfgs) = (&fun.sig, None, vec![]);
+                    retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                        let Some((ml, decoration)) = as_hax_meta(meta, DECORATION_KINDS) else {
+                            return true;
+                        };
+                        // On an error, drop the specifications: generating
+                        // them would pile rustc errors on top of ours. The
+                        // error is raised whenever one of them is enabled.
+                        if error
+                            .get_or_insert_with(|| foreign_self_projection_error(sig, &assoc))
+                            .is_some()
+                        {
+                            cfgs.push(cfg.cloned());
+                            return false;
                         }
+                        let decoration = syn::Ident::new(&decoration, ml.path.span());
+                        let args = impl_fn_decoration_args(
+                            &decoration,
+                            &generics,
+                            &self_ty,
+                            &as_trait,
+                            &ml.tokens,
+                        );
+                        *meta = parse_quote! {::hax_lib::impl_fn_decoration(#args)};
+                        true
+                    });
+                    if let Some(Some(error)) = error {
+                        self.extra_items
+                            .push(cfg_gate(error, any_of(cfgs).as_ref()));
                     }
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
         }
-        fn visit_fields_named_mut(&mut self, fields_named: &mut FieldsNamed) {
-            visit_mut::visit_fields_named_mut(self, fields_named);
-
-            fn handle_reorder_attribute(attrs: &mut [Attribute], errors: &mut Vec<TokenStream>) {
-                let Some((attr, order)) = attrs.iter_mut().find_map(|attr| {
-                    if let Ok(Some(_)) = expects_order(attr.path()) {
-                        let lit: LitInt = attr.parse_args().ok()?;
-                        Some((attr, lit))
-                    } else {
-                        None
-                    }
-                }) else {
-                    return;
-                };
-
-                let Ok(n) = order.base10_parse() else {
-                    errors.push(parse_quote!{const _: () = {compile_error!("Expected a (base 10) i32 literal.")};});
-                    return;
-                };
-                let payload = AttrPayload::Order(n);
-                *attr = parse_quote!(#payload);
+        fn visit_fields_named_mut(&mut self, fields: &mut FieldsNamed) {
+            visit_mut::visit_fields_named_mut(self, fields);
+            for field in fields.named.iter_mut() {
+                let span = field.span();
+                let errors = &mut self.extra_items;
+                let mut cfgs = vec![];
+                retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                    let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
+                        return true;
+                    };
+                    let n = match syn::parse2::<LitInt>(ml.tokens.clone())
+                        .and_then(|lit| lit.base10_parse())
+                    {
+                        Ok(n) => n,
+                        Err(_) => {
+                            let message = "Expected a (base 10) i32 literal.";
+                            errors.push(gated_error(Error::new_spanned(&ml.tokens, message), cfg));
+                            return false;
+                        }
+                    };
+                    cfgs.push(cfg.cloned());
+                    let payload = AttrPayload::Order(n);
+                    let payload: Attribute = parse_quote!(#payload);
+                    *meta = payload.meta;
+                    true
+                });
+                errors.extend(overlap_error(span, &cfgs, "order"));
             }
-
-            for field in &mut fields_named.named {
-                handle_reorder_attribute(&mut field.attrs, &mut self.extra_items);
+        }
+        fn visit_fields_unnamed_mut(&mut self, fields: &mut FieldsUnnamed) {
+            visit_mut::visit_fields_unnamed_mut(self, fields);
+            for field in fields.unnamed.iter_mut() {
+                let errors = &mut self.extra_items;
+                retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                    let Some((ml, _)) = as_hax_meta(meta, &["order"]) else {
+                        return true;
+                    };
+                    let message = "`order` is only supported on named fields.";
+                    errors.push(gated_error(Error::new_spanned(&ml.path, message), cfg));
+                    false
+                });
             }
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
 
-            let mut extra: Vec<Item> = vec![];
+            let mut extra: Vec<TokenStream> = vec![];
             match item {
                 Item::Struct(s) => {
                     let only_one_field = s.fields.len() == 1;
+                    // The generated `refinement` functions need the generics of
+                    // the struct in scope: a field type may mention a generic
+                    // parameter (e.g. a `const LEN: usize` used in `[u8; LEN]`).
+                    // We strip any defaults since those are not allowed on
+                    // function generics. Unused generics are fine on functions.
+                    let generics = {
+                        let mut generics = s.generics.clone();
+                        for param in generics.params.iter_mut() {
+                            match param {
+                                GenericParam::Type(p) => {
+                                    p.eq_token = None;
+                                    p.default = None;
+                                }
+                                GenericParam::Const(p) => {
+                                    p.eq_token = None;
+                                    p.default = None;
+                                }
+                                GenericParam::Lifetime(_) => {}
+                            }
+                        }
+                        generics
+                    };
+                    let where_clause = generics.where_clause.clone();
                     let idents: Vec<_> = s
                         .fields
                         .iter()
@@ -669,45 +579,57 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         })
                         .collect();
                     for (i, field) in s.fields.iter_mut().enumerate() {
-                        let prev = &idents[0..=i];
-                        let refine: Option<(&mut Attribute, Expr)> =
-                            field.attrs.iter_mut().find_map(|attr| {
-                                if let Ok(Some(_)) = expects_refine(attr.path()) {
-                                    let payload = attr.parse_args().ok()?;
-                                    Some((attr, payload))
-                                } else {
-                                    None
+                        let mut binders = None;
+                        let span = field.span();
+                        let mut cfgs = vec![];
+                        retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                            let Some((ml, _)) = as_hax_meta(meta, &["refine"]) else {
+                                return true;
+                            };
+                            let refine = match syn::parse2::<Expr>(ml.tokens.clone()) {
+                                Ok(refine) => refine,
+                                Err(error) => {
+                                    extra.push(gated_error(error, cfg));
+                                    return false;
                                 }
+                            };
+                            cfgs.push(cfg.cloned());
+                            let binders: &TokenStream = binders.get_or_insert_with(|| {
+                                idents[0..=i]
+                                    .iter()
+                                    .map(|(name, ty)| quote! {#name: #ty, })
+                                    .collect()
                             });
-                        if let Some((attr, refine)) = refine {
-                            let binders: TokenStream = prev
-                                .iter()
-                                .map(|(name, ty)| quote! {#name: #ty, })
-                                .collect();
                             let uid = ItemUid::fresh();
-                            let uid_attr = AttrPayload::Uid(uid.clone());
                             let assoc_attr = AttrPayload::AssociatedItem {
                                 role: AssociationRole::Refine,
-                                item: uid,
+                                item: uid.clone(),
                             };
-                            *attr = syn::parse_quote! { #assoc_attr };
+                            let assoc_attr: Attribute = parse_quote! { #assoc_attr };
+                            *meta = assoc_attr.meta;
+                            let uid_attr = AttrPayload::Uid(uid);
                             let status_attr =
                                 &AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
-                            extra.push(syn::parse_quote! {
-                                #[cfg(#HaxCfgOptionName)]
-                                #status_attr
-                                const _: () = {
-                                    #uid_attr
+                            extra.push(cfg_gate(
+                                quote! {
+                                    #[cfg(#HaxCfgOptionName)]
                                     #status_attr
-                                    fn refinement(#binders) -> ::hax_lib::Prop { ::hax_lib::Prop::from(#refine) }
-                                };
-                            })
-                        }
+                                    const _: () = {
+                                        #uid_attr
+                                        #status_attr
+                                        fn refinement #generics (#binders) -> ::hax_lib::Prop #where_clause { ::hax_lib::Prop::from(#refine) }
+                                    };
+                                },
+                                cfg,
+                            ));
+                            true
+                        });
+                        extra.extend(overlap_error(span, &cfgs, "refine"));
                     }
                 }
                 _ => (),
             }
-            let extra: TokenStream = extra.iter().map(|extra| quote! {#extra}).collect();
+            let extra: TokenStream = extra.into_iter().collect();
             *item = Item::Verbatim(quote! {#extra #item});
         }
     }
@@ -720,99 +642,17 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
     quote! { #item #(#extra_items)* }.into()
 }
 
-/// Mark an item opaque: the extraction will assume the
-/// type without revealing its definition.
-#[proc_macro_error]
-#[proc_macro_attribute]
-#[deprecated(note = "Please use 'opaque' instead")]
 pub fn opaque_type(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     opaque(attr, item)
 }
 
-/// Mark an item opaque: the extraction will assume the
-/// type without revealing its definition.
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
     let attr = AttrPayload::Erased;
-    quote! {#attr #item}.into()
+    let charon = charon_attr(quote! {opaque});
+    quote! {#attr #charon #item}.into()
 }
 
-/// Mark an item transparent: the extraction will not
-/// make it opaque regardless of the `-i` flag default.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn transparent(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: Item = parse_macro_input!(item);
-    let attr = AttrPayload::NeverErased;
-    quote! {#attr #item}.into()
-}
-
-/// A marker indicating a `fn` as a ProVerif process read.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn process_read(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProcessRead;
-    quote! {#attr #item}.into()
-}
-
-/// A marker indicating a `fn` as a ProVerif process write.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn process_write(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProcessWrite;
-    quote! {#attr #item}.into()
-}
-
-/// A marker indicating a `fn` as a ProVerif process initialization.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn process_init(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProcessInit;
-    quote! {#attr #item}.into()
-}
-
-/// A marker indicating an `enum` as describing the protocol messages.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn protocol_messages(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemEnum = parse_macro_input!(item);
-    let attr = AttrPayload::ProtocolMessages;
-    quote! {#attr #item}.into()
-}
-
-/// A marker indicating a `fn` should be automatically translated to a ProVerif constructor.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn pv_constructor(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::PVConstructor;
-    quote! {#attr #item}.into()
-}
-
-/// A marker indicating a `fn` requires manual modelling in ProVerif.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::PVHandwritten;
-    quote! {#attr #item}.into()
-}
-
-/// Create a mathematical integer. This macro expects a Rust integer
-/// literal without suffix.
-///
-/// ## Examples:
-/// - `int!(0x101010)`
-/// - `int!(42)`
-/// - `int!(0o52)`
-/// - `int!(0h2A)`
-#[proc_macro_error]
-#[proc_macro]
 pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     let n: LitInt = parse_macro_input!(payload);
     let suffix = n.suffix();
@@ -823,77 +663,17 @@ pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     quote! {::hax_lib::int::Int::_unsafe_from_str(#digits)}.into()
 }
 
-/// This macro inserts a verbatim Lean proof into the extracted code.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::Proof(payload);
-    quote! {#attr #item}.into()
-}
-
-/// This macro inserts a verbatim Lean proof showing that the `requires`-condition is panic-free.
-/// The proof is inserted into the `pureRequires` field of the Lean spec.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn lean_pure_requires_proof(
-    payload: pm::TokenStream,
-    item: pm::TokenStream,
-) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::PureRequiresProof(payload);
-    quote! {#attr #item}.into()
-}
-
-/// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
-/// The proof is inserted into the `pureEnsures` field of the Lean spec.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::PureEnsuresProof(payload);
-    quote! {#attr #item}.into()
-}
-
-/// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
-    quote! {#attr #item}.into()
-}
-
-/// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
-#[proc_macro_error]
-#[proc_macro_attribute]
-pub fn lean_proof_method_bv_decide(
-    _attr: pm::TokenStream,
-    item: pm::TokenStream,
-) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::BvDecide);
-    quote! {#attr #item}.into()
-}
-
 macro_rules! make_quoting_item_proc_macro {
-    ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident) => {
-        #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]
-        ///
-        /// This macro takes a string literal containing backend
-        /// code. Just as backend expression macros, this literal can
-        /// contains dollar-prefixed Rust names.
-        ///
-        /// Note: when targetting F*, you can prepend a first
-        /// comma-separated argument: `interface`, `impl` or
-        /// `both`. This controls where the code will apprear: in the
-        /// `fst` or `fsti` files or both.
-        #[proc_macro_error]
-        #[proc_macro_attribute]
+    ($backend:ident, $macro_name:ident, $short_name:ident, $position:expr, $cfg_name:ident) => {
         pub fn $macro_name(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+            // On an inherent `impl` block, re-target the annotation onto one of its items.
+            {
+                let raw_payload: TokenStream = payload.clone().into();
+                let attr = quote! {#[::hax_lib::$backend::$short_name(#raw_payload)]};
+                if let Some(ts) = crate::quote::retarget_on_inherent_impl(&item, $position, attr) {
+                    return ts.into();
+                }
+            }
             let mut fstar_options = None;
             let item: TokenStream = item.into();
             let payload = {
@@ -905,10 +685,7 @@ macro_rules! make_quoting_item_proc_macro {
                         r#impl: ident_str == "impl" || ident_str == "both",
                     });
                     if !matches!(ident_str.as_str(), "impl" | "both" | "interface") {
-                        proc_macro_error2::abort!(
-                            ident.span(),
-                            "Expected `impl`, `both` or `interface`"
-                        );
+                        abort!(ident.span(), "Expected `impl`, `both` or `interface`");
                     }
                     // Consume the ident
                     let _ = tokens.next();
@@ -919,7 +696,7 @@ macro_rules! make_quoting_item_proc_macro {
                 pm::TokenStream::from_iter(tokens)
             };
 
-            let ts: TokenStream = quote::item(
+            let ts: TokenStream = crate::quote::item(
                 ItemQuote {
                     position: $position,
                     fstar_options,
@@ -936,40 +713,8 @@ macro_rules! make_quoting_item_proc_macro {
 
 macro_rules! make_quoting_proc_macro {
     ($backend:ident) => {
-        #[doc = concat!("Embed ", stringify!($backend), " expression inside a Rust expression. This macro takes only one argument: some raw ", stringify!($backend), " code as a string literal.")]
-        ///
-
-        /// While it is possible to directly write raw backend code,
-        /// sometimes it can be inconvenient. For example, referencing
-        /// Rust names can be a bit cumbersome: for example, the name
-        /// `my_crate::my_module::CONSTANT` might be translated
-        /// differently in a backend (e.g. in the F* backend, it will
-        /// probably be `My_crate.My_module.v_CONSTANT`).
-        ///
-
-        /// To facilitate this, you can write Rust names directly,
-        /// using the prefix `$`: `f $my_crate::my_module__CONSTANT + 3`
-        /// will be replaced with `f My_crate.My_module.v_CONSTANT + 3`
-        /// in the F* backend for instance.
-
-        /// If you want to refer to the Rust constructor
-        /// `Enum::Variant`, you should write `$$Enum::Variant` (note
-        /// the double dollar).
-
-        /// If the name refers to something polymorphic, you need to
-        /// signal it by adding _any_ type informations,
-        /// e.g. `${my_module::function<()>}`. The curly braces are
-        /// needed for such more complex expressions.
-
-        /// You can also write Rust patterns with the `$?{SYNTAX}`
-        /// syntax, where `SYNTAX` is a Rust pattern. The syntax
-        /// `${EXPR}` also allows any Rust expressions
-        /// `EXPR` to be embedded.
-
-        /// Types can be refered to with the syntax `$:{TYPE}`.
-        #[proc_macro]
         pub fn ${concat($backend, _expr)}(payload: pm::TokenStream) -> pm::TokenStream {
-            let ts: TokenStream = quote::expression(quote::InlineExprType::Unit, payload).into();
+            let ts: TokenStream = crate::quote::expression(crate::quote::InlineExprType::Unit, payload).into();
             quote!{{
                 #[cfg(${concat(hax_backend_, $backend)})]
                 {
@@ -978,10 +723,8 @@ macro_rules! make_quoting_proc_macro {
             }}.into()
         }
 
-        #[doc = concat!("The `Prop` version of `", stringify!($backend), "_expr`.")]
-        #[proc_macro]
         pub fn ${concat($backend, _prop_expr)}(payload: pm::TokenStream) -> pm::TokenStream {
-            let ts: TokenStream = quote::expression(quote::InlineExprType::Prop, payload).into();
+            let ts: TokenStream = crate::quote::expression(crate::quote::InlineExprType::Prop, payload).into();
             quote!{{
                 #[cfg(${concat(hax_backend_, $backend)})]
                 {
@@ -994,11 +737,8 @@ macro_rules! make_quoting_proc_macro {
             }}.into()
         }
 
-        #[doc = concat!("The unsafe (because polymorphic: even computationally relevant code can be inlined!) version of `", stringify!($backend), "_expr`.")]
-        #[proc_macro]
-        #[doc(hidden)]
         pub fn ${concat($backend, _unsafe_expr)}(payload: pm::TokenStream) -> pm::TokenStream {
-            let ts: TokenStream = quote::expression(quote::InlineExprType::Anything, payload).into();
+            let ts: TokenStream = crate::quote::expression(crate::quote::InlineExprType::Anything, payload).into();
             quote!{{
                 #[cfg(${concat(hax_backend_, $backend)})]
                 {
@@ -1007,13 +747,18 @@ macro_rules! make_quoting_proc_macro {
             }}.into()
         }
 
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, before, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, after, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
 
-        #[doc = concat!("Replaces a Rust item with some verbatim ", stringify!($backend)," code.")]
-        #[proc_macro_error]
-        #[proc_macro_attribute]
         pub fn ${concat($backend, _replace)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+            if let Ok(item_impl) = syn::parse::<ItemImpl>(item.clone()) {
+                if item_impl.trait_.is_none() {
+                    abort!(
+                        item_impl.impl_token.span(),
+                        "hax: `replace` is not supported on inherent `impl` blocks, please annotate the items of the block individually."
+                    );
+                }
+            }
             let item: TokenStream = item.into();
             let payload: TokenStream = payload.into();
             let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
@@ -1029,9 +774,6 @@ macro_rules! make_quoting_proc_macro {
             .into()
         }
 
-        #[doc = concat!("Replaces the body of a Rust function with some verbatim ", stringify!($backend)," code.")]
-        #[proc_macro_error]
-        #[proc_macro_attribute]
         pub fn ${concat($backend, _replace_body)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
             let payload: TokenStream = payload.into();
             let item: ItemFn = parse_macro_input!(item);
@@ -1055,45 +797,13 @@ macro_rules! make_quoting_proc_macro {
     }
 }
 
-make_quoting_proc_macro!(fstar coq proverif lean);
+make_quoting_proc_macro!(fstar coq proverif legacy_lean);
 
-/// Marks a newtype `struct RefinedT(T);` as a refinement type. The
-/// struct should have exactly one unnamed private field.
-///
-/// This macro takes one argument: a `Prop` proposition that refines
-/// values of type `SomeType`.
-///
-/// For example, the following type defines bounded `u64` integers.
-///
-/// ```
-/// #[hax_lib::refinement_type(|x| x >= MIN && x <= MAX)]
-/// pub struct BoundedU64<const MIN: u64, const MAX: u64>(u64);
-/// ```
-///
-/// This macro will generate an implementation of the [`Deref`] trait
-/// and of the [`hax_lib::Refinement`] type. Those two traits are
-/// the only interface to this newtype: one is allowed only to
-/// construct or destruct refined type via those smart constructors
-/// and destructors, ensuring the abstraction.
-///
-/// A refinement of a type `T` with a formula `f` can be seen as a box
-/// that contains a value of type `T` and a proof that this value
-/// satisfies the formula `f`.
-///
-/// In debug mode, the refinement will be checked at run-time. This
-/// requires the base type `T` to implement `Clone`. Pass a first
-/// parameter `no_debug_runtime_check` to disable this behavior.
-///
-/// When extracted via hax, this is interpreted in the backend as a
-/// refinement type: the use of such a type yields static proof
-/// obligations.
-#[proc_macro_error]
-#[proc_macro_attribute]
 pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let mut item = parse_macro_input!(item as syn::ItemStruct);
 
     let syn::Fields::Unnamed(fields) = &item.fields else {
-        proc_macro_error2::abort!(
+        abort!(
             item.generics.span(),
             "Expected a newtype (a struct with one unnamed field), got one or more named field"
         );
@@ -1101,14 +811,14 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     let paren_token = fields.paren_token;
     let fields = fields.unnamed.iter().collect::<Vec<_>>();
     let [field] = &fields[..] else {
-        proc_macro_error2::abort!(
+        abort!(
             item.generics.span(),
             "Expected a newtype (a struct with one unnamed field), got {} fields",
             fields.len()
         );
     };
     if !matches!(field.vis, syn::Visibility::Inherited) {
-        proc_macro_error2::abort!(field.vis.span(), "This field was expected to be private");
+        abort!(field.vis.span(), "This field was expected to be private");
     }
 
     let no_debug_assert = {
@@ -1117,10 +827,10 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
             (tokens.next(), tokens.next())
         {
             if ident.to_string() != "no_debug_runtime_check" {
-                proc_macro_error2::abort!(ident.span(), "Expected 'no_debug_runtime_check'");
+                abort!(ident.span(), "Expected 'no_debug_runtime_check'");
             }
             if comma.as_char() != ',' {
-                proc_macro_error2::abort!(ident.span(), "Expected a comma");
+                abort!(ident.span(), "Expected a comma");
             }
             attr = pm::TokenStream::from_iter(tokens);
             true
@@ -1136,6 +846,7 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
 
     let kind = FnDecorationKind::Ensures {
         ret_binder: ret_binder.clone(),
+        by_ref: false,
     };
     let sig = syn::Signature {
         constness: None,
@@ -1173,7 +884,8 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
         })
         .collect();
     let inner_ty = &field.ty;
-    let (refinement_item, refinement_attr) = make_fn_decoration(phi.clone(), sig, kind, None, None);
+    let (refinement_item, refinement_attr) =
+        make_fn_decoration(phi.clone(), sig, kind, None, None, SelfProjection::Unknown);
     let module_ident = syn::Ident::new(
         &format!("hax__autogenerated_refinement__{}", ident),
         ident.span(),
@@ -1216,7 +928,7 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
             }
 
             #[::hax_lib::exclude]
-            impl #generics ::std::ops::Deref for #ident <#generics_args> {
+            impl #generics ::core::ops::Deref for #ident <#generics_args> {
                 type Target = #inner_ty;
                 fn deref(&self) -> &Self::Target {
                     &self.0

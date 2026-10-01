@@ -10,7 +10,9 @@ result
 .DS_Store
 .depend
 .cache
+.fstar-cache
 .lake
+.hax-tests-cache
 proof-libs/fstar/rust_primitives/#*#
 **/proofs/*/extraction/*
 !**/proofs/*/extraction/Makefile
@@ -19,3 +21,12 @@ proof-libs/fstar/rust_primitives/#*#
 !**/proofs/coq/extraction/*.v
 !**/proofs/lean/extraction/lakefile.toml
 !**/proofs/rust/extraction/Cargo.toml
+**/proofs/*/*/extraction/*
+!**/proofs/*/*/extraction/Makefile
+!**/proofs/*/*/extraction/*.diff
+!**/proofs/*/fstar/extraction/*.fst
+!**/proofs/*/coq/extraction/*.v
+
+# Build copies made by `make mutants MUTANTS_JOBS=<n>`, which points TMPDIR here
+# so that the copies' `hax-lib = { path = ".." }` resolves. Removed on exit.
+/hax-lib/cargo-mutants-*.tmp/

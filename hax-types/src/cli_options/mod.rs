@@ -8,7 +8,7 @@ pub mod extension;
 use extension::Extension;
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Eq, PartialEq)]
 pub enum DebugEngineMode {
     File(PathOrDash),
     Interactive,
@@ -45,7 +45,7 @@ impl std::convert::From<&str> for ForceCargoBuild {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Eq, PartialEq)]
 pub enum PathOrDash {
     Dash,
     Path(PathBuf),
@@ -111,7 +111,7 @@ impl NormalizePaths for PathOrDash {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Hash, Clone, Eq, PartialEq)]
 pub struct ProVerifOptions {
     /// Items for which hax should extract a default-valued process
     /// macro with a corresponding type signature. This flag expects a
@@ -130,17 +130,38 @@ pub struct ProVerifOptions {
     pub assume_items: Vec<InclusionClause>,
 }
 
+impl ProVerifOptions {
+    /// The flag rendering of these options, as `cargo hax extract
+    /// --dry-run` prints it. Lives next to the fields so a new or renamed
+    /// option is reflected here.
+    pub fn flags(&self) -> Vec<String> {
+        if self.assume_items.is_empty() {
+            return Vec::new();
+        }
+        std::iter::once("--assume-items".to_string())
+            .chain(self.assume_items.iter().map(ToString::to_string))
+            .collect()
+    }
+}
+
+/// The defaults of the F* flags below, shared with
+/// [`FStarOptions::defaults`] so the two cannot diverge.
+const FSTAR_DEFAULT_Z3RLIMIT: u32 = 15;
+const FSTAR_DEFAULT_FUEL: u32 = 0;
+const FSTAR_DEFAULT_IFUEL: u32 = 1;
+const FSTAR_DEFAULT_LINE_WIDTH: u16 = 100;
+
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
-pub struct FStarOptions<E: Extension> {
+#[derive(JsonSchema, Parser, Debug, Hash, Clone, Eq, PartialEq)]
+pub struct FStarOptions {
     /// Set the Z3 per-query resource limit
-    #[arg(long, default_value = "15")]
+    #[arg(long, default_value_t = FSTAR_DEFAULT_Z3RLIMIT)]
     pub z3rlimit: u32,
     /// Number of unrolling of recursive functions to try
-    #[arg(long, default_value = "0")]
+    #[arg(long, default_value_t = FSTAR_DEFAULT_FUEL)]
     pub fuel: u32,
     /// Number of unrolling of inductive datatypes to try
-    #[arg(long, default_value = "1")]
+    #[arg(long, default_value_t = FSTAR_DEFAULT_IFUEL)]
     pub ifuel: u32,
     /// Modules for which Hax should extract interfaces (`*.fsti`
     /// files) in supplement to implementations (`*.fst` files). By
@@ -162,20 +183,144 @@ pub struct FStarOptions<E: Extension> {
     )]
     pub interfaces: Vec<InclusionClause>,
 
-    #[arg(long, default_value = "100", env = "HAX_FSTAR_LINE_WIDTH")]
+    #[arg(long, default_value_t = FSTAR_DEFAULT_LINE_WIDTH, env = "HAX_FSTAR_LINE_WIDTH")]
     pub line_width: u16,
+}
 
-    #[group(flatten)]
-    pub cli_extension: E::FStarOptions,
+impl FStarOptions {
+    /// The flags' defaults. Proof scenarios resolve absent keys to these;
+    /// environment-supplied flag defaults (`HAX_FSTAR_LINE_WIDTH`)
+    /// deliberately do not apply to scenario runs.
+    pub fn defaults() -> Self {
+        Self {
+            z3rlimit: FSTAR_DEFAULT_Z3RLIMIT,
+            fuel: FSTAR_DEFAULT_FUEL,
+            ifuel: FSTAR_DEFAULT_IFUEL,
+            interfaces: Vec::new(),
+            line_width: FSTAR_DEFAULT_LINE_WIDTH,
+        }
+    }
+
+    /// The flag rendering of these options, as `cargo hax extract
+    /// --dry-run` prints it. Lives next to the fields so a new or renamed
+    /// option is reflected here.
+    pub fn flags(&self) -> Vec<String> {
+        let mut flags = vec![
+            format!("--z3rlimit={}", self.z3rlimit),
+            format!("--fuel={}", self.fuel),
+            format!("--ifuel={}", self.ifuel),
+            format!("--line-width={}", self.line_width),
+        ];
+        if !self.interfaces.is_empty() {
+            flags.push("--interfaces".to_string());
+            flags.extend(self.interfaces.iter().map(ToString::to_string));
+        }
+        flags
+    }
+}
+
+/// The inputs a proof scenario resolves for the Lean backend, carried
+/// through the `__json` re-entry rather than argv: verbatim argument
+/// arrays (no shell splitting), the compiled item selection, and the
+/// package-layout overrides. Empty on flag-driven `into` invocations.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Debug, Clone, Hash, Eq, PartialEq, Default)]
+pub struct LeanScenarioOptions {
+    /// The Lean package name, overriding the crate-name derivation.
+    pub package_name: Option<String>,
+    /// The scenario's `project-files` key, overriding the top-level key.
+    pub project_files: Option<bool>,
+    /// Charon name patterns compiled to `--start-from`.
+    pub include: Vec<String>,
+    /// Charon name patterns compiled to `--exclude`.
+    pub exclude: Vec<String>,
+    /// Charon name patterns compiled to `--opaque`, the default opaque
+    /// set already merged in.
+    pub opaque: Vec<String>,
+    /// Verbatim extra charon arguments, one element per process argument.
+    pub charon_args: Vec<String>,
+    /// Verbatim extra aeneas arguments, one element per process argument.
+    pub aeneas_args: Vec<String>,
+    /// Cargo arguments (feature selection) for the cargo invocation
+    /// charon drives.
+    pub cargo_args: Vec<String>,
+}
+
+impl LeanScenarioOptions {
+    /// The charon flags compiled from the unified item-selection keys.
+    /// Both the real charon invocation and the `--dry-run` display use
+    /// this compilation, so the two cannot diverge.
+    pub fn selection_flags(&self) -> Vec<String> {
+        [
+            ("start-from", &self.include),
+            ("exclude", &self.exclude),
+            ("opaque", &self.opaque),
+        ]
+        .into_iter()
+        .flat_map(|(flag, patterns)| {
+            patterns
+                .iter()
+                .map(move |pattern| format!("--{flag}={pattern}"))
+        })
+        .collect()
+    }
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
-pub enum Backend<E: Extension> {
+#[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
+#[command(after_help = "\
+TOOLS:
+  This backend runs `charon`, then `aeneas`, and generates a Lean proof project.
+  Tool versions are managed by hax: each tool resolves through, in order, the
+  project's `hax.toml` (member crate, then workspace root) and the built-in
+  default version this release was tested with, and is downloaded into the
+  tool cache on demand with checksum verification.
+
+  Inspect the active versions and their sources with `cargo hax tools show`;
+  pre-install them with `cargo hax tools install`.
+
+INVOCATION:
+  The tools are run with some fixed flags (to which any --charon-args/--aeneas-args
+  are appended). Pass `-v` (`cargo hax into -v lean`) to print the exact command
+  before each tool runs.
+
+  Overriding a flag that controls where output is written (aeneas's -backend,
+  -dest, -subdir, or -split-files) may break the extraction or the generated
+  proof project. Charon's --dest-file is reserved and rejected: aeneas is always
+  run on the LLBC file hax chooses. Overriding -dest or -subdir additionally disables
+  the generation and checking of the Lean package files and the clearing of stale
+  extraction files, since hax no longer knows the package layout. Committing
+  `project-files = false` in `hax.toml` disables the package files for every
+  invocation.
+
+  To use a binary you built yourself, commit a `path` entry for the tool in
+  `hax.toml` instead of a version.")]
+pub struct LeanOptions {
+    /// Extra arguments forwarded to charon. Parsed with shell-style quoting,
+    /// so values containing spaces can be single- or double-quoted.
+    /// Example: --charon-args="--opaque '{impl Serialize for _}'"
+    #[arg(long)]
+    pub charon_args: Option<String>,
+
+    /// Extra arguments forwarded to aeneas. Parsed with shell-style quoting.
+    /// Example: --aeneas-args="-split-files"
+    #[arg(long)]
+    pub aeneas_args: Option<String>,
+
+    /// The scenario-resolved inputs; not settable from the command line.
+    #[clap(skip)]
+    pub scenario: LeanScenarioOptions,
+}
+
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Hash, Eq, PartialEq)]
+pub enum Backend {
     /// Use the F* backend
-    Fstar(FStarOptions<E>),
-    /// Use the Lean backend (warning: experimental)
-    Lean,
+    Fstar(FStarOptions),
+    /// Use the legacy Lean backend (warning: experimental)
+    LegacyLean,
+    /// Use the Lean backend (charon + aeneas pipeline)
+    Lean(LeanOptions),
     /// Use the Coq backend
     Coq,
     /// Use the SSProve backend
@@ -183,6 +328,7 @@ pub enum Backend<E: Extension> {
     /// Use the EasyCrypt backend (warning: work in progress!)
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
+    #[clap(alias("proverif"))]
     ProVerif(ProVerifOptions),
     /// Use the Rust backend (warning: work in progress!)
     #[clap(hide = true)]
@@ -198,14 +344,14 @@ pub enum Backend<E: Extension> {
     },
 }
 
-impl fmt::Display for Backend<()> {
+impl fmt::Display for Backend {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         BackendName::from(self).fmt(f)
     }
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Hash, Clone, Eq, PartialEq)]
 pub enum DepsKind {
     Transitive,
     Shallow,
@@ -213,7 +359,7 @@ pub enum DepsKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Hash, Clone, Eq, PartialEq)]
 pub enum InclusionKind {
     /// `+query` include the items selected by `query`
     Included(DepsKind),
@@ -222,7 +368,7 @@ pub enum InclusionKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Hash, Clone, Eq, PartialEq)]
 pub struct InclusionClause {
     pub kind: InclusionKind,
     pub namespace: Namespace,
@@ -278,7 +424,7 @@ pub fn parse_inclusion_clause(
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct TranslationOptions {
     /// Controls which Rust item should be extracted or not.
     ///
@@ -322,10 +468,10 @@ pub struct TranslationOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct BackendOptions<E: Extension> {
     #[command(subcommand)]
-    pub backend: Backend<E>,
+    pub backend: Backend,
 
     /// Don't write anything on disk. Output everything as JSON to stdout
     /// instead.
@@ -392,8 +538,42 @@ pub struct BackendOptions<E: Extension> {
     pub cli_extension: E::BackendOptions,
 }
 
+/// Cargo's hermeticity flags, applied to every cargo invocation a
+/// `cargo hax extract` run drives: project discovery, the frontend's
+/// `cargo check`, and the build charon drives.
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Default, Eq, PartialEq)]
+pub struct CargoHermeticityOptions {
+    /// Assert that `Cargo.lock` will remain unchanged
+    #[arg(long)]
+    pub locked: bool,
+
+    /// Run without accessing the network
+    #[arg(long)]
+    pub offline: bool,
+
+    /// Equivalent to specifying both --locked and --offline
+    #[arg(long)]
+    pub frozen: bool,
+}
+
+impl CargoHermeticityOptions {
+    /// The cargo flags these options stand for, verbatim.
+    pub fn flags(&self) -> Vec<String> {
+        [
+            ("--locked", self.locked),
+            ("--offline", self.offline),
+            ("--frozen", self.frozen),
+        ]
+        .into_iter()
+        .filter(|(_, set)| *set)
+        .map(|(flag, _)| flag.to_string())
+        .collect()
+    }
+}
+
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
 pub enum Command<E: Extension> {
     /// Translate to a backend. The translated modules will be written
     /// under the directory `<PKG>/proofs/<BACKEND>/extraction`, where
@@ -401,6 +581,34 @@ pub enum Command<E: Extension> {
     /// the name of the backend.
     #[clap(name = "into")]
     Backend(BackendOptions<E>),
+
+    /// Run the proof scenarios declared in `hax.toml` (`[scenario.<name>]`
+    /// tables): named, complete extraction configurations. Without names,
+    /// every scenario in scope runs. Scenarios run sequentially; a failing
+    /// scenario does not abort the run, failures are reported in a summary
+    /// and produce a non-zero exit code.
+    Extract {
+        /// The scenarios to run. Each name selects every scenario with
+        /// that name in scope. Absent, every scenario in scope runs.
+        names: Vec<String>,
+
+        /// Restrict the scope to the scenarios extracting the given
+        /// package. May be repeated.
+        #[arg(short = 'p', long = "package")]
+        packages: Vec<String>,
+
+        /// Print the resolved invocations, including the arguments
+        /// compiled from the scenarios, without running them.
+        #[arg(long)]
+        dry_run: bool,
+
+        /// Verbose mode, forwarded to each scenario run.
+        #[arg(short, long, action = clap::ArgAction::Count)]
+        verbose: u8,
+
+        #[command(flatten)]
+        hermeticity: CargoHermeticityOptions,
+    },
 
     /// Export directly as a JSON file
     JSON {
@@ -459,8 +667,64 @@ pub enum Command<E: Extension> {
         backend: Option<BackendName>,
     },
 
+    /// Manage the external tools hax depends on (e.g. charon and aeneas).
+    #[command(subcommand)]
+    Tools(ToolsCommand),
+
     #[command(flatten)]
     CliExtension(E::Command),
+}
+
+/// Subcommands of `cargo hax tools`.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
+pub enum ToolsCommand {
+    /// Download and cache the tool versions the current project
+    /// resolves to, or a specific `<tool>@<version>`.
+    Install {
+        /// A `<tool>@<version>` specification (e.g.
+        /// `charon@nightly-2026.07.01`) to install into the
+        /// machine-wide cache. When absent, installs what the current
+        /// project's configuration resolves to.
+        spec: Option<String>,
+        /// Re-download and verify even if the version is already cached
+        /// (e.g. to verify a copy installed before its checksum shipped).
+        #[arg(long)]
+        force: bool,
+    },
+    /// List the tool versions this release of hax can install with
+    /// checksum verification.
+    List {
+        /// Restrict the listing to one tool.
+        tool: Option<String>,
+        /// Only show versions present in the local cache.
+        #[arg(long)]
+        installed: bool,
+        /// Show every version instead of only the most recent ones.
+        #[arg(long)]
+        all: bool,
+    },
+    /// Show which tool versions are active in the current project,
+    /// and where each one comes from.
+    Show,
+    /// Remove a tool version from the machine-wide cache.
+    Remove {
+        /// The `<tool>@<version>` specification (e.g.
+        /// `charon@nightly-2026.07.01`) to remove from the cache.
+        spec: String,
+    },
+    /// Delete the entire tool cache. Later runs download what they need
+    /// again.
+    Clean,
+    /// Write version pins into the project's `hax.toml`, creating the
+    /// file when missing.
+    Pin {
+        /// A `<name>@<version>` specification to write as one entry,
+        /// accepting managed tools (e.g. `charon@nightly-2026.07.01`)
+        /// and declared versions (e.g. `lean@leanprover/lean4:v4.31.0`).
+        /// When absent, pins the built-in defaults of this release.
+        spec: Option<String>,
+    },
 }
 
 impl<E: Extension> Command<E> {
@@ -468,7 +732,12 @@ impl<E: Extension> Command<E> {
         match self {
             Command::JSON { kind, .. } => kind.clone(),
             Command::Serialize { kind, .. } => kind.clone(),
-            Command::Backend { .. } | Command::CliExtension { .. } => vec![ExportBodyKind::Thir],
+            Command::Backend { .. }
+            | Command::Extract { .. }
+            | Command::Tools { .. }
+            | Command::CliExtension { .. } => {
+                vec![ExportBodyKind::Thir]
+            }
         }
     }
     pub fn backend_name(&self) -> Option<BackendName> {
@@ -476,6 +745,8 @@ impl<E: Extension> Command<E> {
             Command::Backend(backend_options) => Some((&backend_options.backend).into()),
             Command::JSON { .. } => None,
             Command::Serialize { backend, .. } => backend.clone(),
+            Command::Extract { .. } => None,
+            Command::Tools(_) => None,
             Command::CliExtension(_) => None,
         }
     }
@@ -598,17 +869,46 @@ pub struct ExporterOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy)]
+#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BackendName {
     Fstar,
     Coq,
     Ssprove,
     Easycrypt,
+    #[clap(alias("proverif"))]
     ProVerif,
+    LegacyLean,
     Lean,
     Rust,
     GenerateRustEngineNames,
     Debugger,
+}
+
+impl BackendName {
+    /// The subdirectory holding the backend's extraction, below the output
+    /// directory. The engine backends keep an `extraction/` level; the Lean
+    /// backend writes its package at the top of the output directory.
+    pub fn output_subdir(self) -> Option<&'static str> {
+        match self {
+            Self::Lean => None,
+            _ => Some("extraction"),
+        }
+    }
+
+    pub fn iter() -> impl Iterator<Item = Self> {
+        [
+            Self::Fstar,
+            Self::Coq,
+            Self::Ssprove,
+            Self::Easycrypt,
+            Self::ProVerif,
+            Self::LegacyLean,
+            Self::Lean,
+            Self::Rust,
+            Self::GenerateRustEngineNames,
+        ]
+        .into_iter()
+    }
 }
 
 impl fmt::Display for BackendName {
@@ -619,6 +919,7 @@ impl fmt::Display for BackendName {
             BackendName::Ssprove => "ssprove",
             BackendName::Easycrypt => "easycrypt",
             BackendName::ProVerif => "proverif",
+            BackendName::LegacyLean => "legacy-lean",
             BackendName::Lean => "lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
@@ -640,14 +941,15 @@ impl From<&Options> for ExporterOptions {
     }
 }
 
-impl<E: Extension> From<&Backend<E>> for BackendName {
-    fn from(backend: &Backend<E>) -> Self {
+impl From<&Backend> for BackendName {
+    fn from(backend: &Backend) -> Self {
         match backend {
             Backend::Fstar { .. } => BackendName::Fstar,
             Backend::Coq { .. } => BackendName::Coq,
             Backend::Ssprove { .. } => BackendName::Ssprove,
             Backend::Easycrypt { .. } => BackendName::Easycrypt,
             Backend::ProVerif { .. } => BackendName::ProVerif,
+            Backend::LegacyLean { .. } => BackendName::LegacyLean,
             Backend::Lean { .. } => BackendName::Lean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
@@ -658,3 +960,68 @@ impl<E: Extension> From<&Backend<E>> for BackendName {
 
 pub const ENV_VAR_OPTIONS_FRONTEND: &str = "DRIVER_HAX_FRONTEND_OPTS";
 pub const ENV_VAR_OPTIONS_FULL: &str = "DRIVER_HAX_FRONTEND_FULL_OPTS";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `flags()` renders the options for `extract --dry-run`. The
+    /// destructuring makes a new field a compile error here, and each field
+    /// is asserted to reach the rendering, which nothing else enforces.
+    #[test]
+    fn fstar_flags_render_every_field() {
+        let options = FStarOptions {
+            z3rlimit: 111,
+            fuel: 222,
+            ifuel: 333,
+            interfaces: vec![parse_inclusion_clause("+**::foo").unwrap()],
+            line_width: 444,
+        };
+        let FStarOptions {
+            z3rlimit,
+            fuel,
+            ifuel,
+            interfaces,
+            line_width,
+        } = &options;
+        let flags = options.flags().join(" ");
+        assert!(flags.contains(&format!("--z3rlimit={z3rlimit}")), "{flags}");
+        assert!(flags.contains(&format!("--fuel={fuel}")), "{flags}");
+        assert!(flags.contains(&format!("--ifuel={ifuel}")), "{flags}");
+        assert!(
+            flags.contains(&format!("--line-width={line_width}")),
+            "{flags}"
+        );
+        assert!(flags.contains("--interfaces"), "{flags}");
+        for clause in interfaces {
+            assert!(flags.contains(&clause.to_string()), "{flags}");
+        }
+    }
+
+    #[test]
+    fn proverif_flags_render_every_field() {
+        let options = ProVerifOptions {
+            assume_items: vec![parse_inclusion_clause("+**::bar").unwrap()],
+        };
+        let ProVerifOptions { assume_items } = &options;
+        let flags = options.flags().join(" ");
+        assert!(flags.contains("--assume-items"), "{flags}");
+        for clause in assume_items {
+            assert!(flags.contains(&clause.to_string()), "{flags}");
+        }
+    }
+
+    /// The Lean backend writes its package at the top of the output
+    /// directory; every engine backend keeps an `extraction/` level.
+    #[test]
+    fn only_the_lean_backend_has_no_extraction_subdir() {
+        for backend in BackendName::iter() {
+            let subdir = backend.output_subdir();
+            if backend == BackendName::Lean {
+                assert_eq!(subdir, None, "{backend}");
+            } else {
+                assert_eq!(subdir, Some("extraction"), "{backend}");
+            }
+        }
+    }
+}

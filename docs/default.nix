@@ -42,7 +42,7 @@ in stdenv.mkDerivation {
     mkdocs-awesome-nav
   ];
   buildPhase = ''
-    mkdocs build
+    mkdocs build --strict
   '';
   installPhase = ''
     mv site $out

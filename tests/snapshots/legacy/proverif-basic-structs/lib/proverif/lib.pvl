@@ -1,0 +1,119 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type new_tests__legacy__proverif_basic_structs__lib__t_Ainitial.
+
+fun new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_to_bitstring(
+      new_tests__legacy__proverif_basic_structs__lib__t_Ainitial
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__proverif_basic_structs__lib__t_Ainitial [typeConverter].
+const new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_default_value: new_tests__legacy__proverif_basic_structs__lib__t_Ainitial.
+letfun new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_default() =
+       new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_default_value.
+letfun new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_err() =
+       let x = construct_fail() in new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_default_value.
+fun new_tests__legacy__proverif_basic_structs__lib__Ainitial(nat)
+    : new_tests__legacy__proverif_basic_structs__lib__t_Ainitial [data].
+reduc forall new_tests__legacy__proverif_basic_structs__lib__f_x: nat;
+    accessor_new_tests__legacy__proverif_basic_structs__lib__t_Ainitial_new_tests__legacy__proverif_basic_structs__lib__f_x(
+      new_tests__legacy__proverif_basic_structs__lib__Ainitial(
+        new_tests__legacy__proverif_basic_structs__lib__f_x
+      )
+    ) = new_tests__legacy__proverif_basic_structs__lib__f_x.
+
+type new_tests__legacy__proverif_basic_structs__lib__t_A.
+
+fun new_tests__legacy__proverif_basic_structs__lib__t_A_to_bitstring(
+      new_tests__legacy__proverif_basic_structs__lib__t_A
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__proverif_basic_structs__lib__t_A_from_bitstring(bitstring
+    )
+    : new_tests__legacy__proverif_basic_structs__lib__t_A [typeConverter].
+const new_tests__legacy__proverif_basic_structs__lib__t_A_default_value: new_tests__legacy__proverif_basic_structs__lib__t_A.
+letfun new_tests__legacy__proverif_basic_structs__lib__t_A_default() =
+       new_tests__legacy__proverif_basic_structs__lib__t_A_default_value.
+letfun new_tests__legacy__proverif_basic_structs__lib__t_A_err() =
+       let x = construct_fail() in new_tests__legacy__proverif_basic_structs__lib__t_A_default_value.
+fun new_tests__legacy__proverif_basic_structs__lib__A(nat, nat)
+    : new_tests__legacy__proverif_basic_structs__lib__t_A [data].
+reduc forall 
+  new_tests__legacy__proverif_basic_structs__lib__f_one: nat,
+  new_tests__legacy__proverif_basic_structs__lib__f_two: nat
+;
+    accessor_new_tests__legacy__proverif_basic_structs__lib__t_A_new_tests__legacy__proverif_basic_structs__lib__f_one(
+      new_tests__legacy__proverif_basic_structs__lib__A(
+        new_tests__legacy__proverif_basic_structs__lib__f_one,
+        new_tests__legacy__proverif_basic_structs__lib__f_two
+      )
+    ) = new_tests__legacy__proverif_basic_structs__lib__f_one.
+reduc forall 
+  new_tests__legacy__proverif_basic_structs__lib__f_one: nat,
+  new_tests__legacy__proverif_basic_structs__lib__f_two: nat
+;
+    accessor_new_tests__legacy__proverif_basic_structs__lib__t_A_new_tests__legacy__proverif_basic_structs__lib__f_two(
+      new_tests__legacy__proverif_basic_structs__lib__A(
+        new_tests__legacy__proverif_basic_structs__lib__f_one,
+        new_tests__legacy__proverif_basic_structs__lib__f_two
+      )
+    ) = new_tests__legacy__proverif_basic_structs__lib__f_two.
+
+type new_tests__legacy__proverif_basic_structs__lib__t_B.
+
+fun new_tests__legacy__proverif_basic_structs__lib__t_B_to_bitstring(
+      new_tests__legacy__proverif_basic_structs__lib__t_B
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__proverif_basic_structs__lib__t_B_from_bitstring(bitstring
+    )
+    : new_tests__legacy__proverif_basic_structs__lib__t_B [typeConverter].
+const new_tests__legacy__proverif_basic_structs__lib__t_B_default_value: new_tests__legacy__proverif_basic_structs__lib__t_B.
+letfun new_tests__legacy__proverif_basic_structs__lib__t_B_default() =
+       new_tests__legacy__proverif_basic_structs__lib__t_B_default_value.
+letfun new_tests__legacy__proverif_basic_structs__lib__t_B_err() =
+       let x = construct_fail() in new_tests__legacy__proverif_basic_structs__lib__t_B_default_value.
+fun new_tests__legacy__proverif_basic_structs__lib__B(nat)
+    : new_tests__legacy__proverif_basic_structs__lib__t_B [data].
+reduc forall new_tests__legacy__proverif_basic_structs__lib__0: nat;
+    accessor_new_tests__legacy__proverif_basic_structs__lib__t_B_new_tests__legacy__proverif_basic_structs__lib__0(
+      new_tests__legacy__proverif_basic_structs__lib__B(
+        new_tests__legacy__proverif_basic_structs__lib__0
+      )
+    ) = new_tests__legacy__proverif_basic_structs__lib__0.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+
+

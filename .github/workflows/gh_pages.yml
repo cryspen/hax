@@ -1,17 +1,56 @@
 name: Deploy to GH Pages
 
+# Runs on every push to `main` and, for a release that becomes the latest,
+# called from the `release` workflow.
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     branches: [main]
 
 jobs:
   # Build job
   build:
+    if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     steps:
+      # A call from the `release` workflow runs on the release tag; the site
+      # is built from `main` regardless, only the manual comes from the
+      # release.
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+      - name: Resolve latest hax release
+        id: latest_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$(gh release view --repo '${{ github.repository }}' --json tagName --jq .tagName)"
+          echo "Latest release: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Replace the Manual with the one from release ${{ steps.latest_release.outputs.tag }}
+        run: |
+          tag='${{ steps.latest_release.outputs.tag }}'
+          git clone --depth 1 --branch "$tag" \
+            'https://github.com/${{ github.repository }}' /tmp/hax-release
+          rm -rf docs/manual
+          cp -r /tmp/hax-release/docs/manual docs/manual
+          # The manual includes sections of the readme as snippets, so the
+          # readme must come from the same release.
+          cp /tmp/hax-release/README.md README.md
+          # The playable snippets of the manual must be run by the very hax
+          # version they document.
+          js=docs/javascripts/hax_playground.js
+          commit="$(git -C /tmp/hax-release rev-parse HEAD)"
+          grep -q 'const HAX_PLAYGROUND_FORCED_VERSION = false;' "$js" \
+            || { echo "::error::no HAX_PLAYGROUND_FORCED_VERSION line to replace in $js"; exit 1; }
+          sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"$commit\";/" "$js"
+          git add -A docs/manual README.md "$js" # For nix to pick up the replacement
       - name: Build documentation
         run: nix build .#docs
       - name: Upload static files as artifact
@@ -21,6 +60,7 @@ jobs:
           path: result/
   # Deploy job
   deploy:
+    if: github.repository == 'cryspen/hax'
     needs: build
     permissions:
       pages: write      # to deploy to Pages

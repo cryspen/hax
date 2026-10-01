@@ -1,10 +1,14 @@
-.PHONY: default clean
-default:
-	cargo hax into lean
-	(cd proofs/lean && \
-   elan default v4.29.0-rc1 && \
-   lake build)
+.PHONY: default lean clean
+
+default: lean
+
+lean:
+	cargo hax extract lean-tutorial
+	(cd proofs/lean-tutorial/lean && \
+		elan default v4.31.0 && \
+		lake exe cache get && \
+		lake build)
 
 clean:
-	-rm -f proofs/lean/extraction/lean_tutorial.lean
-	-cd proofs/lean && lake clean
+	-rm -rf proofs/lean-tutorial/lean/LeanTutorial/Extraction
+	-cd proofs/lean-tutorial/lean && lake clean

@@ -478,9 +478,9 @@ module Make (F : Features.T) = struct
         let new_names =
           ambiguous |> Set.to_list
           |> List.map ~f:(fun (var : Local_ident.t) ->
-                 let var' = { var with name = refresh !local_vars var } in
-                 local_vars := Set.add !local_vars var';
-                 (var, var'))
+              let var' = { var with name = refresh !local_vars var } in
+              local_vars := Set.add !local_vars var';
+              (var, var'))
           |> Map.of_alist_exn (module Local_ident)
         in
         let rename var = Map.find new_names var |> Option.value ~default:var in
@@ -511,19 +511,19 @@ module Make (F : Features.T) = struct
       end
 
     let variables_of_pat (p : pat) : Sets.Local_ident.t =
-      (object
-         inherit [_] Visitors.reduce as super
-         inherit [_] Sets.Local_ident.monoid as m
+      object
+        inherit [_] Visitors.reduce as super
+        inherit [_] Sets.Local_ident.monoid as m
 
-         method! visit_pat' env pat' =
-           match pat' with
-           | PBinding { var; subpat; _ } ->
-               m#plus
-                 (Set.singleton (module Local_ident) var)
-                 (Option.value_map subpat ~default:m#zero
-                    ~f:(fst >> super#visit_pat env))
-           | _ -> super#visit_pat' env pat'
-      end)
+        method! visit_pat' env pat' =
+          match pat' with
+          | PBinding { var; subpat; _ } ->
+              m#plus
+                (Set.singleton (module Local_ident) var)
+                (Option.value_map subpat ~default:m#zero
+                   ~f:(fst >> super#visit_pat env))
+          | _ -> super#visit_pat' env pat'
+      end
         #visit_pat
         () p
 
@@ -579,10 +579,10 @@ module Make (F : Features.T) = struct
           | Loop { body; kind; state; _ } ->
               let vars =
                 (match kind with
-                | UnconditionalLoop -> []
-                | WhileLoop _ -> []
-                | ForLoop { pat = _not_mutable; _ } -> []
-                | ForIndexLoop { var = _not_mutable; _ } -> [])
+                  | UnconditionalLoop -> []
+                  | WhileLoop _ -> []
+                  | ForLoop { pat = _not_mutable; _ } -> []
+                  | ForIndexLoop { var = _not_mutable; _ } -> [])
                 @ (state
                   |> Option.map ~f:(fun { bpat; _ } -> variables_of_pat bpat)
                   |> Option.to_list)
@@ -644,7 +644,7 @@ module Make (F : Features.T) = struct
     let free_suffix =
       vars
       |> List.filter_map ~f:(fun ({ name; _ } : local_ident) ->
-             String.chop_prefix ~prefix name)
+          String.chop_prefix ~prefix name)
       |> List.map ~f:(function "" -> "0" | s -> s)
       |> List.filter_map ~f:Stdlib.int_of_string_opt
       |> List.fold ~init:(-1) ~f:Int.max

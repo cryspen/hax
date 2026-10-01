@@ -6,10 +6,16 @@ license.workspace = true
 homepage.workspace = true
 edition.workspace = true
 repository.workspace = true
-readme.workspace = true
+readme = "README.md"
 description = "Newtypes for working with bounded integers with hax"
 
 [dependencies]
-duplicate = "1.0.0"
+duplicate = "2.0.1"
 hax-lib.workspace = true
 paste = "1.0.15"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(hax)',
+    'cfg(hax_compilation)',
+] }

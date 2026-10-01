@@ -1,9 +1,0 @@
-[package]
-name = "slices"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-
-[package.metadata.hax-tests]
-into."fstar+coq" = { broken = false, issue_id = "85" }

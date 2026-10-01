@@ -153,8 +153,7 @@ let default = { id = 0; data = []; owner_hint = None }
 let owner_hint span =
   span.owner_hint
   |> Option.map ~f:(fun (OwnerId id) ->
-         Option.value_exn
-           (List.nth !owner_id_list (!owner_id_list_len - id - 1)))
+      Option.value_exn (List.nth !owner_id_list (!owner_id_list_len - id - 1)))
 
 let to_rust_ast_span span : Rust_engine_types.span =
   let owner_hint =

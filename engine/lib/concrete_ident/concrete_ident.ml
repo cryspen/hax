@@ -301,10 +301,10 @@ module MakeToString (R : VIEW_RENDERER) = struct
               |> List.map ~f:List.rev
               (* We generate a fake path with module ancestors *)
               |> List.map ~f:(fun path ->
-                     name ^ "__from__"
-                     ^ String.concat ~sep:"__"
-                         path (* This might shadow, we should escape *))
-                 (* Find the shortest name that doesn't exist already *)
+                  name ^ "__from__"
+                  ^ String.concat ~sep:"__"
+                      path (* This might shadow, we should escape *))
+                (* Find the shortest name that doesn't exist already *)
               |> List.find ~f:(Hash_set.mem name_set >> not)
               |> Option.value ~default:(name ^ ([%hash: t] i |> Int.to_string))
             else name
@@ -725,15 +725,15 @@ let map_path_strings ~(f : string -> string) (did : t) : t =
   let path =
     did.path
     |> List.map ~f:(fun (chunk : Types.disambiguated_def_path_item) ->
-           let data =
-             match chunk.data with
-             | TypeNs s -> Types.TypeNs (f s)
-             | ValueNs s -> ValueNs (f s)
-             | MacroNs s -> MacroNs (f s)
-             | LifetimeNs s -> LifetimeNs (f s)
-             | data -> data
-           in
-           { chunk with data })
+        let data =
+          match chunk.data with
+          | TypeNs s -> Types.TypeNs (f s)
+          | ValueNs s -> ValueNs (f s)
+          | MacroNs s -> MacroNs (f s)
+          | LifetimeNs s -> LifetimeNs (f s)
+          | data -> data
+        in
+        { chunk with data })
   in
   let did = { did with path } in
   let def_id =

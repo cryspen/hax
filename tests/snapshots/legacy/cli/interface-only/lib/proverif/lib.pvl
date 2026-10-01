@@ -1,0 +1,148 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type new_tests__legacy__cli__interface_only__lib__t_Bar.
+
+fun new_tests__legacy__cli__interface_only__lib__t_Bar_to_bitstring(
+      new_tests__legacy__cli__interface_only__lib__t_Bar
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__cli__interface_only__lib__t_Bar_from_bitstring(bitstring)
+    : new_tests__legacy__cli__interface_only__lib__t_Bar [typeConverter].
+const new_tests__legacy__cli__interface_only__lib__t_Bar_default_value: new_tests__legacy__cli__interface_only__lib__t_Bar.
+letfun new_tests__legacy__cli__interface_only__lib__t_Bar_default() =
+       new_tests__legacy__cli__interface_only__lib__t_Bar_default_value.
+letfun new_tests__legacy__cli__interface_only__lib__t_Bar_err() =
+       let x = construct_fail() in new_tests__legacy__cli__interface_only__lib__t_Bar_default_value.
+fun new_tests__legacy__cli__interface_only__lib__Bar()
+    : new_tests__legacy__cli__interface_only__lib__t_Bar [data].
+
+
+type new_tests__legacy__cli__interface_only__lib__t_Holder.
+
+fun new_tests__legacy__cli__interface_only__lib__t_Holder_to_bitstring(
+      new_tests__legacy__cli__interface_only__lib__t_Holder
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__cli__interface_only__lib__t_Holder_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__cli__interface_only__lib__t_Holder [typeConverter].
+const new_tests__legacy__cli__interface_only__lib__t_Holder_default_value: new_tests__legacy__cli__interface_only__lib__t_Holder.
+letfun new_tests__legacy__cli__interface_only__lib__t_Holder_default() =
+       new_tests__legacy__cli__interface_only__lib__t_Holder_default_value.
+letfun new_tests__legacy__cli__interface_only__lib__t_Holder_err() =
+       let x = construct_fail() in new_tests__legacy__cli__interface_only__lib__t_Holder_default_value.
+fun new_tests__legacy__cli__interface_only__lib__Holder(bitstring)
+    : new_tests__legacy__cli__interface_only__lib__t_Holder [data].
+reduc forall new_tests__legacy__cli__interface_only__lib__f_value: bitstring;
+    accessor_new_tests__legacy__cli__interface_only__lib__t_Holder_new_tests__legacy__cli__interface_only__lib__f_value(
+      new_tests__legacy__cli__interface_only__lib__Holder(
+        new_tests__legacy__cli__interface_only__lib__f_value
+      )
+    ) = new_tests__legacy__cli__interface_only__lib__f_value.
+
+type new_tests__legacy__cli__interface_only__lib__t_Param.
+
+fun new_tests__legacy__cli__interface_only__lib__t_Param_to_bitstring(
+      new_tests__legacy__cli__interface_only__lib__t_Param
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__cli__interface_only__lib__t_Param_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__cli__interface_only__lib__t_Param [typeConverter].
+const new_tests__legacy__cli__interface_only__lib__t_Param_default_value: new_tests__legacy__cli__interface_only__lib__t_Param.
+letfun new_tests__legacy__cli__interface_only__lib__t_Param_default() =
+       new_tests__legacy__cli__interface_only__lib__t_Param_default_value.
+letfun new_tests__legacy__cli__interface_only__lib__t_Param_err() =
+       let x = construct_fail() in new_tests__legacy__cli__interface_only__lib__t_Param_default_value.
+fun new_tests__legacy__cli__interface_only__lib__Param(bitstring)
+    : new_tests__legacy__cli__interface_only__lib__t_Param [data].
+reduc forall new_tests__legacy__cli__interface_only__lib__f_value: bitstring;
+    accessor_new_tests__legacy__cli__interface_only__lib__t_Param_new_tests__legacy__cli__interface_only__lib__f_value(
+      new_tests__legacy__cli__interface_only__lib__Param(
+        new_tests__legacy__cli__interface_only__lib__f_value
+      )
+    ) = new_tests__legacy__cli__interface_only__lib__f_value.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun new_tests__legacy__cli__interface_only__lib__f(x : nat) =
+       rust_primitives__hax__failure(
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [Raw_pointer] have been found in the AST
+
+Note: the error was labeled with context `reject_RawOrMutPointer`.
+",
+         "{
+ let y: raw_pointer!() = { cast(x) };
+ {
+ let _: tuple0 = {
+ {
+ let _: tuple0 = {
+ {
+ let _: tuple0 = {
+ std::io::stdio::e_print({
+ let args: tuple1<&int> = { Tuple1(&(deref(y))) };
+ {
+ let args: [c..."
+       ).
+
+letfun new_tests__legacy__cli__interface_only__lib__f_from__impl_1__from(
+         wildcard1 : nat
+       ) =
+       new_tests__legacy__cli__interface_only__lib__Bar().
+
+letfun new_tests__legacy__cli__interface_only__lib__ff_generic(e_x : v_U) =
+       new_tests__legacy__cli__interface_only__lib__Param(
+         rust_primitives__hax__repeat(0, v_X)
+       ).
+
+letfun new_tests__legacy__cli__interface_only__lib__padlen(
+         b : bitstring, n : nat
+       ) =
+       if
+         core_models__cmp__f_gt(n, 0) && core_models__cmp__f_eq(
+             core_models__ops__index__f_index(
+               b, core_models__ops__arith__f_sub(n, 1)
+             ),
+             0
+           )
+       then
+         (core_models__ops__arith__f_add(
+            1,
+            new_tests__legacy__cli__interface_only__lib__padlen(
+              b, core_models__ops__arith__f_sub(n, 1)
+            )
+          ))
+       else (0).
+

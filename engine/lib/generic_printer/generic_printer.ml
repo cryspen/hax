@@ -18,7 +18,7 @@ module Annotation = struct
     let lines_position =
       String.to_list s
       |> List.filter_mapi ~f:(fun i ch ->
-             match ch with '\n' -> Some i | _ -> None)
+          match ch with '\n' -> Some i | _ -> None)
       |> List.to_array |> Array.get
     in
     let annots = List.sort ~compare annots in
@@ -51,7 +51,7 @@ module Annotation = struct
     let* span =
       Span.to_thir span
       |> List.find ~f:(fun (s : Types.span) ->
-             real_path s.filename |> Option.is_some)
+          real_path s.filename |> Option.is_some)
     in
     let* src_filename = real_path span.filename in
     let src_start = to_loc span.lo |> loc_to_loc in

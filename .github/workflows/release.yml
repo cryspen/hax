@@ -1,69 +1,230 @@
-name: Release binaries for hax-engine
+name: Release binaries
 
+# The `publish` workflow starts this by dispatch after pushing the release's
+# tags, which its repository token raises no push events for. The push trigger
+# covers a `cargo release --workspace` run outside CI, with a caveat: GitHub
+# raises push events for only some tags of a multi-tag push. When the
+# `cargo-hax-v*` event is among the dropped ones, dispatching this workflow on
+# the tag builds the release's assets.
 on:
   push:
     tags:
-      - '*'
+      - 'cargo-hax-v*'
+  workflow_dispatch:
+
+# A push event and a manual dispatch of the same tag publish the same assets,
+# so runs are grouped by the ref. Runs are never cancelled: cancelling a
+# publish mid-upload can leave the release missing assets. A covered run
+# instead finds every asset published already and skips the work.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
-  release-js:
-    if: startsWith(github.ref, 'refs/tags/')
+  # Computes the values every publish job keys on: the tag the release's
+  # artifacts are published under, empty for a ref that is not a release tag;
+  # the assets published under it already; and the platform matrix for
+  # `cargo-hax`.
+  tag:
+    if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      version: ${{ steps.resolve.outputs.version }}
+      assets: ${{ steps.assets.outputs.assets }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    env:
+      RUSTUP_TOOLCHAIN: stable
     steps:
-    - uses: actions/checkout@v4
-    - uses: DeterminateSystems/nix-installer-action@main
-    - name: Build JS
-      run: nix build .#hax-engine.passthru.js -L -o hax-engine.js
+      - uses: actions/checkout@v4
 
-    - run: |
-        tar --dereference -czf hacspec_js.tar.gz hax-engine.js
+      - id: resolve
+        run: |
+          set -o pipefail
+          version="$(cargo metadata --format-version 1 --no-deps \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          # `cargo release` tags this crate `cargo-hax-v<version>`; a ref that
+          # is not that tag, such as a dispatch on a branch, is not a release.
+          if [ "$GITHUB_REF_NAME" = "cargo-hax-v$version" ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$GITHUB_REF_NAME is not a release tag"
+          fi
 
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: hacspec_js.tar.gz
+      # An interrupted upload can leave an asset record that is not
+      # `uploaded`; it does not count as published, so a later run replaces
+      # the remains.
+      - id: assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: |
+          assets='[]'
+          if [ -n "$TAG" ]; then
+            if release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" 2>&1)"; then
+              assets="$(jq -c '[.assets[]
+                | select(.state == "uploaded" and .size > 0) | .name]' <<< "$release")"
+            # Only a missing release means nothing is published; any other
+            # failure must not pass for that and disable the published-assets
+            # guards.
+            elif ! grep -q 'HTTP 404' <<< "$release"; then
+              echo "$release" >&2
+              exit 1
+            fi
+          fi
+          echo "assets=$assets" >> "$GITHUB_OUTPUT"
 
-  release:
-    if: startsWith(github.ref, 'refs/tags/')
+      # The platforms `cargo-hax` binaries are built for, shared with the
+      # binstall workflow that installs from them.
+      - id: matrix
+        run: |
+          echo "matrix=$(jq -c '{include: .}' .github/cargo-hax-targets.json)" \
+            >> "$GITHUB_OUTPUT"
+
+  release-cargo-hax:
+    needs: tag
+    if: needs.tag.outputs.tag != ''
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - macos-latest
-          - ubuntu-latest
-          # - windows-latest (See #4)
-        ocaml-compiler: [4.14.x]
-        
+      # Which image is strictest differs by system: on Linux the oldest, glibc
+      # being backward compatible, so a binary built on 22.04 runs on the newer
+      # images too; on macOS the newest, since what refuses a binary there is
+      # the code-signing policy, which Apple only tightens.
+      matrix: ${{ fromJSON(needs.tag.outputs.matrix) }}
+
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     permissions:
       contents: write
+
+    env:
+      # Outranks `rust-toolchain.toml`, which would otherwise select the pinned
+      # nightly that this binary must not need.
+      RUSTUP_TOOLCHAIN: stable
+      # The oldest macOS the binary runs on.
+      MACOSX_DEPLOYMENT_TARGET: '11.0'
+      # Kept in step with the binstall metadata `pkg-url` by a `cargo-hax` test.
+      ARCHIVE: cargo-hax-${{ matrix.target }}.tar.zst
+      # In the delete/re-upload window a `cargo binstall` finds nothing and
+      # silently builds from source. Checked per target, so a release that got
+      # only some of its archives is still completed by a later run.
+      PUBLISHED: ${{ contains(fromJSON(needs.tag.outputs.assets), format('cargo-hax-{0}.tar.zst', matrix.target)) }}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - uses: ocaml/setup-ocaml@v2
+      - uses: actions/checkout@v4
+        if: env.PUBLISHED != 'true'
+      - uses: dtolnay/rust-toolchain@stable
+        if: env.PUBLISHED != 'true'
         with:
-          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          targets: ${{ matrix.target }}
 
-      - uses: dtolnay/rust-toolchain@1.70
-          
-      - run: cargo install --path cli/driver && cargo install --path cli/subcommands
+      - name: Build `cargo-hax`
+        if: env.PUBLISHED != 'true'
+        run: cargo build --locked --release -p cargo-hax --target ${{ matrix.target }}
 
-      - run: opam install . --deps-only
-        working-directory: engine
-        
-      - run: opam exec -- dune build
-        working-directory: engine
+      # Compressed by the `zstd` command, which every image here ships, rather
+      # than by `tar` itself: whether its `--zstd` is available depends on how
+      # the `tar` of the image was built.
+      - name: Package the binary at the archive root
+        if: env.PUBLISHED != 'true'
+        run: |
+          set -o pipefail
+          tar -cf - -C target/${{ matrix.target }}/release cargo-hax \
+            | zstd -9 -T0 -o "$ARCHIVE"
 
-      - run: |
-          cp engine/_build/default/bin/native_driver.exe  hax-engine
-          tar -czf hacspec_${{ matrix.os }}.tar.gz hax-engine
-        
+      # The release notes: the released version's changelog section, which the
+      # version bump renames from `[Unreleased]`. A pre-release keeps
+      # `[Unreleased]` in place, has no section of its own, and so gets an
+      # empty body. Headings match with and without brackets, covering the
+      # sections that predate the bracketed form.
+      - name: Extract the changelog section
+        if: env.PUBLISHED != 'true'
+        env:
+          VERSION: ${{ needs.tag.outputs.version }}
+        run: |
+          awk -v version="$VERSION" '
+            /^## / { heading = $2; gsub(/[][]/, "", heading)
+                     on = (heading == version); next }
+            on { print }
+          ' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+
       - name: Release
+        if: env.PUBLISHED != 'true'
         uses: softprops/action-gh-release@v1
         with:
-          files: hacspec_${{ matrix.os }}.tar.gz
+          tag_name: ${{ needs.tag.outputs.tag }}
+          prerelease: ${{ contains(needs.tag.outputs.version, '-') }}
+          body_path: ${{ runner.temp }}/release-notes.md
+          files: ${{ env.ARCHIVE }}
 
-          
+  # Installs the release the way every user's `cargo binstall` does, once the
+  # archives it fetches are all published.
+  binstall:
+    needs: [tag, release-cargo-hax]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/binstall.yml
+    with:
+      version: ${{ needs.tag.outputs.version }}
+
+  # Whether the release created above is the "latest" according to GitHub.
+  # This excludes pre-releases or patch versions of older releases.
+  # Only if the current release is "latest", we need to redeploy the manual.
+  latest-release:
+    needs: [tag, release-cargo-hax]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      deploy: ${{ steps.latest.outputs.deploy }}
+    steps:
+      - id: latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.tag.outputs.tag }}
+        run: |
+          latest="$(gh release view --json tagName --jq .tagName)"
+          if [ "$latest" = "$TAG" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$TAG is not the latest release ($latest); the website keeps serving that"
+          fi
+
+  # Redeploys the website with the manual of the release created above. We
+  # need to call it here because that release raises no `release` event that
+  # would start it on its own.
+  deploy-website:
+    needs: [latest-release]
+    if: needs.latest-release.outputs.deploy == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/gh_pages.yml
+
+  # Files an issue when any part of the release failed, so a failed run
+  # surfaces without anyone checking back on it. A repeated
+  # failure for the same tag lands as a comment on the open issue instead of
+  # a duplicate. A dispatch on a ref that is not a release tag skips every
+  # job and files nothing.
+  notify-failure:
+    needs: [tag, release-cargo-hax, binstall, latest-release, deploy-website]
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # for the checkout that provides the local action
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          title: Release run for ${{ github.ref_name }} failed
+          on-existing: comment
+          body: |
+            The `release` workflow failed, so the release may be missing assets, or the website's manual: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Once the cause is fixed, restart it with `gh workflow run release.yml --ref ${{ github.ref_name }}`; it publishes only the assets that are still missing and redeploys the website.

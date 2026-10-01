@@ -3,6 +3,7 @@ module Core_models.Slice.Iter
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::slice::Chunks`]
 type t_Chunks (v_T: Type0) = {
   f_cs:usize;
   f_elements:t_Slice v_T
@@ -11,6 +12,7 @@ type t_Chunks (v_T: Type0) = {
 let impl__new (#v_T: Type0) (cs: usize) (elements: t_Slice v_T) : t_Chunks v_T =
   { f_cs = cs; f_elements = elements } <: t_Chunks v_T
 
+/// See [`std::slice::ChunksExact`]
 type t_ChunksExact (v_T: Type0) = {
   f_cs:usize;
   f_elements:t_Slice v_T
@@ -19,6 +21,7 @@ type t_ChunksExact (v_T: Type0) = {
 let impl_1__new (#v_T: Type0) (cs: usize) (elements: t_Slice v_T) : t_ChunksExact v_T =
   { f_cs = cs; f_elements = elements } <: t_ChunksExact v_T
 
+/// See [`std::slice::Iter`]
 type t_Iter (v_T: Type0) = | Iter : Rust_primitives.Sequence.t_Seq v_T -> t_Iter v_T
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -28,7 +31,7 @@ let impl_2 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Iter v
     f_next_pre = (fun (self: t_Iter v_T) -> true);
     f_next_post
     =
-    (fun (self: t_Iter v_T) (out: (t_Iter v_T & Core_models.Option.t_Option v_T)) -> true);
+    (fun (self: t_Iter v_T) (out1: (t_Iter v_T & Core_models.Option.t_Option v_T)) -> true);
     f_next
     =
     fun (self: t_Iter v_T) ->
@@ -39,20 +42,11 @@ let impl_2 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Iter v
           <:
           (t_Iter v_T & Core_models.Option.t_Option v_T)
         else
-          let res:v_T = Rust_primitives.Sequence.seq_first #v_T self._0 in
-          let self:t_Iter v_T =
-            {
-              self with
-              _0
-              =
-              Rust_primitives.Sequence.seq_slice #v_T
-                self._0
-                (mk_usize 1)
-                (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize)
-            }
-            <:
-            t_Iter v_T
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
           in
+          let self:t_Iter v_T = { self with _0 = tmp0 } <: t_Iter v_T in
+          let res:v_T = out in
           self, (Core_models.Option.Option_Some res <: Core_models.Option.t_Option v_T)
           <:
           (t_Iter v_T & Core_models.Option.t_Option v_T)
@@ -141,3 +135,19 @@ let impl_4 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Chunks
       in
       self, hax_temp_output <: (t_ChunksExact v_T & Core_models.Option.t_Option (t_Slice v_T))
   }
+
+/// See [`std::slice::Windows`]
+type t_Windows (v_T: Type0) = {
+  f_size:usize;
+  f_elements:t_Slice v_T
+}
+
+let impl_5__new (#v_T: Type0) (size: usize) (elements: t_Slice v_T) : t_Windows v_T =
+  { f_size = size; f_elements = elements } <: t_Windows v_T
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_6': #v_T: Type0 -> Core_models.Iter.Traits.Iterator.t_Iterator (t_Windows v_T)
+
+unfold
+let impl_6 (#v_T: Type0) = impl_6' #v_T

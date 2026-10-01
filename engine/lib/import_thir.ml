@@ -114,8 +114,19 @@ let c_logical_op : Thir.logical_op -> logical_op = function
   | And -> And
   | Or -> Or
 
+(** The markers rustc leaves behind when it expands [#[cfg(..)]] and
+    [#[cfg_attr(..)]] attributes. They exist only so that rustc can report
+    better spans in its own diagnostics: they carry no information for us. Note
+    their paths are purposefully invalid Rust identifiers, so that users cannot
+    write them: keeping them around makes [Print_rust] produce Rust code that
+    cannot be parsed back. *)
+let cfg_trace_attributes = [ "<cfg_trace>"; "<cfg_attr_trace>" ]
+
 let c_attr (attr : Thir.attribute) : attr option =
   match attr with
+  | Unparsed { path; _ }
+    when List.mem cfg_trace_attributes path ~equal:[%eq: string] ->
+      None
   | Parsed (DocComment { kind; comment; span; _ }) ->
       let kind =
         match kind with Thir.Line -> DCKLine | Thir.Block -> DCKBlock
@@ -355,8 +366,8 @@ end) : EXPR = struct
         | Some with_ ->
             Concrete_ident.of_name ~value:true name
             |> (Concrete_ident.map_path_strings [@alert "-unsafe"]) ~f:(function
-                 | "u128" -> with_
-                 | s -> s)
+              | "u128" -> with_
+              | s -> s)
         | None ->
             assertion_failure (Span.to_thir span)
               ("Binary operation: expected " ^ expected ^ " type, got "
@@ -631,8 +642,8 @@ end) : EXPR = struct
           let arms = List.map ~f:c_arm arms in
           Match { scrutinee; arms }
       | Let _ ->
-          assertion_failure [ e.span ]
-            "`Let` nodes are supposed to be pre-processed"
+          unimplemented ~issue_id:2018 [ e.span ]
+            "Let-chains (e.g. `if let .. && let ..`) are not supported."
       | Block { expr; span; stmts; safety_mode; _ } ->
           let { e; _ } = c_block ~expr ~span ~stmts ~ty:e.ty ~safety_mode in
           e
@@ -720,8 +731,8 @@ end) : EXPR = struct
                 Local_ident.mk_id Cnst
                   (MyInt64.to_int id.index
                   |> Option.value_or_thunk ~default:(fun _ ->
-                         assertion_failure [ e.span ]
-                           "Expected const id to fit in an OCaml native int"));
+                      assertion_failure [ e.span ]
+                        "Expected const id to fit in an OCaml native int"));
             }
       | Repeat { value; count } ->
           let value = c_expr value in
@@ -893,9 +904,9 @@ end) : EXPR = struct
       | Literal lit ->
           let lit, neg = constant_lit_to_lit lit span in
           Literal { lit = { node = lit; span }; neg }
-      | Adt { fields; info } ->
+      | Adt { fields; info; repr } ->
           let fields = List.map ~f:constant_field_expr fields in
-          Adt { fields; info; base = None'; user_ty = None }
+          Adt { fields; info; repr; base = None'; user_ty = None }
       | Array { fields } ->
           Array { fields = List.map ~f:constant_expr_to_expr fields }
       | Tuple { fields } ->
@@ -1119,9 +1130,9 @@ end) : EXPR = struct
             item_ref.value.generic_args
           |> Option.all
           |> Option.value_or_thunk ~default:(fun _ ->
-                 assertion_failure [ span ]
-                   "Wrong generics for slice: expected a type. See \
-                    synthetic_items in hax frontend.")
+              assertion_failure [ span ]
+                "Wrong generics for slice: expected a type. See \
+                 synthetic_items in hax frontend.")
         in
         let types = List.map ~f:(fun ty -> GType (c_ty span ty)) types in
         TApp { ident = `TupleType (List.length types); args = types }
@@ -1144,8 +1155,8 @@ end) : EXPR = struct
               Local_ident.mk_id Typ
                 (MyInt64.to_int index
                 |> Option.value_or_thunk ~default:(fun _ ->
-                       assertion_failure [ span ]
-                         "Expected param id to fit in an OCaml native int"));
+                    assertion_failure [ span ]
+                      "Expected param id to fit in an OCaml native int"));
           }
     | Error ->
         assertion_failure [ span ]
@@ -1235,7 +1246,9 @@ end) : EXPR = struct
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
     | Builtin _ -> Builtin goal
-    | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
+    | Error str ->
+        unimplemented ~issue_id:707 [ span ]
+          ("Could not resolve trait reference: " ^ str)
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value
       =
@@ -1404,7 +1417,7 @@ end) : EXPR = struct
         let bounds =
           c_bounds span bounds
           |> List.filter_map ~f:(fun bound ->
-                 match bound with GCType impl -> Some impl | _ -> None)
+              match bound with GCType impl -> Some impl | _ -> None)
         in
         TIType bounds
     | Type (_, Some _) ->
@@ -1434,7 +1447,8 @@ let make ~krate : (module EXPR) =
   let is_core_item = String.(krate = "core" || krate = "core_hax_model") in
   let module M : EXPR = Make (struct
     let is_core_item = is_core_item
-  end) in
+  end)
+  in
   (module M)
 
 let c_trait_item (item : Thir.trait_item) : trait_item =
@@ -1637,7 +1651,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              params = c_fn_params item.span params;
              safety = c_header_safety safety;
            }
-  | (Enum (_, generics, _, _) | Struct (_, generics, _)) when erased ->
+  | (Enum (_, generics, _, _) | Struct (_, generics, _, _)) when erased ->
       let generics = c_generics generics in
       let is_struct = match item.kind with Struct _ -> true | _ -> false in
       let def_id = assert_item_def_id () in
@@ -1651,15 +1665,15 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         (* Each variant might introduce a anonymous constant defining its discriminant integer  *)
         List.filter_map ~f:(fun v -> v.disr_expr) variants
         |> List.map ~f:(fun Types.{ def_id; body; _ } ->
-               let name = Concrete_ident.of_def_id ~value:true def_id in
-               let generics = { params = []; constraints = [] } in
-               let body = c_expr body.expr in
-               {
-                 v = Fn { name; generics; body; params = []; safety = Safe };
-                 span;
-                 ident = name;
-                 attrs = [];
-               })
+            let name = Concrete_ident.of_def_id ~value:true def_id in
+            let generics = { params = []; constraints = [] } in
+            let body = c_expr body.expr in
+            {
+              v = Fn { name; generics; body; params = []; safety = Safe };
+              span;
+              ident = name;
+              attrs = [];
+            })
       in
       let is_primitive =
         List.for_all
@@ -1701,7 +1715,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         mk_one (Type { name; generics; variants; is_struct }) :: discs
       in
       if is_primitive then cast_fun :: result else result
-  | Struct (_, generics, v) ->
+  | Struct (_, generics, v, _repr) ->
       let generics = c_generics generics in
       let def_id = assert_item_def_id () in
       let is_struct = true in
@@ -1948,7 +1962,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
 let import_item ~type_only (item : Thir.item) :
     concrete_ident * (item list * Diagnostics.t list) =
   let ident = Concrete_ident.of_def_id ~value:false item.owner_id in
-  let r, reports =
+  let reports, r =
     let f = U.Reducers.disambiguate_local_idents in
     Diagnostics.Core.capture (fun _ ->
         c_item item ~ident ~type_only |> List.map ~f)

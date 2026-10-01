@@ -1,9 +1,0 @@
-[package]
-name = "if-let"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-
-[package.metadata.hax-tests]
-into."fstar+coq+ssprove" = { broken = false, snapshot = "none", issue_id = "85" }

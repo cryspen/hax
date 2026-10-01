@@ -3,6 +3,7 @@ module Core_models.Error
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::error::Error`]
 class t_Error (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Fmt.t_Display v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:Core_models.Fmt.t_Debug v_Self

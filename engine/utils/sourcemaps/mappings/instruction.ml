@@ -23,7 +23,9 @@ let encode : t list -> string =
          let acc =
            acc
            ^
-           match (sep, sep') with `NeedsSep, `NeedsSep -> "," ^ str | _ -> str
+           match (sep, sep') with
+           | `NeedsSep, `NeedsSep -> "," ^ str
+           | _ -> str
          in
          (acc, sep'))
        ~init:("", `Sep)

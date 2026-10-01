@@ -58,6 +58,10 @@ pub struct AdtExpr {
     pub user_ty: Option<CanonicalUserType>,
     pub fields: Vec<FieldExpr>,
     pub base: AdtExprBase,
+    /// The representation annotation of the ADT type being constructed.
+    /// Populated via [`rustc_abi::AdtDef::repr`], which works for both
+    /// local and external (e.g. `core::option::Option`) ADT types.
+    pub repr: ReprOptions,
 }
 
 #[cfg(feature = "rustc")]
@@ -77,6 +81,7 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, AdtExpr> for thir::AdtExpr<'tcx> {
                 .collect(),
             base: self.base.sinto(s),
             user_ty: self.user_ty.sinto(s),
+            repr: self.adt_def.repr().sinto(s),
         }
     }
 }
@@ -241,6 +246,7 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Expr> for thir::Expr<'tcx> {
                         user_ty: None,
                         base: AdtExprBase::None,
                         fields: vec![],
+                        repr: def.repr().sinto(s),
                     };
                     return Expr {
                         contents: Box::new(ExprKind::Adt(adt_def)),

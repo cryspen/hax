@@ -104,24 +104,32 @@ unfold let array_of_list (#t:Type)
   parent_iterator: Core_models.Iter.Traits.Iterator.t_Iterator self;
   f_fold_return: #b:Type0 -> s:self -> b -> (b -> i:parent_iterator.f_Item{parent_iterator.f_contains s i} -> Core_models.Ops.Control_flow.t_ControlFlow b b) -> Core_models.Ops.Control_flow.t_ControlFlow b b;
 } *)
-let while_loop #acc_t 
+(* `while_loop_internal` is a top-level `let rec` rather than an inner one: F*'s SMT
+   encoding represents an inner `let rec` as an argument-independent constant, which is
+   unsound (two applications of the enclosing function collapse to the same term). Keeping
+   the recursion at top level avoids that encoding. `while_loop`'s signature is unchanged. *)
+let rec while_loop_internal #acc_t
   (inv: acc_t -> Type0)
-  (condition: (c:acc_t {inv c}) -> bool) 
+  (condition: (c:acc_t {inv c}) -> bool)
   (fuel: (a:acc_t{inv a} -> nat))
-  (init: acc_t {inv init}) 
-  (f: (i:acc_t{inv i /\ condition i} -> o:acc_t{inv o /\ fuel o < fuel i})): 
-  (res: acc_t {inv res /\ not (condition res)})
-  = 
-  let rec while_loop_internal
-  (current: acc_t {inv current}): 
+  (f: (i:acc_t{inv i /\ condition i} -> o:acc_t{inv o /\ fuel o < fuel i}))
+  (current: acc_t {inv current}):
   Tot (res: acc_t {inv res /\ not (condition res)}) (decreases (fuel current))
   = if condition current
-    then 
-      let next = f current in 
+    then
+      let next = f current in
       assert (fuel next < fuel current);
-      while_loop_internal next
-    else current in 
-  while_loop_internal init
+      while_loop_internal inv condition fuel f next
+    else current
+
+let while_loop #acc_t
+  (inv: acc_t -> Type0)
+  (condition: (c:acc_t {inv c}) -> bool)
+  (fuel: (a:acc_t{inv a} -> nat))
+  (init: acc_t {inv init})
+  (f: (i:acc_t{inv i /\ condition i} -> o:acc_t{inv o /\ fuel o < fuel i})):
+  (res: acc_t {inv res /\ not (condition res)})
+  = while_loop_internal inv condition fuel f init
 
 assume val while_loop_return #acc_t #ret_t 
   (inv: acc_t -> Type0)

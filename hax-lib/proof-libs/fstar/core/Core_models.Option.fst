@@ -44,3 +44,27 @@ include Core_models.Bundle {impl__ok_or_else as impl__ok_or_else}
 include Core_models.Bundle {impl__and_then as impl__and_then}
 
 include Core_models.Bundle {impl__take as impl__take}
+
+include Core_models.Bundle {impl__filter as impl__filter}
+
+include Core_models.Bundle {impl__or as impl__or}
+
+include Core_models.Bundle {impl__or_else as impl__or_else}
+
+include Core_models.Bundle {impl__xor as impl__xor}
+
+include Core_models.Bundle {impl__zip as impl__zip}
+
+include Core_models.Bundle {impl__inspect as impl__inspect}
+
+include Core_models.Bundle {impl_1__flatten as impl_1__flatten}
+
+include Core_models.Bundle {impl_2__cloned as impl_2__cloned}
+
+include Core_models.Bundle {impl_3__from__option as impl_3}
+
+include Core_models.Bundle {impl_4__from__option as impl_4}
+
+include Core_models.Bundle {impl_5 as impl_5}
+
+include Core_models.Bundle {impl_6__from__option as impl_6}

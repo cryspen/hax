@@ -1,16 +1,146 @@
-use crate::cli_options::Backend;
+use crate::cli_options::{Backend, BackendName, MessageFormat};
+use crate::diagnostics::report::ReportCtx;
 use crate::prelude::*;
 
+/// What a `hax.toml` entry resolved to.
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum ResolvedValue {
+    Version(String),
+    /// The path of a `path` entry, as given.
+    Path(String),
+}
+
+/// One resolved tool or declared version: what it is, what it resolved to,
+/// and a description of where that came from.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct ToolResolution {
+    pub name: String,
+    #[serde(flatten)]
+    pub resolved: ResolvedValue,
+    pub source: String,
+}
+
+impl ToolResolution {
+    /// The resolved version or path, as shown.
+    fn value(&self) -> &str {
+        match &self.resolved {
+            ResolvedValue::Version(value) | ResolvedValue::Path(value) => value,
+        }
+    }
+}
+
+/// How a resolved `hax-lib` version relates to the range a `cargo-hax`
+/// binary accepts.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, Copy, JsonSchema, Hash, Eq, PartialEq)]
+pub enum HaxLibCompatibility {
+    Compatible,
+    /// Older than the binary: the project's dependency needs updating
+    /// (or an older cargo-hax is needed).
+    TooOld,
+    /// Newer than the binary (typically after a `cargo update`): update
+    /// cargo-hax, or pin `hax-lib` back to the binary's version.
+    TooNew,
+}
+
+impl HaxLibCompatibility {
+    /// The parenthesized status `tools show` annotates a `hax-lib` row with.
+    fn describe(self) -> &'static str {
+        match self {
+            Self::Compatible => "compatible",
+            Self::TooOld => "INCOMPATIBLE: too old for this cargo-hax",
+            Self::TooNew => "INCOMPATIBLE: newer than this cargo-hax",
+        }
+    }
+}
+
+/// The `hax-lib` version one crate's direct dependency resolved to.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct HaxLibStatus {
+    #[serde(rename = "crate")]
+    pub crate_name: String,
+    pub version: String,
+    pub compatibility: HaxLibCompatibility,
+}
+
+/// The entries one member crate resolves differently from the workspace.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct MemberOverride {
+    #[serde(rename = "crate")]
+    pub crate_name: String,
+    pub tools: Vec<ToolResolution>,
+    pub versions: Vec<ToolResolution>,
+}
+
+/// One version of one tool, as `tools list` reports it.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct ToolVersionListing {
+    pub version: String,
+    pub installed: bool,
+    pub in_manifest: bool,
+    pub default: bool,
+    /// Whether the cached copy was checksum-verified at install time.
+    /// Meaningless unless `installed`.
+    pub verified: bool,
+}
+
+/// The versions of one tool, as `tools list` reports them.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct ToolListing {
+    pub tool: String,
+    pub versions: Vec<ToolVersionListing>,
+    /// How many versions were left out of `versions` as too old.
+    pub omitted: usize,
+}
+
+/// How one version came to be in the cache.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, Copy, JsonSchema, Hash, Eq, PartialEq)]
+pub enum InstallStatus {
+    /// Already in the cache, `verified` as recorded at install time.
+    Cached { verified: bool },
+    /// Freshly downloaded and installed.
+    Installed { verified: bool },
+}
+
+/// One tool version an `install` run accounted for.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct InstalledTool {
+    pub tool: String,
+    pub version: String,
+    pub status: InstallStatus,
+}
+
+/// One entry a `pin` run wrote into `hax.toml`.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct PinChange {
+    pub name: String,
+    pub version: String,
+    /// The version the entry pinned before, if it existed.
+    pub previous: Option<String>,
+}
+
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
 #[repr(u8)]
 pub enum HaxMessage {
     Diagnostic {
         diagnostic: super::Diagnostics,
         working_dir: Option<PathBuf>,
     } = 254,
-    EngineNotFound {
-        is_opam_setup_correctly: bool,
+    BinaryNotFound {
+        binary_name: String,
+        env_var: String,
+        hint: Option<String>,
     } = 0,
     ProducedFile {
         path: PathBuf,
@@ -21,12 +151,149 @@ pub enum HaxMessage {
     } = 2,
     CargoBuildFailure = 3,
     WarnExperimentalBackend {
-        backend: Backend<()>,
+        backend: Backend,
     } = 4,
     ProfilingData(crate::engine_api::ProfilingData) = 5,
     Stats {
         errors_per_item: Vec<(hax_frontend_exporter::DefId, usize)>,
     } = 6,
+    GenericError {
+        message: String,
+    } = 7,
+    GenericWarning {
+        message: String,
+    } = 8,
+    Step {
+        verb: String,
+        target: String,
+    } = 9,
+    SubprocessOutput {
+        prefix: String,
+        line: String,
+    } = 10,
+    OutputTruncated {
+        prefix: String,
+        remaining: usize,
+        log_path: PathBuf,
+    } = 11,
+    UnsupportedOption {
+        option: String,
+        backend: BackendName,
+    } = 12,
+    HaxTomlWarning {
+        path: PathBuf,
+        message: String,
+    } = 13,
+    HaxTomlError {
+        path: PathBuf,
+        message: String,
+    } = 14,
+    MemberToolOverrides {
+        crate_name: String,
+        path: PathBuf,
+        entries: Vec<String>,
+    } = 15,
+    StrayHaxToml {
+        path: PathBuf,
+    } = 16,
+    UnverifiedInstall {
+        tool: String,
+        version: String,
+        url: String,
+    } = 17,
+    NonDefaultToolVersion {
+        tool: String,
+        used: String,
+        tested: String,
+    } = 18,
+    HaxLibIncompatible {
+        crate_name: String,
+        found: String,
+        binary: String,
+        expected: String,
+        newer: bool,
+    } = 19,
+    CachedUnverifiedToolInUse {
+        tool: String,
+        version: String,
+    } = 20,
+    /// The result of `cargo hax tools show`.
+    ToolsShow {
+        /// The workspace-wide resolution of each managed tool.
+        tools: Vec<ToolResolution>,
+        /// The workspace-wide resolution of each declared-only version.
+        versions: Vec<ToolResolution>,
+        /// Every crate with a direct `hax-lib` dependency.
+        hax_lib: Vec<HaxLibStatus>,
+        member_overrides: Vec<MemberOverride>,
+    } = 21,
+    /// The result of `cargo hax tools list`.
+    ToolsList {
+        tools: Vec<ToolListing>,
+        /// Whether the listing was restricted to cached versions, which is
+        /// what an empty listing means.
+        installed_only: bool,
+    } = 22,
+    /// The result of `cargo hax tools install`: the versions now in the
+    /// cache. Versions that failed to install are reported as errors of
+    /// their own and are absent here.
+    ToolsInstalled {
+        installed: Vec<InstalledTool>,
+    } = 23,
+    /// An existing generated Lean project file pins a version that
+    /// differs from the current resolution.
+    LakefilePinDrift {
+        path: PathBuf,
+        /// What is pinned: a lakefile `[[require]]` name, or `lean` for
+        /// the toolchain file.
+        name: String,
+        found: String,
+        expected: String,
+    } = 24,
+    /// The result of `cargo hax tools remove`: the version deleted from
+    /// the cache.
+    ToolRemoved {
+        tool: String,
+        version: String,
+    } = 25,
+    /// The result of `cargo hax tools clean`: how many cached tool
+    /// versions the deleted cache held.
+    ToolsCleaned {
+        removed: usize,
+    } = 26,
+    /// The result of `cargo hax tools pin`: the entries written into the
+    /// edited `hax.toml`, and the path-pinned ones left untouched. Empty
+    /// `changes` means the file was not written.
+    ToolsPinned {
+        path: PathBuf,
+        changes: Vec<PinChange>,
+        skipped: Vec<String>,
+    } = 27,
+    /// A file the root module of a generated Lean package should import
+    /// exists, but the root module does not import it.
+    RootModuleMissingImport {
+        path: PathBuf,
+        import: String,
+    } = 28,
+    /// The root module of a generated Lean package imports an extraction
+    /// file that no longer exists.
+    RootModuleStaleImport {
+        path: PathBuf,
+        import: String,
+    } = 29,
+    /// The resolved invocation of one proof scenario, as
+    /// `extract --dry-run` prints it.
+    ScenarioDryRun {
+        name: String,
+        package: String,
+        /// The resolved invocation, one display line per entry.
+        lines: Vec<String>,
+    } = 30,
+    /// The summary of an `extract` run.
+    ScenarioSummary {
+        total: usize,
+        failed: Vec<String>,
+    } = 31,
 }
 
 impl HaxMessage {
@@ -40,5 +307,679 @@ impl HaxMessage {
             HaxMessage::Diagnostic { diagnostic, .. } => diagnostic.kind.code(),
             _ => format!("CARGOHAX{:0>4}", self.discriminant()),
         }
+    }
+}
+
+/// Whether this process reported an error-severity message.
+/// [`HaxMessage::report`] sets it, and [`errors_reported`] exposes it: a
+/// reported error and a successful exit status must never combine, so an
+/// exit path with a zero code has to consult it.
+static ERROR_REPORTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Whether an error-severity message was reported in this process.
+pub fn errors_reported() -> bool {
+    ERROR_REPORTED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+const ENGINE_BINARY_NAME: &str = "hax-engine";
+
+use annotate_snippets::{Level, Renderer};
+
+/// Render a warning with a `help` footer, the shape most warnings share.
+fn warn_with_help(renderer: &Renderer, title: &str, remedy: &str) -> String {
+    format!(
+        "{}",
+        renderer.render(
+            Level::Warning
+                .title(title)
+                .footer(Level::Help.title(remedy))
+        )
+    )
+}
+
+/// Make a path relative to the current directory for display, if possible.
+fn relative_to_cwd(path: PathBuf) -> PathBuf {
+    std::env::current_dir()
+        .ok()
+        .and_then(|current_dir| path.strip_prefix(current_dir).ok())
+        .map(|relative| PathBuf::from(".").join(relative))
+        .unwrap_or(path)
+}
+
+impl HaxMessage {
+    /// Whether this message reports an error, i.e. renders at error level.
+    /// Reporting one commits the process to a failing exit status. Kept
+    /// exhaustive so that a new variant forces a decision here, matching
+    /// the level [`Self::render_styled`] gives it.
+    pub fn is_error(&self) -> bool {
+        match self {
+            Self::Diagnostic { .. }
+            | Self::BinaryNotFound { .. }
+            | Self::HaxEngineFailure { .. }
+            | Self::GenericError { .. }
+            | Self::HaxTomlError { .. }
+            | Self::HaxLibIncompatible { .. } => true,
+            Self::ScenarioSummary { failed, .. } => !failed.is_empty(),
+            Self::ProducedFile { .. }
+            | Self::CargoBuildFailure
+            | Self::WarnExperimentalBackend { .. }
+            | Self::ProfilingData(..)
+            | Self::Stats { .. }
+            | Self::GenericWarning { .. }
+            | Self::Step { .. }
+            | Self::SubprocessOutput { .. }
+            | Self::OutputTruncated { .. }
+            | Self::UnsupportedOption { .. }
+            | Self::HaxTomlWarning { .. }
+            | Self::MemberToolOverrides { .. }
+            | Self::StrayHaxToml { .. }
+            | Self::UnverifiedInstall { .. }
+            | Self::NonDefaultToolVersion { .. }
+            | Self::CachedUnverifiedToolInUse { .. }
+            | Self::ToolsShow { .. }
+            | Self::ToolsList { .. }
+            | Self::ToolsInstalled { .. }
+            | Self::LakefilePinDrift { .. }
+            | Self::ToolRemoved { .. }
+            | Self::ToolsCleaned { .. }
+            | Self::ToolsPinned { .. }
+            | Self::RootModuleMissingImport { .. }
+            | Self::RootModuleStaleImport { .. }
+            | Self::ScenarioDryRun { .. } => false,
+        }
+    }
+
+    pub fn report(self, message_format: MessageFormat, rctx: Option<&mut ReportCtx>) {
+        if self.is_error() {
+            ERROR_REPORTED.store(true, std::sync::atomic::Ordering::Relaxed);
+        }
+        // A message that renders to nothing has nothing to print: a report
+        // of an empty listing must not become a blank line.
+        if let Some(rendered) = self.render(message_format, rctx)
+            && !rendered.is_empty()
+        {
+            println!("{rendered}")
+        }
+    }
+    pub fn report_styled(self, rctx: Option<&mut ReportCtx>) {
+        if self.is_error() {
+            ERROR_REPORTED.store(true, std::sync::atomic::Ordering::Relaxed);
+        }
+        println!("{}", self.render_styled(rctx))
+    }
+
+    pub fn render(
+        self,
+        message_format: MessageFormat,
+        mut rctx: Option<&mut ReportCtx>,
+    ) -> Option<String> {
+        if let (Some(r), HaxMessage::Diagnostic { diagnostic, .. }) = (rctx.as_mut(), &self)
+            && r.seen_already(diagnostic.clone())
+        {
+            return None;
+        }
+        Some(match message_format {
+            MessageFormat::Json => serde_json::to_string(&self).unwrap(),
+            MessageFormat::Human => self.render_styled(rctx),
+        })
+    }
+    pub fn render_styled(self, rctx: Option<&mut ReportCtx>) -> String {
+        let renderer = Renderer::styled();
+        match self {
+            Self::Diagnostic {
+                diagnostic,
+                working_dir,
+            } => {
+                let mut _rctx = None;
+                let rctx = rctx.unwrap_or_else(|| _rctx.get_or_insert(ReportCtx::default()));
+                diagnostic.with_message(
+                    rctx,
+                    working_dir.as_ref().map(PathBuf::as_path),
+                    Level::Error,
+                    |msg| format!("{}", renderer.render(msg)),
+                )
+            }
+            Self::BinaryNotFound {
+                binary_name,
+                env_var,
+                hint,
+            } => {
+                use colored::Colorize;
+                let mut message = format!(
+                    "hax: The binary [{}] was not found in your [PATH].\n\
+                     Please make sure it is installed and is in PATH!\n\
+                     Hint: set the [{}] environment variable to provide its path explicitly.",
+                    binary_name, env_var
+                );
+                if let Some(hint) = hint {
+                    message.push_str(&format!("\n{}", hint.bright_black()));
+                }
+                format!("{}", renderer.render(Level::Error.title(&message)))
+            }
+            Self::ProducedFile { path, wrote } => {
+                let path = relative_to_cwd(path);
+                let title = if wrote {
+                    format!("hax: wrote file {}", path.display())
+                } else {
+                    format!("hax: unchanged file {}", path.display())
+                };
+                format!("{}", renderer.render(Level::Info.title(&title)))
+            }
+            Self::HaxEngineFailure { exit_code } => {
+                let title = format!(
+                    "hax: {} exited with non-zero code {}",
+                    ENGINE_BINARY_NAME, exit_code,
+                );
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::ProfilingData(data) => {
+                fn format_with_dot(shift: u32, n: u64) -> String {
+                    let factor = 10u64.pow(shift);
+                    format!("{}.{}", n / factor, n % factor)
+                }
+                let title = format!(
+                    "hax[profiling]: {}: {}ms, memory={}, {} item{}{}",
+                    data.context,
+                    format_with_dot(6, data.time_ns),
+                    data.memory,
+                    data.quantity,
+                    if data.quantity > 1 { "s" } else { "" },
+                    if data.errored {
+                        " (note: this failed!)"
+                    } else {
+                        ""
+                    }
+                );
+                format!("{}", renderer.render(Level::Info.title(&title)))
+            }
+            Self::Stats { errors_per_item } => {
+                let success_items = errors_per_item.iter().filter(|(_, n)| *n == 0).count();
+                let total = errors_per_item.len();
+                let title = format!(
+                    "hax: {}/{} items were successfully translated ({}% success rate)",
+                    success_items,
+                    total,
+                    (success_items * 100) / total
+                );
+                format!("{}", renderer.render(Level::Info.title(&title)))
+            }
+            Self::CargoBuildFailure => {
+                let title =
+                    "hax: running `cargo build` was not successful, continuing anyway.".to_string();
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::WarnExperimentalBackend { backend } => {
+                let title = format!(
+                    "hax: Experimental backend \"{}\" is work in progress.",
+                    backend
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::GenericError { message } => {
+                let title = format!("hax: {}", message);
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::GenericWarning { message } => {
+                let title = format!("hax: {}", message);
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::Step { verb, target } => {
+                use colored::Colorize;
+                format!("{:>12} {}", verb.bold().green(), target)
+            }
+            Self::SubprocessOutput { prefix, line } => {
+                format!("{:>12} > {}", prefix, line)
+            }
+            Self::OutputTruncated {
+                prefix,
+                remaining,
+                log_path,
+            } => {
+                format!(
+                    "{:>12} > ... ({} more lines, full output in {})",
+                    prefix,
+                    remaining,
+                    log_path.display()
+                )
+            }
+            Self::UnsupportedOption { option, backend } => {
+                let title = format!(
+                    "hax: option {} is not supported by the {} backend and will be ignored",
+                    option, backend
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxTomlWarning { path, message } => {
+                let title = format!("hax: {}: {}", path.display(), message);
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxTomlError { path, message } => {
+                let title = format!("hax: {}: {}", path.display(), message);
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::MemberToolOverrides {
+                crate_name,
+                path,
+                entries,
+            } => {
+                let title = format!(
+                    "hax: crate `{}` overrides the workspace tool configuration ({}) in {}. \
+                     Prefer a single workspace-wide pin where possible.",
+                    crate_name,
+                    entries.join(", "),
+                    path.display()
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxLibIncompatible {
+                crate_name,
+                found,
+                binary,
+                expected,
+                newer,
+            } => {
+                let remedy = if newer {
+                    format!(
+                        "update cargo-hax to the release matching hax-lib {found}, or pin\n\
+                         the `hax-lib` dependency to {expected} in Cargo.toml"
+                    )
+                } else {
+                    format!(
+                        "update the `hax-lib` dependency to {expected}, e.g. with\n\
+                         `cargo update -p hax-lib --precise {expected}`, or install cargo-hax {found}"
+                    )
+                };
+                let title = format!(
+                    "incompatible `hax-lib` version\n\n\
+                     this cargo-hax binary ({binary}) requires hax-lib {expected}\n\
+                     found hax-lib {found} in Cargo.lock (crate `{crate_name}`)\n\n\
+                     {remedy}"
+                );
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::NonDefaultToolVersion { tool, used, tested } => {
+                let title =
+                    format!("hax: using {tool} {used}; this hax release was tested with {tested}");
+                format!("{}", renderer.render(Level::Info.title(&title)))
+            }
+            Self::LakefilePinDrift {
+                path,
+                name,
+                found,
+                expected,
+            } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} pins {name} {found}; the current configuration expects {expected}",
+                    path.display()
+                );
+                let remedy = "update the pin, or delete the file and re-run to regenerate it";
+                warn_with_help(&renderer, &title, remedy)
+            }
+            Self::RootModuleMissingImport { path, import } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} does not import {import}, so `lake build` will not \
+                     check that file",
+                    path.display()
+                );
+                let remedy = format!(
+                    "add `import {import}`, or comment it out (`-- import {import}`) \
+                     to silence this warning"
+                );
+                warn_with_help(&renderer, &title, &remedy)
+            }
+            Self::RootModuleStaleImport { path, import } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} imports {import}, but the extraction no longer \
+                     produces that file",
+                    path.display()
+                );
+                let remedy = "remove or comment out the import line";
+                warn_with_help(&renderer, &title, remedy)
+            }
+            Self::UnverifiedInstall { tool, version, url } => {
+                let title = format!(
+                    "{tool} {version} is not in this release's manifest; \
+                     installing without checksum verification"
+                );
+                let source = format!("source {url}");
+                let remedy = format!(
+                    "once a checksum ships, run \
+                     `cargo hax tools install {tool}@{version} --force` to verify"
+                );
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Note.title(&source))
+                            .footer(Level::Help.title(&remedy))
+                    )
+                )
+            }
+            Self::StrayHaxToml { path } => {
+                let title = format!(
+                    "hax: found {} outside the workspace root and member crate roots; \
+                     it has no effect and is ignored",
+                    path.display()
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::CachedUnverifiedToolInUse { tool, version } => {
+                let title = format!(
+                    "using {tool} {version} from the cache; it was installed \
+                     without checksum verification"
+                );
+                let remedy = format!(
+                    "run `cargo hax tools install {tool}@{version} --force` to \
+                     re-download and verify it once a checksum ships"
+                );
+                warn_with_help(&renderer, &title, &remedy)
+            }
+            Self::ToolsShow {
+                tools,
+                versions,
+                hax_lib,
+                member_overrides,
+            } => render_tools_show(&tools, &versions, &hax_lib, &member_overrides),
+            Self::ToolsList {
+                tools,
+                installed_only,
+            } => render_tools_list(&tools, installed_only),
+            Self::ToolsInstalled { installed } => render_tools_installed(&installed),
+            Self::ToolRemoved { tool, version } => {
+                use colored::Colorize;
+                format!("{:>12} {tool} {version}", "Removed".bold().green())
+            }
+            Self::ToolsCleaned { removed } => {
+                use colored::Colorize;
+                let noun = if removed == 1 {
+                    "tool version"
+                } else {
+                    "tool versions"
+                };
+                format!("{:>12} {removed} {noun}", "Removed".bold().green())
+            }
+            Self::ToolsPinned {
+                path,
+                changes,
+                skipped,
+            } => render_tools_pinned(&path, &changes, &skipped),
+            Self::ScenarioDryRun {
+                name,
+                package,
+                lines,
+            } => {
+                let mut block = vec![format!("scenario `{name}` (package `{package}`):")];
+                block.extend(lines.iter().map(|line| format!("  {line}")));
+                block.join("\n")
+            }
+            Self::ScenarioSummary { total, failed } => {
+                let plural = |n: usize| if n == 1 { "" } else { "s" };
+                if failed.is_empty() {
+                    let title = format!("hax: {total} scenario{} extracted", plural(total));
+                    format!("{}", renderer.render(Level::Info.title(&title)))
+                } else {
+                    let title = format!(
+                        "hax: {} of {total} scenario{} failed: {}",
+                        failed.len(),
+                        plural(total),
+                        failed.join(", ")
+                    );
+                    format!("{}", renderer.render(Level::Error.title(&title)))
+                }
+            }
+        }
+    }
+}
+
+/// The name the `hax-lib` rows of `tools show` are labelled with.
+const HAX_LIB_ROW: &str = "hax-lib";
+
+/// One `  <name>  <value>  (<source>)` row of the `tools show` grid.
+fn resolution_rows(
+    entries: &[ToolResolution],
+    name_width: usize,
+    value_width: usize,
+) -> impl Iterator<Item = String> + '_ {
+    entries.iter().map(move |entry| {
+        format!(
+            "  {name:name_width$}  {value:value_width$}  ({source})",
+            name = entry.name,
+            value = entry.value(),
+            source = entry.source,
+        )
+    })
+}
+
+/// `tools show`: the resolutions of the project, section by section, with
+/// the name and value columns aligned across every section so the source
+/// annotations line up in a single grid.
+fn render_tools_show(
+    tools: &[ToolResolution],
+    versions: &[ToolResolution],
+    hax_lib: &[HaxLibStatus],
+    member_overrides: &[MemberOverride],
+) -> String {
+    let all = || {
+        tools.iter().chain(versions).chain(
+            member_overrides
+                .iter()
+                .flat_map(|member| member.tools.iter().chain(&member.versions)),
+        )
+    };
+    // The `hax-lib` rows share the grid too, so `hax-lib` reads as a named
+    // row rather than a bare version line.
+    let name_width = all()
+        .map(|entry| entry.name.len())
+        .chain(hax_lib.iter().map(|_| HAX_LIB_ROW.len()))
+        .max()
+        .unwrap_or(0);
+    let value_width = all()
+        .map(|entry| entry.value().len())
+        .chain(hax_lib.iter().map(|status| status.version.len()))
+        .max()
+        .unwrap_or(0);
+    let hax_lib_row = |status: &HaxLibStatus, annotation: String| {
+        format!(
+            "  {name:name_width$}  {value:value_width$}  ({annotation})",
+            name = HAX_LIB_ROW,
+            value = status.version,
+        )
+    };
+
+    let mut lines = vec!["tools:".to_string()];
+    lines.extend(resolution_rows(tools, name_width, value_width));
+    lines.push(String::new());
+    lines.push("versions:".to_string());
+    lines.extend(resolution_rows(versions, name_width, value_width));
+
+    // One version across the project (or a single crate) is one row; crates
+    // that disagree get one row each, naming the crate.
+    let uniform = hax_lib.iter().all(|status| {
+        (&status.version, status.compatibility) == (&hax_lib[0].version, hax_lib[0].compatibility)
+    });
+    match hax_lib {
+        [] => {}
+        [first, ..] => {
+            lines.push(String::new());
+            lines.push("libraries:".to_string());
+            if uniform {
+                lines.push(hax_lib_row(
+                    first,
+                    first.compatibility.describe().to_string(),
+                ));
+            } else {
+                lines.extend(hax_lib.iter().map(|status| {
+                    hax_lib_row(
+                        status,
+                        format!(
+                            "crate `{}`: {}",
+                            status.crate_name,
+                            status.compatibility.describe()
+                        ),
+                    )
+                }));
+            }
+        }
+    }
+
+    for member in member_overrides {
+        lines.push(String::new());
+        lines.push(format!("crate `{}` (overrides):", member.crate_name));
+        lines.extend(resolution_rows(&member.tools, name_width, value_width));
+        lines.extend(resolution_rows(&member.versions, name_width, value_width));
+    }
+    lines.join("\n")
+}
+
+/// `tools list`: one block per tool, each version annotated with what is
+/// known about it.
+fn render_tools_list(tools: &[ToolListing], installed_only: bool) -> String {
+    let mut blocks = Vec::new();
+    for listing in tools {
+        let mut lines = vec![format!("{}:", listing.tool)];
+        if listing.versions.is_empty() {
+            lines.push(format!(
+                "  ({})",
+                if installed_only {
+                    "none installed"
+                } else {
+                    "none"
+                }
+            ));
+        }
+        // Pad the version column so the markers line up.
+        let width = listing
+            .versions
+            .iter()
+            .map(|version| version.version.len())
+            .max()
+            .unwrap_or(0);
+        for version in &listing.versions {
+            let mut marks = Vec::new();
+            if version.default {
+                marks.push("default".to_string());
+            }
+            if version.installed {
+                marks.push("installed".to_string());
+                if !version.verified {
+                    marks.push("unverified".to_string());
+                }
+            }
+            if !version.in_manifest {
+                marks.push("not in manifest".to_string());
+            }
+            lines.push(if marks.is_empty() {
+                format!("  {}", version.version)
+            } else {
+                format!(
+                    "  {version:width$}  ({marks})",
+                    version = version.version,
+                    marks = marks.join(", ")
+                )
+            });
+        }
+        if listing.omitted > 0 {
+            lines.push(format!(
+                "  ... {} older versions omitted (use --all)",
+                listing.omitted
+            ));
+        }
+        blocks.push(lines.join("\n"));
+    }
+    blocks.join("\n\n")
+}
+
+/// `tools pin`: one Cargo-style line per skipped and per written entry,
+/// closed by the state of the file.
+fn render_tools_pinned(
+    path: &std::path::Path,
+    changes: &[PinChange],
+    skipped: &[String],
+) -> String {
+    use colored::Colorize;
+    let path = relative_to_cwd(path.to_path_buf());
+    let mut lines: Vec<String> = skipped
+        .iter()
+        .map(|name| {
+            format!(
+                "{:>12} {name} (pinned to a path)",
+                "Skipped".bold().yellow()
+            )
+        })
+        .chain(changes.iter().map(|change| {
+            let previous = match &change.previous {
+                Some(previous) => format!(" (was {previous})"),
+                None => String::new(),
+            };
+            format!(
+                "{:>12} {} {}{previous}",
+                "Pinned".bold().green(),
+                change.name,
+                change.version
+            )
+        }))
+        .collect();
+    lines.push(if !changes.is_empty() {
+        format!(
+            "{:>12} {} (run `cargo hax tools install` to pre-fetch)",
+            "Wrote".bold().green(),
+            path.display()
+        )
+    } else if !skipped.is_empty() {
+        format!("{:>12} {}", "Unchanged".bold().green(), path.display())
+    } else {
+        format!(
+            "{:>12} {} already pins these versions",
+            "Unchanged".bold().green(),
+            path.display()
+        )
+    });
+    lines.join("\n")
+}
+
+/// `tools install`: one Cargo-style line per version now in the cache.
+fn render_tools_installed(installed: &[InstalledTool]) -> String {
+    use colored::Colorize;
+    installed
+        .iter()
+        .map(|entry| {
+            let (verb, verified) = match entry.status {
+                InstallStatus::Cached { verified } => ("Cached", verified),
+                InstallStatus::Installed { verified } => ("Installed", verified),
+            };
+            let suffix = if verified { "" } else { " (unverified)" };
+            format!(
+                "{:>12} {} {}{}",
+                verb.bold().green(),
+                entry.tool,
+                entry.version,
+                suffix
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_reported_error_must_not_exit_successfully() {
+        let warning = HaxMessage::GenericWarning {
+            message: "w".into(),
+        };
+        assert!(!warning.is_error());
+
+        let error = HaxMessage::GenericError {
+            message: "e".into(),
+        };
+        assert!(error.is_error());
+        error.report(MessageFormat::Json, None);
+        assert!(errors_reported());
     }
 }

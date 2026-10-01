@@ -76,7 +76,7 @@ module%inlined_contents Make (F : Features.T) = struct
       quote_of_expr' span expr
       |> Option.map ~f:(fun quote : B.expr' -> B.Quote quote)
       |> Option.value_or_thunk ~default:(fun _ ->
-             [%inline_body dexpr'] span expr)
+          [%inline_body dexpr'] span expr)
 
     and quote_of_expr (expr : A.expr) = quote_of_expr' expr.span expr.e
 
@@ -107,19 +107,18 @@ module%inlined_contents Make (F : Features.T) = struct
                       extract_pattern e
                       |> Option.bind ~f:first_global_ident
                       |> Option.value_or_thunk ~default:(fun _ ->
-                             Error.assertion_failure span
-                               "Could not extract pattern (case constructor): \
-                                this may be a bug in the quote macros in \
-                                hax-lib.")
+                          Error.assertion_failure span
+                            "Could not extract pattern (case constructor): \
+                             this may be a bug in the quote macros in hax-lib.")
                     in
                     B.Expr { e with e = GlobalVar id }
                 | Some "_pat" ->
                     let pat =
                       extract_pattern e
                       |> Option.value_or_thunk ~default:(fun _ ->
-                             Error.assertion_failure span
-                               "Could not extract pattern (case pat): this may \
-                                be a bug in the quote macros in hax-lib.")
+                          Error.assertion_failure span
+                            "Could not extract pattern (case pat): this may be \
+                             a bug in the quote macros in hax-lib.")
                     in
                     Pattern pat
                 | Some "_ty" ->
@@ -199,10 +198,10 @@ module%inlined_contents Make (F : Features.T) = struct
         let quote =
           quote_of_expr body
           |> Option.value_or_thunk ~default:(fun _ ->
-                 Error.assertion_failure item.span
-                 @@ "Malformed `Quote` item: `quote_of_expr` failed. \
-                     Expression was:\n"
-                 ^ [%show: A.expr] body)
+              Error.assertion_failure item.span
+              @@ "Malformed `Quote` item: `quote_of_expr` failed. Expression \
+                  was:\n"
+              ^ [%show: A.expr] body)
         in
         let attrs =
           let is_late_skip =

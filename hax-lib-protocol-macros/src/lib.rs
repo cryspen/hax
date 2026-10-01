@@ -105,7 +105,6 @@ pub fn init(
 ///     }
 /// }
 /// ```
-#[proc_macro_error2::proc_macro_error]
 #[proc_macro_attribute]
 pub fn init_empty(
     attr: proc_macro::TokenStream,

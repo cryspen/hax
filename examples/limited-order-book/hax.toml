@@ -1,0 +1,3 @@
+[scenario.process-order]
+backend = "fstar"
+select-clauses = ["-**", "+**::process_order"]

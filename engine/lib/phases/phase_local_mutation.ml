@@ -182,7 +182,7 @@ struct
                       bindings =
                         Set.to_list observable_mutations
                         |> List.map ~f:(fun (Local_ident.{ name; _ }, _) ->
-                               name);
+                            name);
                     };
                 span;
               };

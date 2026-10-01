@@ -217,7 +217,15 @@ let mul_mod (#t:inttype) (a:int_t t)
 
 let mul_overflow (#t:inttype) (a:int_t t)
                  (b:int_t t) =
-                 (mk_int #t (v a * v b @%. t), (v a * v b > maxint t || v a * v b < maxint t))
+                 (mk_int #t (v a * v b @%. t), (v a * v b > maxint t || v a * v b < minint t))
+
+let add_overflow (#t:inttype) (a:int_t t)
+                 (b:int_t t) =
+                 (mk_int #t ((v a + v b) @%. t), (v a + v b > maxint t || v a + v b < minint t))
+
+let sub_overflow (#t:inttype) (a:int_t t)
+                 (b:int_t t) =
+                 (mk_int #t ((v a - v b) @%. t), (v a - v b > maxint t || v a - v b < minint t))
 let mul (#t:inttype) (a:int_t t)
         (b:int_t t{range (v a * v b) t}) =
         mk_int #t (v a * v b)
@@ -232,12 +240,26 @@ let sub (#t:inttype) (a:int_t t)
 let decr (#t:inttype) (a:int_t t{minint t < v a}) =
     mk_int #t (v a - 1)
 
-let div (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (v a / v b) t)}) =
-  assert (unsigned t \/ range (v a / v b) t);
-  mk_int #t (v a / v b)
-  
-let mod (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0}) =
-  mk_int #t (v a % v b)
+let trunc_div (a: int) (b: int{b <> 0}) : int =
+  let q = abs a / abs b in
+  if (a >= 0) = (b >= 0) then q else -q
+
+let trunc_mod (a: int) (b: int{b <> 0}) : int = a - b * trunc_div a b
+
+/// Unsigned operands are non-negative, so truncating and Euclidean division
+/// agree; taking `/` and `%` on that branch keeps the sign case-splits of
+/// [trunc_div] and [abs] out of unsigned consumers' contexts. [unsigned t]
+/// matches on a concrete [inttype], so the branch reduces rather than
+/// reaching the solver.
+let div (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (trunc_div (v a) (v b)) t)}) =
+  if unsigned t
+  then mk_int #t (v a / v b)
+  else mk_int #t (trunc_div (v a) (v b))
+
+let mod (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (trunc_div (v a) (v b)) t)}) =
+  if unsigned t
+  then mk_int #t (v a % v b)
+  else mk_int #t (trunc_mod (v a) (v b))
 
 
 /// Comparison Operators
@@ -303,9 +325,8 @@ val logand_lemma: #t:inttype -> a:int_t t -> b:int_t t ->
 
 val logand_mask_lemma: #t:inttype
   -> a:int_t t
-  -> m:nat{m < bits t} ->
-  Lemma (pow2 m < maxint t /\
-         logand a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)) ==
+  -> m:nat{m < bits t /\ pow2 m < maxint t} ->
+  Lemma (logand a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)) ==
          mk_int (v a % pow2 m))
   [SMTPat (logand #t a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)))]
 
@@ -429,9 +450,6 @@ unfold
 let ( &. ) #t = logand #t
 
 unfold
-let ( ~. ) #t = lognot #t
-
-unfold
 let (/!) #t = div #t
 
 unfold
@@ -455,6 +473,18 @@ let (>.) #t = gt #t
 unfold
 let (>=.) #t = gte #t
 
+class negation_tc self = {
+  ( ~. ): self -> self;
+}
+
+instance negation_for_integers #t: negation_tc (int_t t) = {
+  ( ~. ) = fun x -> lognot x
+}
+
+instance negation_for_bool: negation_tc bool = {
+  ( ~. ) = not
+}
+
 type bit = n: nat {n < 2}
 
 /// Mathematical `get_bit` definition on `nat`s
@@ -469,7 +499,8 @@ let get_bit (#n: inttype) (x: int_t n) (nth: usize {v nth < bits n}): bit
                     get_bit_nat (pow2 (bits n) + v x) (v nth)
 
 unfold let bit_and (x y: bit): bit = match x, y with | (1, 1) -> 1 | _ -> 0
-unfold let bit_or  (x y: bit): bit = (x + y) % 2
+unfold let bit_or  (x y: bit): bit = match x, y with | (0, 0) -> 0 | _ -> 1
+unfold let bit_xor (x y: bit): bit = (x + y) % 2
 
 /// Bit-wise semantics for `&.`
 val get_bit_and #t (x y: int_t t) (i: usize {v i < bits t})
@@ -480,6 +511,56 @@ val get_bit_and #t (x y: int_t t) (i: usize {v i < bits t})
 val get_bit_or #t (x y: int_t t) (i: usize {v i < bits t})
   : Lemma (get_bit (x |. y) i == get_bit x i `bit_or` get_bit y i)
           [SMTPat (get_bit (x |. y) i)]
+
+/// Bit-wise semantics for `^.`
+val get_bit_xor #t (x y: int_t t) (i: usize {v i < bits t})
+  : Lemma (get_bit (x ^. y) i == get_bit x i `bit_xor` get_bit y i)
+          [SMTPat (get_bit (x ^. y) i)]
+
+/// Bit-wise semantics for `~.` (logical NOT).
+val get_bit_lognot #t (x: int_t t) (i: usize {v i < bits t})
+  : Lemma (get_bit (~. x) i == (if get_bit x i = 0 then 1 else 0))
+          [SMTPat (get_bit (~. x) i)]
+
+/// Bit-wise commutativity of `&.`
+val logand_commutative #t (a b: int_t t)
+  : Lemma ((a &. b) == (b &. a))
+
+/// Bit-extensionality on integer types: two integers are equal iff
+/// they agree on every bit position.  Useful for closing equality
+/// goals that have been reduced to per-bit reasoning via the
+/// [get_bit_*] SMTPats above.
+val lemma_int_t_eq_via_bits #t (x y: int_t t)
+  : Lemma (requires forall (i: usize {v i < bits t}). get_bit x i == get_bit y i)
+          (ensures x == y)
+
+/// Concrete left-rotation of an unsigned integer by [n] bits, where
+/// [0 < n < bits t].  Defined as the shift-XOR composition that the
+/// SIMD intrinsics implement.  For non-zero rotation amounts strictly
+/// below the bit-width the shifted-left and shifted-right portions
+/// occupy disjoint bit positions, so `^.` agrees with `|.` here.
+///
+/// This is the canonical rotate-left in [Rust_primitives]; the
+/// [Core_models.Num.impl_u*__rotate_left] specs delegate to it
+/// (handling the zero / wrap-around cases at the boundary).
+unfold
+let rotate_left_u (#t: inttype{unsigned t})
+                  (x: int_t t)
+                  (n: u32 {v n > 0 /\ v n < bits t /\ bits t < pow2 31})
+              : int_t t =
+  (x <<! n) ^. (x >>! (mk_u32 (bits t) -! n))
+
+/// Per-bit characterization of [rotate_left_u].  For every bit
+/// position [i ∈ [0, bits t)]:
+///     bit i of (rotate_left_u x n)
+///   equals
+///     bit ((i + bits t - n) mod (bits t)) of x
+val lemma_rotate_left_u_get_bit (#t: inttype{unsigned t})
+      (x: int_t t)
+      (n: u32 {v n > 0 /\ v n < bits t /\ bits t < pow2 31})
+      (i: usize {v i < bits t})
+  : Lemma (get_bit (rotate_left_u x n) i ==
+           get_bit x (sz ((v i + bits t - v n) % bits t)))
 
 /// Bit-wise semantics for `<<!`
 val get_bit_shl #t #u (x: int_t t) (y: int_t u) (i: usize {v i < bits t})
@@ -508,6 +589,7 @@ val get_bit_cast #t #u
 
 val get_bit_cast_extend #t #u
   (x: int_t t) (nth: usize)
-  : Lemma (requires bits t < bits u /\ v nth >= bits t /\ v nth < bits u)
+  : Lemma (requires bits t < bits u /\ v nth >= bits t /\ v nth < bits u /\
+                    (unsigned t \/ v x >= 0))
           (ensures get_bit (cast_mod #t #u x) nth == 0)
           [SMTPat (get_bit (cast_mod #t #u x) nth)]

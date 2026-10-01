@@ -744,7 +744,7 @@ const _: () = {
                 ItemKind::Impl {
                     generics,
                     self_ty,
-                    of_trait: (trait_, trait_args),
+                    of_trait: TraitGoal { trait_, args },
                     items,
                     parent_bounds: _,
                 } => docs![
@@ -752,7 +752,7 @@ const _: () = {
                     self.generic_params(&generics.params),
                     space!(),
                     trait_,
-                    sep_opt!("<", trait_args[1..], ">"),
+                    sep_opt!("<", args[1..], ">"),
                     space!(),
                     "for",
                     space!(),

@@ -2,9 +2,9 @@
 members = [
      "frontend/exporter",
      "frontend/exporter/options",
-     "cli/subcommands",
+     "cli/cargo-hax",
      "cli/driver",
-     "test-harness",
+     "cli/test-driver",
      "hax-lib",
      "hax-lib/macros",
      "hax-lib/macros/types",
@@ -17,13 +17,13 @@ members = [
      "rust-engine",
      "rust-engine/macros",
 ]
-exclude = ["tests", "rustc-coverage-tests", "rust-engine/tests", "hax-lib/core-models"]
+exclude = ["tests", "hax-lib/core-models"]
 default-members = [
      "frontend/exporter",
      "frontend/exporter/options",
-     "cli/subcommands",
+     "cli/cargo-hax",
      "cli/driver",
-     "test-harness",
+     "cli/test-driver",
      "hax-lib",
      "hax-lib/macros",
      "hax-lib/macros/types",
@@ -34,12 +34,13 @@ default-members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.3.6"
+version = "0.4.1"
 authors = ["hax Authors"]
 license = "Apache-2.0"
-homepage = "https://github.com/hacspec/hax"
+homepage = "https://github.com/cryspen/hax"
 edition = "2024"
-repository = "https://github.com/hacspec/hax"
+rust-version = "1.88"
+repository = "https://github.com/cryspen/hax"
 readme = "README.md"
 
 [workspace.dependencies]
@@ -73,16 +74,17 @@ colored = "2"
 annotate-snippets = "0.11"
 
 # Crates in this repository
-hax-frontend-exporter = { path = "frontend/exporter", version = "=0.3.6", default-features = false }
-hax-adt-into = { path = "frontend/exporter/adt-into", version = "=0.3.6" }
-hax-frontend-exporter-options = { path = "frontend/exporter/options", version = "=0.3.6" }
-hax-lib-macros = { path = "hax-lib/macros", version = "=0.3.6" }
-hax-lib-macros-types = { path = "hax-lib/macros/types", version = "=0.3.6" }
-hax-lib = { path = "hax-lib", version = "=0.3.6" }
-hax-engine-names = { path = "engine/names", version = "=0.3.6" }
-hax-types = { path = "hax-types", version = "=0.3.6" }
-hax-rust-engine = { path = "rust-engine", version = "=0.3.6" }
-hax-rust-engine-macros = { path = "rust-engine/macros", version = "=0.3.6" }
+hax-frontend-exporter = { path = "frontend/exporter", version = "=0.4.1", default-features = false }
+hax-adt-into = { path = "frontend/exporter/adt-into", version = "=0.4.1" }
+hax-frontend-exporter-options = { path = "frontend/exporter/options", version = "=0.4.1" }
+hax-lib-macros = { path = "hax-lib/macros", version = "=0.4.1" }
+hax-lib-macros-types = { path = "hax-lib/macros/types", version = "=0.4.1" }
+hax-lib = { path = "hax-lib", version = "=0.4.1" }
+hax-engine-names = { path = "engine/names", version = "=0.4.1" }
+hax-types = { path = "hax-types", version = "=0.4.1" }
+hax-rust-engine = { path = "rust-engine", version = "=0.4.1" }
+hax-rust-engine-macros = { path = "rust-engine/macros", version = "=0.4.1" }
 
 [workspace.metadata.release]
 owners = ["github:cryspen:tools"]
+pre-release-commit-message = "chore: release v{{version}}"

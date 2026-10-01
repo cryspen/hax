@@ -1,0 +1,11 @@
+.PHONY: lean clean
+lean:
+	cargo hax extract adc
+	(cd proofs/adc/lean && \
+		elan default v4.31.0 && \
+		lake exe cache get && \
+		lake build)
+
+clean:
+	-rm -rf proofs/adc/lean/Adc/Extraction
+	-cd proofs/adc/lean && lake clean

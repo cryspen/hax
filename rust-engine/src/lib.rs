@@ -1,6 +1,5 @@
 //! The Rust engine of hax.
 
-#![feature(rustc_private)]
 #![feature(fn_traits, unboxed_closures)]
 #![warn(
     rustdoc::broken_intra_doc_links,

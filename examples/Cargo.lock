@@ -3,6 +3,60 @@
 version = 4
 
 [[package]]
+name = "adc"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+]
+
+[[package]]
+name = "anodized"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "anodized-logic",
+ "anodized-macros",
+]
+
+[[package]]
+name = "anodized-core"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "bitflags",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
+]
+
+[[package]]
+name = "anodized-example"
+version = "0.1.0"
+dependencies = [
+ "anodized",
+ "hax-lib",
+]
+
+[[package]]
+name = "anodized-logic"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "num-bigint",
+]
+
+[[package]]
+name = "anodized-macros"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "anodized-core",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -49,6 +103,12 @@ dependencies = [
  "quote",
  "syn 1.0.109",
 ]
+
+[[package]]
+name = "bitflags"
+version = "2.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b588b76d00fde79687d7646a9b5bdf3cc0f655e0bbd080335a95d7e96f3587da"
 
 [[package]]
 name = "block-buffer"
@@ -145,17 +205,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "coq-example"
-version = "0.1.0"
-dependencies = [
- "hax-lib",
-]
-
-[[package]]
-name = "coverage"
-version = "0.1.0"
-
-[[package]]
 name = "cpufeatures"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -201,12 +250,13 @@ dependencies = [
 
 [[package]]
 name = "duplicate"
-version = "1.0.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de78e66ac9061e030587b2a2e75cc88f22304913c907b11307bca737141230cb"
+checksum = "8e92f10a49176cbffacaedabfaa11d51db1ea0f80a83c26e1873b43cd1742c24"
 dependencies = [
  "heck",
- "proc-macro-error",
+ "proc-macro2",
+ "proc-macro2-diagnostics",
 ]
 
 [[package]]
@@ -252,7 +302,7 @@ checksum = "f93e7192158dbcda357bdec5fb5788eebf8bbac027f3f33e719d29135ae84156"
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.3.6"
+version = "0.4.0-rc.1"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -261,7 +311,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.3.6"
+version = "0.4.0-rc.1"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -270,10 +320,9 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.3.6"
+version = "0.4.0-rc.1"
 dependencies = [
  "hax-lib-macros-types",
- "proc-macro-error2",
  "proc-macro2",
  "quote",
  "syn 2.0.39",
@@ -281,7 +330,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.3.6"
+version = "0.4.0-rc.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -292,9 +341,9 @@ dependencies = [
 
 [[package]]
 name = "heck"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
+checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
 name = "hex"
@@ -397,28 +446,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
-name = "lean_adc"
-version = "0.1.0"
-dependencies = [
- "hax-lib",
-]
-
-[[package]]
-name = "lean_barrett"
-version = "0.1.0"
-dependencies = [
- "hax-lib",
-]
-
-[[package]]
-name = "lean_chacha20"
-version = "0.1.0"
-dependencies = [
- "hax-bounded-integers",
- "hax-lib",
-]
-
-[[package]]
 name = "lean_tutorial"
 version = "0.1.0"
 dependencies = [
@@ -497,6 +524,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
+name = "loop_equivalence"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+]
+
+[[package]]
 name = "memchr"
 version = "2.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -504,11 +538,10 @@ checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 
 [[package]]
 name = "num-bigint"
-version = "0.4.4"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608e7659b5c3d7cba262d894801b9ec9d00de989e8a82bd4bef91d08da45cdc0"
+checksum = "c89e69e7e0f03bea5ef08013795c25018e101932225a656383bd384495ecc367"
 dependencies = [
- "autocfg",
  "num-integer",
  "num-traits",
  "serde",
@@ -516,19 +549,18 @@ dependencies = [
 
 [[package]]
 name = "num-integer"
-version = "0.1.45"
+version = "0.1.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "225d3389fb3509a24c93f5c29eb6bde2586b98d9f016636dff58d7c6f7569cd9"
+checksum = "7ce2d95d4b3734dc35aa2f45e1aa22cd416814592a4f9d9205e11affd5b8e10b"
 dependencies = [
- "autocfg",
  "num-traits",
 ]
 
 [[package]]
 name = "num-traits"
-version = "0.2.17"
+version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39e3200413f237f41ab11ad6d161bc7239c84dcb631773ccd7de3dfe4b5c267c"
+checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
 ]
@@ -597,58 +629,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "proc-macro-error"
-version = "1.0.4"
+name = "proc-macro2"
+version = "1.0.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da25490ff9892aab3fcf7c36f08cfb902dd3e71ca0f9f9517bea02a73a5ce38c"
+checksum = "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934"
 dependencies = [
- "proc-macro-error-attr",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
- "version_check",
+ "unicode-ident",
 ]
 
 [[package]]
-name = "proc-macro-error-attr"
-version = "1.0.4"
+name = "proc-macro2-diagnostics"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1be40180e52ecc98ad80b184934baf3d0d29f979574e439af5a55274b35f869"
+checksum = "af066a9c399a26e020ada66a034357a868728e72cd426f3adcd35f80d88d88c8"
 dependencies = [
- "proc-macro2",
- "quote",
- "version_check",
-]
-
-[[package]]
-name = "proc-macro-error-attr2"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96de42df36bb9bba5542fe9f1a054b8cc87e172759a1868aa05c1f3acc89dfc5"
-dependencies = [
- "proc-macro2",
- "quote",
-]
-
-[[package]]
-name = "proc-macro-error2"
-version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11ec05c52be0a07b08061f7dd003e7d7092e0472bc731b4af7bb1ef876109802"
-dependencies = [
- "proc-macro-error-attr2",
  "proc-macro2",
  "quote",
  "syn 2.0.39",
-]
-
-[[package]]
-name = "proc-macro2"
-version = "1.0.69"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "134c189feb4956b20f6f547d2cf727d4c0fe06722b20a0eec87ed445a97f92da"
-dependencies = [
- "unicode-ident",
+ "version_check",
 ]
 
 [[package]]
@@ -680,9 +678,9 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.8.5"
+version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
+checksum = "5ca0ecfa931c29007047d1bc58e623ab12e5590e8c7cc53200d5202b69266d8a"
 dependencies = [
  "libc",
  "rand_chacha",
@@ -784,6 +782,13 @@ dependencies = [
 
 [[package]]
 name = "sha256"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+]
+
+[[package]]
+name = "sha3"
 version = "0.1.0"
 dependencies = [
  "hax-lib",

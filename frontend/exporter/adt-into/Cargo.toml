@@ -6,7 +6,7 @@ license.workspace = true
 homepage.workspace = true
 edition.workspace = true
 repository.workspace = true
-readme.workspace = true
+readme = "README.md"
 description = "Provides the `adt_into` procedural macro, allowing for mirroring data types with small variations."
 
 [lib]

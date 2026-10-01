@@ -14,7 +14,7 @@ use rustc_trait_selection::traits::ImplSource;
 
 use super::utils::{
     self, ToPolyTraitRef, erase_and_norm, implied_predicates, normalize_bound_val,
-    required_predicates, self_predicate,
+    required_predicates, self_predicate, type_alias_implied_predicates,
 };
 
 #[derive(Debug, Clone)]
@@ -247,10 +247,23 @@ pub struct PredicateSearcher<'tcx> {
 impl<'tcx> PredicateSearcher<'tcx> {
     /// Initialize the elaborator with the predicates accessible within this item.
     pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId, options: BoundsOptions) -> Self {
+        let mut param_env = tcx.param_env(owner_id);
+        // A type alias's body can rely on bounds the alias doesn't declare; make them available to
+        // resolution too, not just in the alias's predicate list.
+        let extra_clauses = type_alias_implied_predicates(tcx, owner_id);
+        if !extra_clauses.is_empty() {
+            let clauses = tcx.mk_clauses_from_iter(
+                param_env
+                    .caller_bounds()
+                    .iter()
+                    .chain(extra_clauses.into_iter().map(|(clause, _)| clause)),
+            );
+            param_env = ParamEnv::new(clauses);
+        }
         let mut out = Self {
             tcx,
             typing_env: TypingEnv {
-                param_env: tcx.param_env(owner_id),
+                param_env,
                 typing_mode: TypingMode::PostAnalysis,
             },
             candidates: Default::default(),
