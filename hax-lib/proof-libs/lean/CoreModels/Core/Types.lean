@@ -1059,14 +1059,15 @@ structure ops.range.Range (T : Type) where
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 333:4-336:5
+    Source: 'core-models/src/core/ops.rs', lines 333:4-337:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
   start : T
   «end» : T
+  exhausted : Bool
 
 /-- [core_models::ops::range::Bound]
-    Source: 'core-models/src/core/ops.rs', lines 376:4-380:5
+    Source: 'core-models/src/core/ops.rs', lines 377:4-381:5
     Visibility: public -/
 @[discriminant isize]
 inductive ops.range.Bound (T : Type) where
@@ -1075,7 +1076,7 @@ inductive ops.range.Bound (T : Type) where
 | Unbounded : ops.range.Bound T
 
 /-- Trait declaration: [core_models::ops::range::RangeBounds]
-    Source: 'core-models/src/core/ops.rs', lines 383:4-388:5
+    Source: 'core-models/src/core/ops.rs', lines 384:4-389:5
     Visibility: public -/
 structure ops.range.RangeBounds (Self : Type) (T : Type) where
   start_bound : Self → RustM (ops.range.Bound T)

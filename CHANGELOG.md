@@ -24,7 +24,11 @@ F* backend and library:
 
 ### Changed
 
+Lean backend and library:
+ - Add an `exhausted` field to `RangeInclusive`
+
 F* backend and library:
+ - Add an `f_exhausted` field to `RangeInclusive`
  - Breaking: `Core_models.Ops.Range.impl` to `impl_4` are now the `RangeBounds`
    instances, with the `Iterator` instances of `Range` moving to `impl_5` to
    `impl_16`
