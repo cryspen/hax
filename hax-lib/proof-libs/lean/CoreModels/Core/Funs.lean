@@ -1277,7 +1277,7 @@ def cmp.Ordering.then_with
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::panicking::internal::panic]:
-    Source: 'core-models/src/core/panicking.rs', lines 38:4-40:5
+    Source: 'core-models/src/core/panicking.rs', lines 133:4-135:5
     Visibility: public -/
 def panicking.internal.panic (T : Type) : RustM T := do
   fail Error.panic
@@ -5427,6 +5427,90 @@ def hint.black_box {T : Type} (dummy : T) : RustM T := do
     Visibility: public -/
 def hint.must_use {T : Type} (value : T) : RustM T := do
   ok value
+
+/-- [core_models::hint::likely]:
+    Source: 'core-models/src/core/hint.rs', lines 15:0-17:1
+    Visibility: public -/
+def hint.likely (b : Bool) : RustM Bool := do
+  ok b
+
+/-- [core_models::hint::unlikely]:
+    Source: 'core-models/src/core/hint.rs', lines 21:0-23:1
+    Visibility: public -/
+def hint.unlikely (b : Bool) : RustM Bool := do
+  ok b
+
+/-- [core_models::hint::select_unpredictable]:
+    Source: 'core-models/src/core/hint.rs', lines 27:0-29:1
+    Visibility: public -/
+def hint.select_unpredictable
+  {T : Type} (condition : Bool) (true_val : T) (false_val : T) : RustM T := do
+  if condition
+  then ok true_val
+  else ok false_val
+
+/-- [core_models::hint::spin_loop]:
+    Source: 'core-models/src/core/hint.rs', lines 32:0-32:21
+    Visibility: public -/
+def hint.spin_loop : RustM Unit := do
+  ok ()
+
+/-- [core_models::hint::cold_path]:
+    Source: 'core-models/src/core/hint.rs', lines 35:0-35:27
+    Visibility: public -/
+def hint.cold_path : RustM Unit := do
+  ok ()
+
+/-- [core_models::hint::assert_unchecked]:
+    Source: 'core-models/src/core/hint.rs', lines 47:0-51:1
+    Visibility: public -/
+def hint.assert_unchecked (cond : Bool) : RustM Unit := do
+  if cond
+  then ok ()
+  else panicking.internal.panic Unit
+
+/-- [core_models::hint::prefetch_read]:
+    Source: 'core-models/src/core/hint.rs', lines 67:0-67:67
+    Visibility: public -/
+def hint.prefetch_read
+  {T : Type} (ptr1 : ConstRawPtr T) (locality : hint.Locality) :
+  RustM Unit
+  := do
+  ok ()
+
+/-- [core_models::hint::prefetch_read_non_temporal]:
+    Source: 'core-models/src/core/hint.rs', lines 71:0-71:80
+    Visibility: public -/
+def hint.prefetch_read_non_temporal
+  {T : Type} (ptr1 : ConstRawPtr T) (locality : hint.Locality) :
+  RustM Unit
+  := do
+  ok ()
+
+/-- [core_models::hint::prefetch_read_instruction]:
+    Source: 'core-models/src/core/hint.rs', lines 75:0-75:79
+    Visibility: public -/
+def hint.prefetch_read_instruction
+  {T : Type} (ptr1 : ConstRawPtr T) (locality : hint.Locality) :
+  RustM Unit
+  := do
+  ok ()
+
+/-- [core_models::hint::prefetch_write]:
+    Source: 'core-models/src/core/hint.rs', lines 79:0-79:66
+    Visibility: public -/
+def hint.prefetch_write
+  {T : Type} (ptr1 : MutRawPtr T) (locality : hint.Locality) : RustM Unit := do
+  ok ()
+
+/-- [core_models::hint::prefetch_write_non_temporal]:
+    Source: 'core-models/src/core/hint.rs', lines 83:0-83:81
+    Visibility: public -/
+def hint.prefetch_write_non_temporal
+  {T : Type} (ptr1 : ConstRawPtr T) (locality : hint.Locality) :
+  RustM Unit
+  := do
+  ok ()
 
 /-- [core_models::intrinsics::unreachable]:
     Source: 'core-models/src/core/intrinsics.rs', lines 5:0-7:1
@@ -15533,19 +15617,19 @@ def option.OptionMutAOption.flatten_mut
     ok (option.Option.None, back)
 
 /-- [core_models::panicking::panic_explicit]:
-    Source: 'core-models/src/core/panicking.rs', lines 5:0-7:1
+    Source: 'core-models/src/core/panicking.rs', lines 8:0-10:1
     Visibility: public -/
 def panicking.panic_explicit : RustM Never := do
   fail Error.panic
 
 /-- [core_models::panicking::panic]:
-    Source: 'core-models/src/core/panicking.rs', lines 11:0-13:1
+    Source: 'core-models/src/core/panicking.rs', lines 14:0-16:1
     Visibility: public -/
 def panicking.panic (_msg : Str) : RustM Never := do
   fail Error.panic
 
 /-- [core_models::panicking::panic_fmt]:
-    Source: 'core-models/src/core/panicking.rs', lines 17:0-19:1
+    Source: 'core-models/src/core/panicking.rs', lines 20:0-22:1
     Visibility: public -/
 def panicking.panic_fmt (_fmt : fmt.Arguments) : RustM Never := do
   fail Error.panic

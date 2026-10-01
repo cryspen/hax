@@ -8,7 +8,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 
 ## `core`
 
-**Targeted coverage: 904/3888 items (23%) across 35 modules — 23 have at least a partial model.**
+**Targeted coverage: 946/3888 items (24%) across 35 modules — 23 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
@@ -31,7 +31,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `fmt` | 10 | 111 | 9% |
 | `from` | 0 | 1 | 0% |
 | `hash` | 5 | 29 | 17% |
-| `hint` | 2 | 15 | 13% |
+| `hint` | 15 | 15 | 100% |
 | `index` | 0 | 2 | 0% |
 | `iter` | 38 | 170 | 22% |
 | `marker` | 6 | 35 | 17% |
@@ -39,7 +39,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `num` | 471 | 1835 | 26% |
 | `ops` | 137 | 151 | 91% |
 | `option` | 44 | 57 | 77% |
-| `panicking` | 2 | 31 | 6% |
+| `panicking` | 31 | 31 | 100% |
 | `pin` | 1 | 27 | 4% |
 | `profiling` | 0 | 2 | 0% |
 | `ptr` | 1 | 191 | 1% |
@@ -47,7 +47,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `result` | 38 | 42 | 90% |
 | `slice` | 41 | 205 | 20% |
 | `str` | 6 | 160 | 4% |
-| **subtotal** | **904** | **3888** | **23%** |
+| **subtotal** | **946** | **3888** | **24%** |
 
 <details><summary>Non-targeted modules: 20 modules, 7/14842 items</summary>
 

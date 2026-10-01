@@ -38,17 +38,20 @@
 // `drop_guard`, `mem_copy_fn`: for `mem::{DropGuard, copy}`.
 // `bound_*`, `control_flow_*`, `one_sided_range`, `range_*`: for the `ops`
 // range and `ControlFlow` items.
+// `cold_path`, `likely_unlikely`: for `hint::{cold_path, likely, unlikely}`.
 #![cfg_attr(
     test,
     feature(
         array_into_iter_constructors,
         bound_as_ref,
         bound_copied,
+        cold_path,
         control_flow_into_value,
         control_flow_ok,
         drop_guard,
         fmt_helpers_for_derive,
         int_roundings,
+        likely_unlikely,
         mem_copy_fn,
         one_sided_range,
         option_reduce,

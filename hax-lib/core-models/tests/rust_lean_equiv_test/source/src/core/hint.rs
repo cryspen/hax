@@ -79,3 +79,78 @@ pub fn test_black_box_bool_false() -> bool {
 //
 // TODO(must_use-stability): expose a test path once a stable wrapper exists
 // or the model is invoked directly through a different surface.
+
+// ----- likely / unlikely -----------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_likely_true() -> bool {
+    core::hint::likely(true) == true
+}
+
+#[rust_lean_test]
+pub fn test_likely_false() -> bool {
+    core::hint::likely(false) == false
+}
+
+#[rust_lean_test]
+pub fn test_unlikely_true() -> bool {
+    core::hint::unlikely(true) == true
+}
+
+#[rust_lean_test]
+pub fn test_unlikely_false() -> bool {
+    core::hint::unlikely(false) == false
+}
+
+// ----- select_unpredictable --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_select_unpredictable_true_branch() -> bool {
+    core::hint::select_unpredictable(true, 0u8, u8::MAX) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_select_unpredictable_false_branch() -> bool {
+    core::hint::select_unpredictable(false, 0u8, u8::MAX) == u8::MAX
+}
+
+#[rust_lean_test]
+pub fn test_select_unpredictable_i32_min() -> bool {
+    core::hint::select_unpredictable(false, 0i32, i32::MIN) == i32::MIN
+}
+
+#[rust_lean_test]
+pub fn test_select_unpredictable_bool_payload() -> bool {
+    core::hint::select_unpredictable(true, false, true) == false
+}
+
+// ----- spin_loop / cold_path -------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_spin_loop_is_a_noop() -> bool {
+    let x = 42u8;
+    core::hint::spin_loop();
+    x == 42u8
+}
+
+#[rust_lean_test]
+pub fn test_cold_path_is_a_noop() -> bool {
+    let x = 42u8;
+    core::hint::cold_path();
+    x == 42u8
+}
+
+// ----- assert_unchecked ------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_assert_unchecked_holds() -> bool {
+    let x = 7u8;
+    unsafe { core::hint::assert_unchecked(x == 7u8) };
+    x == 7u8
+}
+
+#[rust_lean_test]
+pub fn test_assert_unchecked_literal_true() -> bool {
+    unsafe { core::hint::assert_unchecked(true) };
+    true
+}
