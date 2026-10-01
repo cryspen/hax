@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Lean backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
+ - Add models for more of `clone`, `array`, `option` and `result`
 
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
+ - Add models for more of `clone`, `array`, `option` and `result`
 
 ### Changed
 
@@ -25,6 +27,11 @@ Lean backend and library:
 F* backend and library:
  - Breaking: the fields `f_start` and `f_end` of `t_RangeInclusive` are now
    `f_start_` and `f_end_`
+
+### Fixed
+
+F* backend and library:
+ - Fix the names of `Option::flatten`, `Result::transpose` and `Result::flatten`
 
 ## [0.4.2] - 2026-10-01
 
