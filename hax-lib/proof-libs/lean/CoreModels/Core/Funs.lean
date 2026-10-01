@@ -960,7 +960,7 @@ def Isize.Insts.CoreCloneUseCloned : clone.UseCloned Std.Isize := {
 }
 
 /-- [core_models::cmp::PartialEq::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 20:4-22:5
+    Source: 'core-models/src/core/cmp.rs', lines 21:4-23:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialEq.ne.default
@@ -972,7 +972,7 @@ def cmp.PartialEq.ne.default
   ok (b = false)
 
 /-- [core_models::cmp::{impl core_models::fmt::Debug for core_models::cmp::Ordering}::fmt]:
-    Source: 'core-models/src/core/cmp.rs', lines 42:4-44:5
+    Source: 'core-models/src/core/cmp.rs', lines 43:4-45:5
     Visibility: public -/
 def cmp.Ordering.Insts.CoreFmtDebug.fmt
   (self : cmp.Ordering) (f : fmt.Formatter) :
@@ -981,14 +981,14 @@ def cmp.Ordering.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::fmt::Debug for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 41:0-45:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 42:0-46:1 -/
 @[reducible]
 def cmp.Ordering.Insts.CoreFmtDebug : fmt.Debug cmp.Ordering := {
   fmt := cmp.Ordering.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::cmp::PartialOrd::lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 61:4-63:5
+    Source: 'core-models/src/core/cmp.rs', lines 62:4-64:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.lt.default
@@ -1006,7 +1006,7 @@ def cmp.PartialOrd.lt.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::le]:
-    Source: 'core-models/src/core/cmp.rs', lines 66:4-71:5
+    Source: 'core-models/src/core/cmp.rs', lines 67:4-72:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.le.default
@@ -1024,7 +1024,7 @@ def cmp.PartialOrd.le.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 74:4-76:5
+    Source: 'core-models/src/core/cmp.rs', lines 75:4-77:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.gt.default
@@ -1042,7 +1042,7 @@ def cmp.PartialOrd.gt.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 79:4-84:5
+    Source: 'core-models/src/core/cmp.rs', lines 80:4-85:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.ge.default
@@ -1060,7 +1060,7 @@ def cmp.PartialOrd.ge.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::{impl core_models::cmp::Neq<T> for T}::neq]:
-    Source: 'core-models/src/core/cmp.rs', lines 94:4-97:5 -/
+    Source: 'core-models/src/core/cmp.rs', lines 95:4-98:5 -/
 def cmp.Neq.Blanket.neq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : T) (y : T) :
   RustM Bool
@@ -1069,7 +1069,7 @@ def cmp.Neq.Blanket.neq
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Neq<T> for T}]
-    Source: 'core-models/src/core/cmp.rs', lines 93:0-98:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 94:0-99:1 -/
 @[reducible]
 def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
   T := {
@@ -1077,7 +1077,7 @@ def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
 }
 
 /-- [core_models::cmp::max]:
-    Source: 'core-models/src/core/cmp.rs', lines 166:0-171:1
+    Source: 'core-models/src/core/cmp.rs', lines 167:0-172:1
     Visibility: public -/
 def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   let o ← OrdInst.cmp v1 v2
@@ -1087,7 +1087,7 @@ def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   | cmp.Ordering.Greater => ok v1
 
 /-- [core_models::cmp::min]:
-    Source: 'core-models/src/core/cmp.rs', lines 174:0-179:1
+    Source: 'core-models/src/core/cmp.rs', lines 175:0-180:1
     Visibility: public -/
 def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   let o ← OrdInst.cmp v1 v2
@@ -1097,7 +1097,7 @@ def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   | cmp.Ordering.Greater => ok v2
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 195:4-197:5
+    Source: 'core-models/src/core/cmp.rs', lines 196:4-198:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -1107,7 +1107,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   PartialEqInst.eq other self
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 192:4-194:5
+    Source: 'core-models/src/core/cmp.rs', lines 193:4-195:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.ne
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -1120,7 +1120,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 190:0-198:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 191:0-199:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
   : cmp.PartialEq T T) : cmp.PartialEq (cmp.Reverse T) (cmp.Reverse T) := {
@@ -1129,7 +1129,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 185:4-187:5
+    Source: 'core-models/src/core/cmp.rs', lines 186:4-188:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (self : cmp.Reverse T)
@@ -1139,7 +1139,7 @@ def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   PartialOrdInst.partial_cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 184:0-188:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 185:0-189:1 -/
 @[reducible]
 impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
   (PartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (cmp.Reverse T)
@@ -1159,7 +1159,7 @@ impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 200:0-200:32 -/
+    Source: 'core-models/src/core/cmp.rs', lines 201:0-201:32 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
   (cmp.Reverse T) := {
@@ -1168,7 +1168,7 @@ def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 203:4-205:5
+    Source: 'core-models/src/core/cmp.rs', lines 204:4-206:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpOrd.cmp
   {T : Type} (OrdInst : cmp.Ord T) (self : cmp.Reverse T)
@@ -1178,7 +1178,7 @@ def cmp.Reverse.Insts.CoreCmpOrd.cmp
   OrdInst.cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 202:0-206:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 203:0-207:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
   cmp.Ord (cmp.Reverse T) := {
@@ -1189,7 +1189,7 @@ def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
 }
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 263:4-265:5
+    Source: 'core-models/src/core/cmp.rs', lines 264:4-266:5
     Visibility: public -/
 def cmp.Ordering.is_eq (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1198,7 +1198,7 @@ def cmp.Ordering.is_eq (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 267:4-269:5
+    Source: 'core-models/src/core/cmp.rs', lines 268:4-270:5
     Visibility: public -/
 def cmp.Ordering.is_ne (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1207,7 +1207,7 @@ def cmp.Ordering.is_ne (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 271:4-273:5
+    Source: 'core-models/src/core/cmp.rs', lines 272:4-274:5
     Visibility: public -/
 def cmp.Ordering.is_lt (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1216,7 +1216,7 @@ def cmp.Ordering.is_lt (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 275:4-277:5
+    Source: 'core-models/src/core/cmp.rs', lines 276:4-278:5
     Visibility: public -/
 def cmp.Ordering.is_gt (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1225,7 +1225,7 @@ def cmp.Ordering.is_gt (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_le]:
-    Source: 'core-models/src/core/cmp.rs', lines 279:4-281:5
+    Source: 'core-models/src/core/cmp.rs', lines 280:4-282:5
     Visibility: public -/
 def cmp.Ordering.is_le (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1234,7 +1234,7 @@ def cmp.Ordering.is_le (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 283:4-285:5
+    Source: 'core-models/src/core/cmp.rs', lines 284:4-286:5
     Visibility: public -/
 def cmp.Ordering.is_ge (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1243,7 +1243,7 @@ def cmp.Ordering.is_ge (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::reverse]:
-    Source: 'core-models/src/core/cmp.rs', lines 287:4-293:5
+    Source: 'core-models/src/core/cmp.rs', lines 288:4-294:5
     Visibility: public -/
 def cmp.Ordering.reverse (self : cmp.Ordering) : RustM cmp.Ordering := do
   match self with
@@ -1252,7 +1252,7 @@ def cmp.Ordering.reverse (self : cmp.Ordering) : RustM cmp.Ordering := do
   | cmp.Ordering.Greater => ok cmp.Ordering.Less
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then]:
-    Source: 'core-models/src/core/cmp.rs', lines 295:4-300:5
+    Source: 'core-models/src/core/cmp.rs', lines 296:4-301:5
     Visibility: public -/
 def cmp.Ordering.then
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM cmp.Ordering := do
@@ -1262,7 +1262,7 @@ def cmp.Ordering.then
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then_with]:
-    Source: 'core-models/src/core/cmp.rs', lines 302:4-307:5
+    Source: 'core-models/src/core/cmp.rs', lines 303:4-308:5
     Visibility: public -/
 def cmp.Ordering.then_with
   {F : Type} (coreopsfunctionFnOnceFTupleOrderingInst :
@@ -1276,14 +1276,186 @@ def cmp.Ordering.then_with
     coreopsfunctionFnOnceFTupleOrderingInst.call_once f ()
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
+/-- [core_models::cmp::max_by]:
+    Source: 'core-models/src/core/cmp.rs', lines 315:0-317:1
+    Visibility: public -/
+def cmp.max_by
+  {T : Type} {F : Type} (coreopsfunctionFnOnceFPairSharedTSharedTOrderingInst :
+  core.ops.function.FnOnce F (T × T) cmp.Ordering) (v1 : T) (v2 : T)
+  (compare : F) :
+  RustM T
+  := do
+  let o ←
+    coreopsfunctionFnOnceFPairSharedTSharedTOrderingInst.call_once compare (v2,
+      v1)
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then ok v1
+  else ok v2
+
+/-- [core_models::cmp::min_by]:
+    Source: 'core-models/src/core/cmp.rs', lines 320:0-322:1
+    Visibility: public -/
+def cmp.min_by
+  {T : Type} {F : Type} (coreopsfunctionFnOnceFPairSharedTSharedTOrderingInst :
+  core.ops.function.FnOnce F (T × T) cmp.Ordering) (v1 : T) (v2 : T)
+  (compare : F) :
+  RustM T
+  := do
+  let o ←
+    coreopsfunctionFnOnceFPairSharedTSharedTOrderingInst.call_once compare (v2,
+      v1)
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then ok v2
+  else ok v1
+
+/-- [core_models::cmp::max_by_key]:
+    Source: 'core-models/src/core/cmp.rs', lines 328:0-330:1
+    Visibility: public -/
+def cmp.max_by_key
+  {T : Type} {F : Type} {K : Type} (coreopsfunctionFnMutFTupleSharedTKInst :
+  core.ops.function.FnMut F T K) (OrdInst : cmp.Ord K) (v1 : T) (v2 : T)
+  (f : F) :
+  RustM T
+  := do
+  let (t, f1) ← coreopsfunctionFnMutFTupleSharedTKInst.call_mut f v2
+  let (t1, _) ← coreopsfunctionFnMutFTupleSharedTKInst.call_mut f1 v1
+  let o ← OrdInst.cmp t t1
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then ok v1
+  else ok v2
+
+/-- [core_models::cmp::min_by_key]:
+    Source: 'core-models/src/core/cmp.rs', lines 334:0-336:1
+    Visibility: public -/
+def cmp.min_by_key
+  {T : Type} {F : Type} {K : Type} (coreopsfunctionFnMutFTupleSharedTKInst :
+  core.ops.function.FnMut F T K) (OrdInst : cmp.Ord K) (v1 : T) (v2 : T)
+  (f : F) :
+  RustM T
+  := do
+  let (t, f1) ← coreopsfunctionFnMutFTupleSharedTKInst.call_mut f v2
+  let (t1, _) ← coreopsfunctionFnMutFTupleSharedTKInst.call_mut f1 v1
+  let o ← OrdInst.cmp t t1
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then ok v2
+  else ok v1
+
+/-- [core_models::cmp::minmax]:
+    Source: 'core-models/src/core/cmp.rs', lines 339:0-345:1
+    Visibility: public -/
+def cmp.minmax
+  {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) :
+  RustM (Array T 2#usize)
+  := do
+  let o ← OrdInst.cmp v2 v1
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then rust_primitives.slice.array_pair v2 v1
+  else rust_primitives.slice.array_pair v1 v2
+
+/-- [core_models::cmp::minmax_by]:
+    Source: 'core-models/src/core/cmp.rs', lines 348:0-354:1
+    Visibility: public -/
+def cmp.minmax_by
+  {T : Type} {F : Type} (coreopsfunctionFnOnceFPairSharedTSharedTOrderingInst :
+  core.ops.function.FnOnce F (T × T) cmp.Ordering) (v1 : T) (v2 : T)
+  (compare : F) :
+  RustM (Array T 2#usize)
+  := do
+  let o ←
+    coreopsfunctionFnOnceFPairSharedTSharedTOrderingInst.call_once compare (v2,
+      v1)
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then rust_primitives.slice.array_pair v2 v1
+  else rust_primitives.slice.array_pair v1 v2
+
+/-- [core_models::cmp::minmax_by_key]:
+    Source: 'core-models/src/core/cmp.rs', lines 358:0-364:1
+    Visibility: public -/
+def cmp.minmax_by_key
+  {T : Type} {F : Type} {K : Type} (coreopsfunctionFnMutFTupleSharedTKInst :
+  core.ops.function.FnMut F T K) (OrdInst : cmp.Ord K) (v1 : T) (v2 : T)
+  (f : F) :
+  RustM (Array T 2#usize)
+  := do
+  let (t, f1) ← coreopsfunctionFnMutFTupleSharedTKInst.call_mut f v2
+  let (t1, _) ← coreopsfunctionFnMutFTupleSharedTKInst.call_mut f1 v1
+  let o ← OrdInst.cmp t t1
+  let b ← cmp.Ordering.is_lt o
+  if b
+  then rust_primitives.slice.array_pair v2 v1
+  else rust_primitives.slice.array_pair v1 v2
+
 /-- [core_models::panicking::internal::panic]:
     Source: 'core-models/src/core/panicking.rs', lines 133:4-135:5
     Visibility: public -/
 def panicking.internal.panic (T : Type) : RustM T := do
   fail Error.panic
 
+/-- [core_models::cmp::{impl core_models::cmp::OrdDefaults for T}::clamp]:
+    Source: 'core-models/src/core/cmp.rs', lines 400:4-411:5 -/
+def cmp.OrdDefaults.Blanket.clamp
+  {T : Type} (OrdInst : cmp.Ord T) (self : T) (min : T) (max : T) :
+  RustM T
+  := do
+  let o ← OrdInst.cmp min max
+  let b ← cmp.Ordering.is_le o
+  if b
+  then ok ()
+  else panicking.internal.panic Unit
+  let o1 ← OrdInst.cmp self min
+  match o1 with
+  | cmp.Ordering.Less => ok min
+  | cmp.Ordering.Equal =>
+    let o2 ← OrdInst.cmp self max
+    match o2 with
+    | cmp.Ordering.Less => ok self
+    | cmp.Ordering.Equal => ok self
+    | cmp.Ordering.Greater => ok max
+  | cmp.Ordering.Greater =>
+    let o2 ← OrdInst.cmp self max
+    match o2 with
+    | cmp.Ordering.Less => ok self
+    | cmp.Ordering.Equal => ok self
+    | cmp.Ordering.Greater => ok max
+
+/-- [core_models::cmp::{impl core_models::cmp::OrdDefaults for T}::min]:
+    Source: 'core-models/src/core/cmp.rs', lines 394:4-399:5 -/
+def cmp.OrdDefaults.Blanket.min
+  {T : Type} (OrdInst : cmp.Ord T) (self : T) (other : T) : RustM T := do
+  let o ← OrdInst.cmp other self
+  match o with
+  | cmp.Ordering.Less => ok other
+  | cmp.Ordering.Equal => ok self
+  | cmp.Ordering.Greater => ok self
+
+/-- [core_models::cmp::{impl core_models::cmp::OrdDefaults for T}::max]:
+    Source: 'core-models/src/core/cmp.rs', lines 388:4-393:5 -/
+def cmp.OrdDefaults.Blanket.max
+  {T : Type} (OrdInst : cmp.Ord T) (self : T) (other : T) : RustM T := do
+  let o ← OrdInst.cmp other self
+  match o with
+  | cmp.Ordering.Less => ok self
+  | cmp.Ordering.Equal => ok other
+  | cmp.Ordering.Greater => ok other
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::OrdDefaults for T}]
+    Source: 'core-models/src/core/cmp.rs', lines 386:0-412:1 -/
+@[reducible]
+def cmp.OrdDefaults.Blanket {T : Type} (OrdInst : cmp.Ord T) : cmp.OrdDefaults
+  T := {
+  max := fun (OrdInst1 : cmp.Ord T) => cmp.OrdDefaults.Blanket.max OrdInst
+  min := fun (OrdInst1 : cmp.Ord T) => cmp.OrdDefaults.Blanket.min OrdInst
+  clamp := fun (OrdInst1 : cmp.Ord T) => cmp.OrdDefaults.Blanket.clamp OrdInst
+}
+
 /-- [core_models::cmp::clamp]:
-    Source: 'core-models/src/core/cmp.rs', lines 312:0-324:1
+    Source: 'core-models/src/core/cmp.rs', lines 416:0-428:1
     Visibility: public -/
 def cmp.clamp
   {T : Type} (OrdInst : cmp.Ord T) (value : T) (min : T) (max : T) :
@@ -1306,21 +1478,21 @@ def cmp.clamp
     | cmp.Ordering.Greater => ok max
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 335:4-337:5
+    Source: 'core-models/src/core/cmp.rs', lines 439:4-441:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialEqTuple.ne
   (_ : Unit) (_ : Unit) : RustM Bool := do
   ok false
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 331:4-333:5
+    Source: 'core-models/src/core/cmp.rs', lines 435:4-437:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialEqTuple.eq
   (_ : Unit) (_ : Unit) : RustM Bool := do
   ok true
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 330:0-338:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 434:0-442:1 -/
 @[reducible]
 def Tuple.Insts.CoreCmpPartialEqTuple : cmp.PartialEq Unit Unit := {
   eq := Tuple.Insts.CoreCmpPartialEqTuple.eq
@@ -1328,21 +1500,21 @@ def Tuple.Insts.CoreCmpPartialEqTuple : cmp.PartialEq Unit Unit := {
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 341:0-341:17 -/
+    Source: 'core-models/src/core/cmp.rs', lines 445:0-445:17 -/
 @[reducible]
 def Tuple.Insts.CoreCmpEq : cmp.Eq Unit := {
   PartialEqInst := Tuple.Insts.CoreCmpPartialEqTuple
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<()> for ()}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 345:4-347:5
+    Source: 'core-models/src/core/cmp.rs', lines 449:4-451:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialOrdTuple.partial_cmp
   (_ : Unit) (_ : Unit) : RustM (option.Option cmp.Ordering) := do
   ok (option.Option.Some cmp.Ordering.Equal)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<()> for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 344:0-348:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 448:0-452:1 -/
 @[reducible]
 impl_def Tuple.Insts.CoreCmpPartialOrdTuple : cmp.PartialOrd Unit Unit
   := {
@@ -1355,14 +1527,14 @@ impl_def Tuple.Insts.CoreCmpPartialOrdTuple : cmp.PartialOrd Unit Unit
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for ()}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 352:4-354:5
+    Source: 'core-models/src/core/cmp.rs', lines 456:4-458:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpOrd.cmp
   (_ : Unit) (_ : Unit) : RustM cmp.Ordering := do
   ok cmp.Ordering.Equal
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 351:0-355:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 455:0-459:1 -/
 @[reducible]
 def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
   EqInst := Tuple.Insts.CoreCmpEq
@@ -1371,7 +1543,7 @@ def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 360:4-367:5
+    Source: 'core-models/src/core/cmp.rs', lines 464:4-471:5
     Visibility: public -/
 def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM Bool := do
@@ -1393,7 +1565,7 @@ def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
     | cmp.Ordering.Greater => ok true
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 359:0-368:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 463:0-472:1 -/
 @[reducible]
 impl_def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
   cmp.Ordering cmp.Ordering := {
@@ -1403,7 +1575,7 @@ impl_def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 372:0-372:23 -/
+    Source: 'core-models/src/core/cmp.rs', lines 476:0-476:23 -/
 @[reducible]
 def cmp.Ordering.Insts.CoreCmpEq : cmp.Eq cmp.Ordering := {
   PartialEqInst := cmp.Ordering.Insts.CoreCmpPartialEqOrdering
@@ -18391,8 +18563,431 @@ def Shared0Slice.Insts.CoreCmpPartialEqArray {T : Type} {U : Type} (N :
   ne := Shared0Slice.Insts.CoreCmpPartialEqArray.ne cmpPartialEqInst
 }
 
+/-- [core_models::str::is_ascii_whitespace_byte]:
+    Source: 'core-models/src/core/str.rs', lines 16:0-18:1 -/
+def str.is_ascii_whitespace_byte (b : Std.U8) : RustM Bool := do
+  if b = 32#u8
+  then ok true
+  else
+    if b = 9#u8
+    then ok true
+    else
+      if b = 10#u8
+      then ok true
+      else if b = 12#u8
+           then ok true
+           else ok (b = 13#u8)
+
+/-- [core_models::str::ascii_lowercase_byte]:
+    Source: 'core-models/src/core/str.rs', lines 20:0-22:1 -/
+def str.ascii_lowercase_byte (b : Std.U8) : RustM Std.U8 := do
+  if b >= 65#u8
+  then if b <= 90#u8
+       then b + 32#u8
+       else ok b
+  else ok b
+
+/-- [core_models::str::{core_models::str::str}::as_bytes]:
+    Source: 'core-models/src/core/str.rs', lines 27:4-29:5 -/
+def str.Str.as_bytes (s : Str) : RustM (Slice Std.U8) := do
+  rust_primitives.string.str_as_bytes s
+
+/-- [core_models::str::{core_models::str::str}::len]:
+    Source: 'core-models/src/core/str.rs', lines 31:4-33:5 -/
+def str.Str.len (s : Str) : RustM Std.Usize := do
+  let s1 ← rust_primitives.string.str_as_bytes s
+  rust_primitives.slice.slice_length s1
+
+/-- [core_models::str::{core_models::str::str}::is_empty]:
+    Source: 'core-models/src/core/str.rs', lines 35:4-37:5 -/
+def str.Str.is_empty (s : Str) : RustM Bool := do
+  let i ← str.Str.len s
+  ok (i = 0#usize)
+
+/-- [core_models::str::{core_models::str::str}::as_str]:
+    Source: 'core-models/src/core/str.rs', lines 39:4-41:5 -/
+def str.Str.as_str (s : Str) : RustM Str := do
+  ok s
+
+/-- [core_models::str::{core_models::str::str}::is_char_boundary]:
+    Source: 'core-models/src/core/str.rs', lines 43:4-53:5 -/
+def str.Str.is_char_boundary (s : Str) (index : Std.Usize) : RustM Bool := do
+  let bytes ← str.Str.as_bytes s
+  let n ← rust_primitives.slice.slice_length bytes
+  if index = 0#usize
+  then ok true
+  else
+    if index >= n
+    then ok (index = n)
+    else
+      let i ← rust_primitives.slice.slice_index bytes index
+      let i1 ← lift (i &&& 192#u8)
+      ok (i1 != 128#u8)
+
+/-- [core_models::str::{core_models::str::str}::floor_char_boundary]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 62:12-66:13 -/
+@[rust_loop_body]
+def str.Str.floor_char_boundary_loop.body
+  (s : Str) (iter1 : core.ops.range.Range Std.Usize) (res : Std.Usize) :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize) Std.Usize)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    let b ← str.Str.is_char_boundary s i
+    if b
+    then ok (cont (iter2, i))
+    else ok (cont (iter2, res))
+
+/-- [core_models::str::{core_models::str::str}::floor_char_boundary]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 62:12-66:13 -/
+@[rust_loop]
+def str.Str.floor_char_boundary_loop
+  (iter1 : core.ops.range.Range Std.Usize) (s : Str) (res : Std.Usize) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, res1) => str.Str.floor_char_boundary_loop.body s iter2 res1)
+    (iter1, res)
+
+/-- [core_models::str::{core_models::str::str}::floor_char_boundary]:
+    Source: 'core-models/src/core/str.rs', lines 55:4-69:5 -/
+def str.Str.floor_char_boundary
+  (s : Str) (index : Std.Usize) : RustM Std.Usize := do
+  let n ← str.Str.len s
+  if index >= n
+  then ok n
+  else
+    let i ← index + 1#usize
+    str.Str.floor_char_boundary_loop { start := 0#usize, «end» := i } s
+      0#usize
+
+/-- [core_models::str::{core_models::str::str}::ceil_char_boundary]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 81:12-86:13 -/
+@[rust_loop_body]
+def str.Str.ceil_char_boundary_loop.body
+  (s : Str) (iter1 : core.ops.range.Range Std.Usize) (res : Std.Usize)
+  (found : Bool) :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool)
+    Std.Usize)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    if found
+    then ok (cont (iter2, res, true))
+    else
+      let b ← str.Str.is_char_boundary s i
+      if b
+      then ok (cont (iter2, i, true))
+      else ok (cont (iter2, res, false))
+
+/-- [core_models::str::{core_models::str::str}::ceil_char_boundary]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 81:12-86:13 -/
+@[rust_loop]
+def str.Str.ceil_char_boundary_loop
+  (iter1 : core.ops.range.Range Std.Usize) (s : Str) (res : Std.Usize)
+  (found : Bool) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, res1, found1) => str.Str.ceil_char_boundary_loop.body s iter2
+      res1 found1)
+    (iter1, res, found)
+
+/-- [core_models::str::{core_models::str::str}::ceil_char_boundary]:
+    Source: 'core-models/src/core/str.rs', lines 72:4-89:5 -/
+def str.Str.ceil_char_boundary
+  (s : Str) (index : Std.Usize) : RustM Std.Usize := do
+  let n ← str.Str.len s
+  if index > n
+  then panicking.internal.panic Std.Usize
+  else
+    if index = n
+    then ok n
+    else
+      str.Str.ceil_char_boundary_loop { start := index, «end» := n } s n
+        false
+
+/-- [core_models::str::{core_models::str::str}::split_at]:
+    Source: 'core-models/src/core/str.rs', lines 92:4-103:5 -/
+def str.Str.split_at (s : Str) (mid : Std.Usize) : RustM (Str × Str) := do
+  let b ← str.Str.is_char_boundary s mid
+  if b
+  then ok ()
+  else panicking.internal.panic Unit
+  let s1 ← rust_primitives.string.str_sub_bytes s 0#usize mid
+  let i ← str.Str.len s
+  let s2 ← rust_primitives.string.str_sub_bytes s mid i
+  ok (s1, s2)
+
+/-- [core_models::str::{core_models::str::str}::split_at_checked]:
+    Source: 'core-models/src/core/str.rs', lines 105:4-114:5 -/
+def str.Str.split_at_checked
+  (s : Str) (mid : Std.Usize) : RustM (option.Option (Str × Str)) := do
+  let b ← str.Str.is_char_boundary s mid
+  if b
+  then let (s1, s2) ← str.Str.split_at s mid
+       ok (option.Option.Some (s1, s2))
+  else ok option.Option.None
+
+/-- [core_models::str::{core_models::str::str}::is_ascii]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 119:8-123:9 -/
+@[rust_loop_body]
+def str.Str.is_ascii_loop.body
+  (bytes : Slice Std.U8) (iter1 : core.ops.range.Range Std.Usize) (res : Bool)
+  :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    let i1 ← rust_primitives.slice.slice_index bytes i
+    if i1 > 127#u8
+    then ok (cont (iter2, false))
+    else ok (cont (iter2, res))
+
+/-- [core_models::str::{core_models::str::str}::is_ascii]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 119:8-123:9 -/
+@[rust_loop]
+def str.Str.is_ascii_loop
+  (iter1 : core.ops.range.Range Std.Usize) (bytes : Slice Std.U8) (res : Bool)
+  :
+  RustM Bool
+  := do
+  loop
+    (fun (iter2, res1) => str.Str.is_ascii_loop.body bytes iter2 res1)
+    (iter1, res)
+
+/-- [core_models::str::{core_models::str::str}::is_ascii]:
+    Source: 'core-models/src/core/str.rs', lines 116:4-125:5 -/
+def str.Str.is_ascii (s : Str) : RustM Bool := do
+  let bytes ← str.Str.as_bytes s
+  let i ← rust_primitives.slice.slice_length bytes
+  str.Str.is_ascii_loop { start := 0#usize, «end» := i } bytes true
+
+/-- [core_models::str::{core_models::str::str}::eq_ignore_ascii_case]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 134:12-140:13 -/
+@[rust_loop_body]
+def str.Str.eq_ignore_ascii_case_loop.body
+  (a : Slice Std.U8) (b : Slice Std.U8)
+  (iter1 : core.ops.range.Range Std.Usize) (res : Bool) :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    let i1 ← rust_primitives.slice.slice_index a i
+    let i2 ← str.ascii_lowercase_byte i1
+    let i3 ← rust_primitives.slice.slice_index b i
+    let i4 ← str.ascii_lowercase_byte i3
+    if i2 != i4
+    then ok (cont (iter2, false))
+    else ok (cont (iter2, res))
+
+/-- [core_models::str::{core_models::str::str}::eq_ignore_ascii_case]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 134:12-140:13 -/
+@[rust_loop]
+def str.Str.eq_ignore_ascii_case_loop
+  (iter1 : core.ops.range.Range Std.Usize) (a : Slice Std.U8)
+  (b : Slice Std.U8) (res : Bool) :
+  RustM Bool
+  := do
+  loop
+    (fun (iter2, res1) => str.Str.eq_ignore_ascii_case_loop.body a b iter2
+      res1)
+    (iter1, res)
+
+/-- [core_models::str::{core_models::str::str}::eq_ignore_ascii_case]:
+    Source: 'core-models/src/core/str.rs', lines 127:4-143:5 -/
+def str.Str.eq_ignore_ascii_case (s : Str) (other : Str) : RustM Bool := do
+  let a ← str.Str.as_bytes s
+  let b ← str.Str.as_bytes other
+  let i ← rust_primitives.slice.slice_length a
+  let i1 ← rust_primitives.slice.slice_length b
+  if i != i1
+  then ok false
+  else
+    str.Str.eq_ignore_ascii_case_loop { start := 0#usize, «end» := i } a b
+      true
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii_start]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 150:8-155:9 -/
+@[rust_loop_body]
+def str.Str.trim_ascii_start_loop.body
+  (bytes : Slice Std.U8) (iter1 : core.ops.range.Range Std.Usize)
+  (start : Std.Usize) (found : Bool) :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool)
+    Std.Usize)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done start)
+  | core.option.Option.Some i =>
+    if found
+    then ok (cont (iter2, start, true))
+    else
+      let i1 ← rust_primitives.slice.slice_index bytes i
+      let b ← str.is_ascii_whitespace_byte i1
+      if b
+      then ok (cont (iter2, start, false))
+      else ok (cont (iter2, i, true))
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii_start]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 150:8-155:9 -/
+@[rust_loop]
+def str.Str.trim_ascii_start_loop
+  (iter1 : core.ops.range.Range Std.Usize) (bytes : Slice Std.U8)
+  (start : Std.Usize) (found : Bool) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, start1, found1) => str.Str.trim_ascii_start_loop.body bytes
+      iter2 start1 found1)
+    (iter1, start, found)
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii_start]:
+    Source: 'core-models/src/core/str.rs', lines 145:4-157:5 -/
+def str.Str.trim_ascii_start (s : Str) : RustM Str := do
+  let bytes ← str.Str.as_bytes s
+  let n ← rust_primitives.slice.slice_length bytes
+  let start ←
+    str.Str.trim_ascii_start_loop { start := 0#usize, «end» := n } bytes n
+      false
+  rust_primitives.string.str_sub_bytes s start n
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii_end]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 164:8-168:9 -/
+@[rust_loop_body]
+def str.Str.trim_ascii_end_loop.body
+  (bytes : Slice Std.U8) (iter1 : core.ops.range.Range Std.Usize)
+  (last : Std.Usize) :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize) Std.Usize)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done last)
+  | core.option.Option.Some i =>
+    let i1 ← rust_primitives.slice.slice_index bytes i
+    let b ← str.is_ascii_whitespace_byte i1
+    if b
+    then ok (cont (iter2, last))
+    else let last1 ← i + 1#usize
+         ok (cont (iter2, last1))
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii_end]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 164:8-168:9 -/
+@[rust_loop]
+def str.Str.trim_ascii_end_loop
+  (iter1 : core.ops.range.Range Std.Usize) (bytes : Slice Std.U8)
+  (last : Std.Usize) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, last1) => str.Str.trim_ascii_end_loop.body bytes iter2 last1)
+    (iter1, last)
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii_end]:
+    Source: 'core-models/src/core/str.rs', lines 160:4-170:5 -/
+def str.Str.trim_ascii_end (s : Str) : RustM Str := do
+  let bytes ← str.Str.as_bytes s
+  let n ← rust_primitives.slice.slice_length bytes
+  let last ←
+    str.Str.trim_ascii_end_loop { start := 0#usize, «end» := n } bytes
+      0#usize
+  rust_primitives.string.str_sub_bytes s 0#usize last
+
+/-- [core_models::str::{core_models::str::str}::trim_ascii]:
+    Source: 'core-models/src/core/str.rs', lines 172:4-174:5 -/
+def str.Str.trim_ascii (s : Str) : RustM Str := do
+  let s1 ← str.Str.trim_ascii_start s
+  str.Str.trim_ascii_end s1
+
+/-- [core_models::str::{core_models::str::str}::parse]:
+    Source: 'core-models/src/core/str.rs', lines 176:4-178:5 -/
+def str.Str.parse
+  {F : Type} {Clause0_Err : Type} (traitsFromStrInst : str.traits.FromStr F
+  Clause0_Err) (s : Str) :
+  RustM (result.Result F Clause0_Err)
+  := do
+  traitsFromStrInst.from_str s
+
+/-- [core_models::str::equality::{impl core_models::cmp::PartialEq<str> for str}::eq]: loop body 0:
+    Source: 'core-models/src/core/str.rs', lines 197:16-201:17
+    Visibility: public -/
+@[rust_loop_body]
+def Str.Insts.CoreCmpPartialEqStr.eq_loop.body
+  (a : Slice Std.U8) (b : Slice Std.U8)
+  (iter1 : core.ops.range.Range Std.Usize) (res : Bool) :
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    let i1 ← rust_primitives.slice.slice_index a i
+    let i2 ← rust_primitives.slice.slice_index b i
+    if i1 != i2
+    then ok (cont (iter2, false))
+    else ok (cont (iter2, res))
+
+/-- [core_models::str::equality::{impl core_models::cmp::PartialEq<str> for str}::eq]: loop 0:
+    Source: 'core-models/src/core/str.rs', lines 197:16-201:17
+    Visibility: public -/
+@[rust_loop]
+def Str.Insts.CoreCmpPartialEqStr.eq_loop
+  (iter1 : core.ops.range.Range Std.Usize) (a : Slice Std.U8)
+  (b : Slice Std.U8) (res : Bool) :
+  RustM Bool
+  := do
+  loop
+    (fun (iter2, res1) => Str.Insts.CoreCmpPartialEqStr.eq_loop.body a b
+      iter2 res1)
+    (iter1, res)
+
+/-- [core_models::str::equality::{impl core_models::cmp::PartialEq<str> for str}::eq]:
+    Source: 'core-models/src/core/str.rs', lines 190:8-204:9
+    Visibility: public -/
+def Str.Insts.CoreCmpPartialEqStr.eq
+  (self : Str) (other : Str) : RustM Bool := do
+  let a ← str.Str.as_bytes self
+  let b ← str.Str.as_bytes other
+  let i ← rust_primitives.slice.slice_length a
+  let i1 ← rust_primitives.slice.slice_length b
+  if i != i1
+  then ok false
+  else
+    Str.Insts.CoreCmpPartialEqStr.eq_loop
+      { start := 0#usize, «end» := i } a b true
+
+/-- Trait implementation: [core_models::str::equality::{impl core_models::cmp::PartialEq<str> for str}]
+    Source: 'core-models/src/core/str.rs', lines 189:4-205:5 -/
+@[reducible]
+impl_def Str.Insts.CoreCmpPartialEqStr : cmp.PartialEq Str Str := {
+  eq := Str.Insts.CoreCmpPartialEqStr.eq
+  ne := cmp.PartialEq.ne.default Str.Insts.CoreCmpPartialEqStr
+}
+
 /-- [core_models::str::error::{impl core_models::fmt::Debug for core_models::str::error::Utf8Error}::fmt]:
-    Source: 'core-models/src/core/str.rs', lines 45:8-47:9
+    Source: 'core-models/src/core/str.rs', lines 258:8-260:9
     Visibility: public -/
 def str.error.Utf8Error.Insts.CoreFmtDebug.fmt
   (self : str.error.Utf8Error) (f : fmt.Formatter) :
@@ -18401,11 +18996,80 @@ def str.error.Utf8Error.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::str::error::{impl core_models::fmt::Debug for core_models::str::error::Utf8Error}]
-    Source: 'core-models/src/core/str.rs', lines 44:4-48:5 -/
+    Source: 'core-models/src/core/str.rs', lines 257:4-261:5 -/
 @[reducible]
 def str.error.Utf8Error.Insts.CoreFmtDebug : fmt.Debug
   str.error.Utf8Error := {
   fmt := str.error.Utf8Error.Insts.CoreFmtDebug.fmt
+}
+
+/-- [core_models::str::error::{core_models::str::error::Utf8Error}::new]:
+    Source: 'core-models/src/core/str.rs', lines 267:8-276:9 -/
+def str.error.Utf8Error.new
+  (valid_up_to : Std.Usize) (error_len : Std.U8) :
+  RustM str.error.Utf8Error
+  := do
+  if error_len = 0#u8
+  then ok { valid_up_to, error_len := option.Option.None }
+  else ok { valid_up_to, error_len := (option.Option.Some error_len) }
+
+/-- [core_models::str::error::{core_models::str::error::Utf8Error}::valid_up_to]:
+    Source: 'core-models/src/core/str.rs', lines 279:8-281:9
+    Visibility: public -/
+def str.error.Utf8Error.impl.valid_up_to
+  (self : str.error.Utf8Error) : RustM Std.Usize := do
+  ok self.valid_up_to
+
+/-- [core_models::str::error::{core_models::str::error::Utf8Error}::error_len]:
+    Source: 'core-models/src/core/str.rs', lines 283:8-288:9
+    Visibility: public -/
+def str.error.Utf8Error.impl.error_len
+  (self : str.error.Utf8Error) : RustM (option.Option Std.Usize) := do
+  match self.error_len with
+  | option.Option.Some len =>
+    let i ← lift (UScalar.cast .Usize len)
+    ok (option.Option.Some i)
+  | option.Option.None => ok option.Option.None
+
+/-- [core_models::str::error::{impl core_models::cmp::PartialEq<core_models::str::error::ParseBoolError> for core_models::str::error::ParseBoolError}::eq]:
+    Source: 'core-models/src/core/str.rs', lines 312:8-314:9
+    Visibility: public -/
+def str.error.ParseBoolError.Insts.CoreCmpPartialEqParseBoolError.eq
+  (self : str.error.ParseBoolError) (_other : str.error.ParseBoolError) :
+  RustM Bool
+  := do
+  ok true
+
+/-- Trait implementation: [core_models::str::error::{impl core_models::cmp::PartialEq<core_models::str::error::ParseBoolError> for core_models::str::error::ParseBoolError}]
+    Source: 'core-models/src/core/str.rs', lines 311:4-315:5 -/
+@[reducible]
+impl_def str.error.ParseBoolError.Insts.CoreCmpPartialEqParseBoolError :
+  cmp.PartialEq str.error.ParseBoolError str.error.ParseBoolError := {
+  eq := str.error.ParseBoolError.Insts.CoreCmpPartialEqParseBoolError.eq
+  ne := cmp.PartialEq.ne.default
+    str.error.ParseBoolError.Insts.CoreCmpPartialEqParseBoolError
+}
+
+/-- [core_models::str::traits::{impl core_models::str::traits::FromStr<core_models::str::error::ParseBoolError> for bool}::from_str]:
+    Source: 'core-models/src/core/str.rs', lines 358:8-366:9
+    Visibility: public -/
+def Bool.Insts.CoreStrTraitsFromStrParseBoolError.from_str
+  (s : Str) : RustM (result.Result Bool str.error.ParseBoolError) := do
+  let b ← Str.Insts.CoreCmpPartialEqStr.eq s (toStr "true")
+  if b
+  then ok (result.Result.Ok true)
+  else
+    let b1 ← Str.Insts.CoreCmpPartialEqStr.eq s (toStr "false")
+    if b1
+    then ok (result.Result.Ok false)
+    else ok (result.Result.Err ())
+
+/-- Trait implementation: [core_models::str::traits::{impl core_models::str::traits::FromStr<core_models::str::error::ParseBoolError> for bool}]
+    Source: 'core-models/src/core/str.rs', lines 356:4-367:5 -/
+@[reducible]
+def Bool.Insts.CoreStrTraitsFromStrParseBoolError : str.traits.FromStr
+  Bool str.error.ParseBoolError := {
+  from_str := Bool.Insts.CoreStrTraitsFromStrParseBoolError.from_str
 }
 
 

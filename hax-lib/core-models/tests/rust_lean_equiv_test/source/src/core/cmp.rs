@@ -164,9 +164,58 @@ pub fn test_ordering_is_gt() -> bool {
     std::cmp::Ordering::Greater.is_gt() && !std::cmp::Ordering::Equal.is_gt()
 }
 
-// Rust-only: the model's `Ord` has only `cmp`, no `clamp`.
+// ----- minmax ----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_minmax_ordered() -> bool {
+    std::cmp::minmax(3u8, 7u8) == [3, 7]
+}
+
+#[rust_lean_test]
+pub fn test_minmax_reversed() -> bool {
+    std::cmp::minmax(7u8, 3u8) == [3, 7]
+}
+
+// On `Equal`, `minmax` keeps the argument order.
+#[rust_lean_test]
+pub fn test_minmax_equal() -> bool {
+    std::cmp::minmax(5u8, 5u8) == [5, 5]
+}
+
+#[rust_lean_test]
+pub fn test_minmax_extremes() -> bool {
+    std::cmp::minmax(u8::MAX, 0u8) == [0, u8::MAX]
+}
+
+// ----- Rust-only: `Ord`'s default methods --------------------------------
+// The model has these in `OrdDefaults`, not `Ord`.
 #[cfg(test)]
-mod ord_clamp {
+mod ord_defaults {
+    #[test]
+    fn test_max_first() {
+        assert_eq!(9u8.max(2), 9);
+    }
+
+    #[test]
+    fn test_max_second() {
+        assert_eq!(2u8.max(9), 9);
+    }
+
+    #[test]
+    fn test_max_extremes() {
+        assert_eq!(0u8.max(u8::MAX), u8::MAX);
+    }
+
+    #[test]
+    fn test_min_first() {
+        assert_eq!(2u8.min(9), 2);
+    }
+
+    #[test]
+    fn test_min_extremes() {
+        assert_eq!(u8::MAX.min(0), 0);
+    }
+
     #[test]
     fn test_clamp_below() {
         assert_eq!(1u8.clamp(3, 7), 3);
@@ -254,4 +303,81 @@ pub fn test_ordering_eq_different() -> bool {
 #[rust_lean_test]
 pub fn test_ordering_ne() -> bool {
     5u8.cmp(&5u8) != core::cmp::Ordering::Less
+}
+
+// ----- Rust-only: the closure-taking `*_by` / `*_by_key` family -----------
+// TODO(closure-extraction): ties on the first component pin the tie-breaks.
+#[cfg(test)]
+mod by_and_by_key {
+    #[test]
+    fn test_max_by_ties_to_second() {
+        assert_eq!(
+            std::cmp::max_by((1u8, 10u8), (1u8, 20u8), |a, b| a.0.cmp(&b.0)),
+            (1, 20)
+        );
+    }
+
+    #[test]
+    fn test_min_by_ties_to_first() {
+        assert_eq!(
+            std::cmp::min_by((1u8, 10u8), (1u8, 20u8), |a, b| a.0.cmp(&b.0)),
+            (1, 10)
+        );
+    }
+
+    #[test]
+    fn test_max_by_picks_greater() {
+        assert_eq!(
+            std::cmp::max_by((1u8, 10u8), (2u8, 20u8), |a, b| a.0.cmp(&b.0)),
+            (2, 20)
+        );
+    }
+
+    #[test]
+    fn test_max_by_key_ties_to_second() {
+        assert_eq!(
+            std::cmp::max_by_key((1u8, 10u8), (1u8, 20u8), |a| a.0),
+            (1, 20)
+        );
+    }
+
+    #[test]
+    fn test_min_by_key_ties_to_first() {
+        assert_eq!(
+            std::cmp::min_by_key((1u8, 10u8), (1u8, 20u8), |a| a.0),
+            (1, 10)
+        );
+    }
+
+    #[test]
+    fn test_min_by_key_picks_smaller() {
+        assert_eq!(
+            std::cmp::min_by_key((3u8, 10u8), (2u8, 20u8), |a| a.0),
+            (2, 20)
+        );
+    }
+
+    #[test]
+    fn test_minmax_by_ties_keep_order() {
+        assert_eq!(
+            std::cmp::minmax_by((1u8, 10u8), (1u8, 20u8), |a, b| a.0.cmp(&b.0)),
+            [(1, 10), (1, 20)]
+        );
+    }
+
+    #[test]
+    fn test_minmax_by_sorts() {
+        assert_eq!(
+            std::cmp::minmax_by((5u8, 10u8), (2u8, 20u8), |a, b| a.0.cmp(&b.0)),
+            [(2, 20), (5, 10)]
+        );
+    }
+
+    #[test]
+    fn test_minmax_by_key_sorts() {
+        assert_eq!(
+            std::cmp::minmax_by_key((5u8, 10u8), (2u8, 20u8), |a| a.0),
+            [(2, 20), (5, 10)]
+        );
+    }
 }

@@ -56,7 +56,19 @@ MODEL_OWNER_ALIASES = {
     "ErrorDefaults": "Error",
     "RangeBoundsDefaults": "RangeBounds",
     "IntoBoundsDefaults": "IntoBounds",
+    "IteratorMethods": "Iterator",
+    "DoubleEndedIteratorMethods": "DoubleEndedIterator",
+    "ExactSizeIteratorMethods": "ExactSizeIterator",
+    "ExtendMethods": "Extend",
+    "Neq": "PartialEq",
+    "PartialOrdDefaults": "PartialOrd",
+    "OrdDefaults": "Ord",
+    "ToOwnedDefaults": "ToOwned",
+    "WriteDefaults": "Write",
 }
+
+# Companion-trait methods renamed in the model.
+MODEL_METHOD_ALIASES = {("Neq", "neq"): "ne"}
 
 # Modules that a pure-Rust verification model of core/alloc is not trying to
 # provide (platform/runtime/compiler surface). Reported separately, not in the
@@ -190,6 +202,7 @@ def apply_model_aliases(mods: dict[str, set[str]]) -> dict[str, set[str]]:
             if alias is None:
                 continue
             if method:
+                method = MODEL_METHOD_ALIASES.get((owner, method), method)
                 aliased.add(f"{alias}::{method}")
             else:
                 aliased.add(alias)

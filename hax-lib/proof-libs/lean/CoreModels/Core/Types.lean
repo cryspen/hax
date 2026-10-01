@@ -218,7 +218,7 @@ structure clone.Clone (Self : Type) where
 def array.CloneArray.clone.closure (T : Type) (N : Std.Usize) := Array T N
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
-    Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
+    Source: 'core-models/src/core/cmp.rs', lines 6:0-24:1
     Visibility: public -/
 structure cmp.PartialEq (Self : Type) (Rhs : Type) where
   eq : Self → Rhs → RustM Bool
@@ -264,14 +264,14 @@ structure clone.UseCloned (Self : Type) where
   CloneInst : clone.Clone Self
 
 /-- Trait declaration: [core_models::cmp::Eq]
-    Source: 'core-models/src/core/cmp.rs', lines 26:0-26:32
+    Source: 'core-models/src/core/cmp.rs', lines 27:0-27:32
     Visibility: public -/
 structure cmp.Eq (Self : Type) where
   PartialEqInst : cmp.PartialEq Self Self
 
 /-
 /-- [core_models::cmp::Ordering]
-    Source: 'core-models/src/core/cmp.rs', lines 30:0-37:1
+    Source: 'core-models/src/core/cmp.rs', lines 31:0-38:1
     Visibility: public -/
 @[discriminant isize [-1,0,1]]
 inductive cmp.Ordering where
@@ -281,7 +281,7 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 49:0-85:1
+    Source: 'core-models/src/core/cmp.rs', lines 50:0-86:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
@@ -292,12 +292,12 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   ge : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 88:0-91:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 89:0-92:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 159:0-163:1
+    Source: 'core-models/src/core/cmp.rs', lines 160:0-164:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -305,10 +305,18 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → RustM cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 182:0-182:29
+    Source: 'core-models/src/core/cmp.rs', lines 183:0-183:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T
+
+/-- Trait declaration: [core_models::cmp::OrdDefaults]
+    Source: 'core-models/src/core/cmp.rs', lines 370:0-383:1 -/
+structure cmp.OrdDefaults (Self : Type) where
+  max : forall (OrdInst : cmp.Ord Self), Self → Self → RustM Self
+  min : forall (OrdInst : cmp.Ord Self), Self → Self → RustM Self
+  clamp : forall (OrdInst : cmp.Ord Self), Self → Self → Self → RustM
+    Self
 
 /-- Trait declaration: [core_models::convert::TryInto]
     Source: 'core-models/src/core/convert.rs', lines 5:0-10:1 -/
@@ -1474,21 +1482,34 @@ structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   get_unchecked_mut : Self → T → RustM (Self_Output × (Self_Output → T))
   index_mut : Self → T → RustM (Self_Output × (Self_Output → T))
 
-/-- [core_models::str::error::Utf8Error]
-    Source: 'core-models/src/core/str.rs', lines 40:4-40:25
-    Visibility: public -/
+/-- [core_models::str::str]
+    Source: 'core-models/src/core/str.rs', lines 13:0-13:11 -/
 @[reducible]
-def str.error.Utf8Error := Unit
-
-/-- [core_models::str::iter::Split]
-    Source: 'core-models/src/core/str.rs', lines 72:4-72:23 -/
-@[reducible]
-def str.iter.Split (T : Type) := T
+def str.str := Unit
 
 /-- Trait declaration: [core_models::str::traits::FromStr]
-    Source: 'core-models/src/core/str.rs', lines 76:4-79:5 -/
+    Source: 'core-models/src/core/str.rs', lines 334:4-337:5
+    Visibility: public -/
 structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
   from_str : Str → RustM (result.Result Self Self_Err)
+
+/-- [core_models::str::error::Utf8Error]
+    Source: 'core-models/src/core/str.rs', lines 250:4-253:5
+    Visibility: public -/
+structure str.error.Utf8Error where
+  valid_up_to : Std.Usize
+  error_len : option.Option Std.U8
+
+/-- [core_models::str::error::ParseBoolError]
+    Source: 'core-models/src/core/str.rs', lines 307:4-307:30
+    Visibility: public -/
+@[reducible]
+def str.error.ParseBoolError := Unit
+
+/-- [core_models::str::iter::Split]
+    Source: 'core-models/src/core/str.rs', lines 330:4-330:23 -/
+@[reducible]
+def str.iter.Split (T : Type) := T
 
 /-- [core_models::sync::atomic::AtomicBool]
     Source: 'core-models/src/core/sync.rs', lines 11:4-13:5
