@@ -28,6 +28,7 @@
 // Unstable std items the Rust half of the tests calls.
 #![feature(
     array_into_iter_constructors,
+    cmp_minmax,
     cold_path,
     drop_guard,
     ergonomic_clones,

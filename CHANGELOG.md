@@ -16,6 +16,7 @@ Lean backend and library:
  - Add models for more of `ops`
  - Add models for more of `panicking` and `hint`
  - Add models for more of `marker` and `hash`
+ - Add models for more of `cmp` and `str`
 
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
@@ -24,6 +25,7 @@ F* backend and library:
  - Add models for more of `ops`
  - Add models for more of `panicking` and `hint`
  - Add models for more of `marker` and `hash`
+ - Add models for more of `cmp` and `str`
 
 ### Changed
 

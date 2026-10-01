@@ -160,7 +160,7 @@ clean: clean-generated alloc-clean fstar-clean
 FSTAR_CRATES = core-models std alloc rand_core
 
 CORE_MODELS_FSTAR_INTERFACES = \
-    '+!core_models::str::* +!**::num::error +!**::panicking::internal \
+    '+!core_models::str +!core_models::str::** +!**::num::error +!**::panicking::internal \
      +!core_models::borrow +!core_models::default +!core_models::error \
      +!core_models::hash +!core_models::hint +!core_models::ops::bit \
      +!core_models::ops::arith +!core_models::fmt +!core_models::fmt::rt \
@@ -231,7 +231,6 @@ FSTAR_HANDWRITTEN = \
     Core_models.Iter.Traits.fst \
     Core_models.Num.Niche_types.fsti \
     Core_models.Ops.Index.IndexMut.fst \
-    Core_models.Str.fsti \
     Core_models.Time.fsti \
     Core_models.TypeClassPlaceHolder.fst \
     Rand.Distr.Distribution.fsti \

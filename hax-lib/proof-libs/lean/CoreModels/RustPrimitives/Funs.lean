@@ -244,11 +244,23 @@ def rust_primitives.slice.array_from_mut
   {T : Type} : T → RustM ((Array T 1#usize) × (Array T 1#usize → T)) :=
   fun x => ok (Array.repeat 1#usize x, fun a => a.val.headD x)
 
+-- The two-element array `[a, b]`.
+@[spec]
+def rust_primitives.slice.array_pair
+  {T : Type} : T → T → RustM (Array T 2#usize) :=
+  fun a b => ok (Array.make 2#usize [a, b])
+
 -- Aeneas represents `str` as `Slice U8` (`Aeneas.Std.Str`), i.e. already as its
 -- UTF-8 bytes, so taking those bytes is the identity.
 @[spec]
 def rust_primitives.string.str_as_bytes : Str → RustM (Slice Std.U8) :=
   fun s => ok s
+
+-- Byte-indexed substring; the same projection as `slice_slice`, since `Str` is
+-- a byte slice here. Slicing off a UTF-8 boundary is ruled out by the callers
+-- in `core_models::str`, not by the representation.
+def rust_primitives.string.str_sub_bytes : Str → Std.Usize → Std.Usize → RustM Str :=
+  fun s i j => Slice.subslice s ⟨i, j⟩
 
 @[spec]
 def rust_primitives.slice.array_slice

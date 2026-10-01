@@ -213,6 +213,20 @@ include Core_models.Bundle {impl_58__then as impl_Ordering__then}
 
 include Core_models.Bundle {impl_58__then_with as impl_Ordering__then_with}
 
+include Core_models.Bundle {max_by as max_by}
+
+include Core_models.Bundle {min_by as min_by}
+
+include Core_models.Bundle {max_by_key as max_by_key}
+
+include Core_models.Bundle {min_by_key as min_by_key}
+
+include Core_models.Bundle {minmax as minmax}
+
+include Core_models.Bundle {minmax_by as minmax_by}
+
+include Core_models.Bundle {minmax_by_key as minmax_by_key}
+
 include Core_models.Bundle {clamp as clamp}
 
 include Core_models.Bundle {impl_6 as impl_6}

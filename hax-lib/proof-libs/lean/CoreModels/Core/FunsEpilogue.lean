@@ -385,15 +385,6 @@ def iter.traits.iterator.Iterator.fuse.default
     RustM (iter.adapters.fuse.Fuse Self) :=
   iter.adapters.fuse.Fuse.new self
 
-/-! ## `str::as_bytes`
-
-`Str` is definitionally `Slice U8` (Aeneas.Std `StringDef`), so `str::as_bytes` is
-the identity on the underlying bytes — faithful, no opacity, no trust expansion.
-(The verify path passes a domain-separator `label : Str` to `Transcript::new`.) -/
-open Aeneas.Std in
-def str.Str.as_bytes (s : Str) : Aeneas.Std.RustM (Slice U8) :=
-  .ok s
-
 /-! ## Per-impl specialisations of the eager consumers
 
 Aeneas emits the generic `.default` for the lazy constructors, but a per-impl

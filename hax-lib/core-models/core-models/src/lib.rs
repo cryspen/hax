@@ -40,12 +40,14 @@
 // range and `ControlFlow` items.
 // `cold_path`, `likely_unlikely`: for `hint::{cold_path, likely, unlikely}`.
 // `hasher_prefixfree_extras`: for `Hasher::{write_length_prefix, write_str}`.
+// `cmp_minmax`: for `cmp::minmax{,_by,_by_key}`.
 #![cfg_attr(
     test,
     feature(
         array_into_iter_constructors,
         bound_as_ref,
         bound_copied,
+        cmp_minmax,
         cold_path,
         control_flow_into_value,
         control_flow_ok,

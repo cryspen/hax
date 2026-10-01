@@ -1,4 +1,5 @@
 use crate::option::Option;
+use rust_primitives::slice::array_pair;
 
 /// See [`std::cmp::PartialEq`]
 #[hax_lib::attributes]
@@ -307,6 +308,109 @@ impl Ordering {
     }
 }
 
+// `is_lt` rather than a `match`: F* types a closure's result as a `FnOnce::Output`
+// projection, which an `Ordering` pattern does not match.
+
+/// See [`std::cmp::max_by`]
+pub fn max_by<T, F: FnOnce(&T, &T) -> Ordering>(v1: T, v2: T, compare: F) -> T {
+    if compare(&v2, &v1).is_lt() { v1 } else { v2 }
+}
+
+/// See [`std::cmp::min_by`]
+pub fn min_by<T, F: FnOnce(&T, &T) -> Ordering>(v1: T, v2: T, compare: F) -> T {
+    if compare(&v2, &v1).is_lt() { v2 } else { v1 }
+}
+
+// opaque for F*, which loses the closure's `Output` type and so cannot type the body.
+
+/// See [`std::cmp::max_by_key`]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+pub fn max_by_key<T, F: FnMut(&T) -> K, K: Ord>(v1: T, v2: T, mut f: F) -> T {
+    if f(&v2).cmp(&f(&v1)).is_lt() { v1 } else { v2 }
+}
+
+/// See [`std::cmp::min_by_key`]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+pub fn min_by_key<T, F: FnMut(&T) -> K, K: Ord>(v1: T, v2: T, mut f: F) -> T {
+    if f(&v2).cmp(&f(&v1)).is_lt() { v2 } else { v1 }
+}
+
+/// See [`std::cmp::minmax`]
+pub fn minmax<T: Ord>(v1: T, v2: T) -> [T; 2] {
+    if v2.cmp(&v1).is_lt() {
+        array_pair(v2, v1)
+    } else {
+        array_pair(v1, v2)
+    }
+}
+
+/// See [`std::cmp::minmax_by`]
+pub fn minmax_by<T, F: FnOnce(&T, &T) -> Ordering>(v1: T, v2: T, compare: F) -> [T; 2] {
+    if compare(&v2, &v1).is_lt() {
+        array_pair(v2, v1)
+    } else {
+        array_pair(v1, v2)
+    }
+}
+
+/// See [`std::cmp::minmax_by_key`]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+pub fn minmax_by_key<T, F: FnMut(&T) -> K, K: Ord>(v1: T, v2: T, mut f: F) -> [T; 2] {
+    if f(&v2).cmp(&f(&v1)).is_lt() {
+        array_pair(v2, v1)
+    } else {
+        array_pair(v1, v2)
+    }
+}
+
+// Companion trait for `Ord`'s default methods; after `impl Ordering` for aeneas.
+// Not in F*: the extra impl would renumber F*'s global `impl_NN` names (#828).
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+trait OrdDefaults {
+    #[hax_lib::requires(true)]
+    fn max(self, other: Self) -> Self
+    where
+        Self: Ord;
+    #[hax_lib::requires(true)]
+    fn min(self, other: Self) -> Self
+    where
+        Self: Ord;
+    #[hax_lib::requires(min.cmp(&max).is_le())]
+    fn clamp(self, min: Self, max: Self) -> Self
+    where
+        Self: Ord;
+}
+
+#[cfg(not(hax_backend_fstar))]
+impl<T: Ord> OrdDefaults for T {
+    // On `Equal`, `max` returns `other` and `min` returns `self`, like core.
+    fn max(self, other: T) -> T {
+        match other.cmp(&self) {
+            Ordering::Less => self,
+            _ => other,
+        }
+    }
+    fn min(self, other: T) -> T {
+        match other.cmp(&self) {
+            Ordering::Less => other,
+            _ => self,
+        }
+    }
+    fn clamp(self, min: T, max: T) -> T {
+        if !min.cmp(&max).is_le() {
+            crate::panicking::internal::panic()
+        }
+        match self.cmp(&min) {
+            Ordering::Less => min,
+            _ => match self.cmp(&max) {
+                Ordering::Greater => max,
+                _ => self,
+            },
+        }
+    }
+}
+
 /// See [`std::cmp::clamp`]
 #[hax_lib::requires(min.cmp(&max).is_le())]
 pub fn clamp<T: Ord>(value: T, min: T, max: T) -> T {
@@ -373,6 +477,8 @@ impl Eq for Ordering {}
 
 #[cfg(test)]
 mod tests {
+    #[cfg(not(hax_backend_fstar))]
+    use super::OrdDefaults;
     use super::{Ord, Ordering, PartialEq, PartialOrd};
     use crate::testing::Inject;
     use proptest::prelude::*;
@@ -386,6 +492,21 @@ mod tests {
         for o in [Ordering::Less, Ordering::Equal, Ordering::Greater] {
             assert!(crate::fmt::Debug::fmt(&o, &mut f).is_ok());
         }
+    }
+
+    /// Ordered on the key alone, so that ties between distinct values are observable.
+    type Tagged = (u8, u8);
+
+    fn model_by(x: &Tagged, y: &Tagged) -> super::Ordering {
+        <u8 as Ord>::cmp(&x.0, &y.0)
+    }
+
+    fn std_by(x: &Tagged, y: &Tagged) -> std::cmp::Ordering {
+        std::cmp::Ord::cmp(&x.0, &y.0)
+    }
+
+    fn key(x: &Tagged) -> u8 {
+        x.0
     }
 
     proptest! {
@@ -519,7 +640,10 @@ mod tests {
         #[test]
         fn test_clamp_at_min(x in any::<u8>(), hi in any::<u8>()) {
             let hi = std::cmp::max(x, hi);
-            prop_assert_eq!(super::clamp(x.inject(), x.inject(), hi.inject()), x.clamp(x, hi));
+            prop_assert_eq!(
+                super::clamp(x.inject(), x.inject(), hi.inject()),
+                std::cmp::Ord::clamp(x, x, hi)
+            );
         }
 
         #[test]
@@ -528,7 +652,7 @@ mod tests {
             let hi = std::cmp::max(a, b);
             prop_assert_eq!(
                 super::clamp(x.inject(), lo.inject(), hi.inject()),
-                x.clamp(lo, hi)
+                std::cmp::Ord::clamp(x, lo, hi)
             );
         }
 
@@ -730,6 +854,99 @@ mod tests {
                     a != b
                 );
             }
+        }
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_ord_clamp_min_above_max_panics() {
+        crate::testing::panics_like_core(
+            || OrdDefaults::clamp(5u8, 7u8, 3u8),
+            || std::cmp::Ord::clamp(5u8, 7u8, 3u8),
+        );
+    }
+
+    proptest! {
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ord_max(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                OrdDefaults::max(x.inject(), y.inject()),
+                std::cmp::Ord::max(x, y)
+            );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ord_min(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                OrdDefaults::min(x.inject(), y.inject()),
+                std::cmp::Ord::min(x, y)
+            );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ord_clamp(x in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
+            let lo = std::cmp::min(a, b);
+            let hi = std::cmp::max(a, b);
+            prop_assert_eq!(
+                OrdDefaults::clamp(x.inject(), lo.inject(), hi.inject()),
+                std::cmp::Ord::clamp(x, lo, hi)
+            );
+        }
+
+        #[test]
+        fn test_max_by(x in any::<Tagged>(), y in any::<Tagged>()) {
+            prop_assert_eq!(
+                super::max_by(x.inject(), y.inject(), model_by),
+                std::cmp::max_by(x, y, std_by).inject()
+            );
+        }
+
+        #[test]
+        fn test_min_by(x in any::<Tagged>(), y in any::<Tagged>()) {
+            prop_assert_eq!(
+                super::min_by(x.inject(), y.inject(), model_by),
+                std::cmp::min_by(x, y, std_by).inject()
+            );
+        }
+
+        #[test]
+        fn test_max_by_key(x in any::<Tagged>(), y in any::<Tagged>()) {
+            prop_assert_eq!(
+                super::max_by_key(x.inject(), y.inject(), key),
+                std::cmp::max_by_key(x, y, key).inject()
+            );
+        }
+
+        #[test]
+        fn test_min_by_key(x in any::<Tagged>(), y in any::<Tagged>()) {
+            prop_assert_eq!(
+                super::min_by_key(x.inject(), y.inject(), key),
+                std::cmp::min_by_key(x, y, key).inject()
+            );
+        }
+
+        #[test]
+        fn test_minmax(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(super::minmax(x.inject(), y.inject()), std::cmp::minmax(x, y));
+        }
+
+        #[test]
+        fn test_minmax_by(x in any::<Tagged>(), y in any::<Tagged>()) {
+            prop_assert_eq!(
+                super::minmax_by(x.inject(), y.inject(), model_by),
+                std::cmp::minmax_by(x, y, std_by).inject()
+            );
+        }
+
+        #[test]
+        fn test_minmax_by_key(x in any::<Tagged>(), y in any::<Tagged>()) {
+            prop_assert_eq!(
+                super::minmax_by_key(x.inject(), y.inject(), key),
+                std::cmp::minmax_by_key(x, y, key).inject()
+            );
         }
     }
 }

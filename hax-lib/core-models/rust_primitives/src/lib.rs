@@ -1,4 +1,6 @@
 #![allow(unused_variables)]
+// Gated so the crate still builds on stable, where the attribute is unknown.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 pub mod slice {
     pub fn slice_length<T>(s: &[T]) -> usize {
@@ -69,6 +71,11 @@ pub mod slice {
     // Lean-only: the F* models lower indexed assignment to `Array.update`.
     pub fn array_as_mut_slice<T, const N: usize>(s: &mut [T; N]) -> &mut [T] {
         &mut s[..]
+    }
+    // A `[a, b]` literal in the model extracts to `Rust_primitives.Hax.array_of_list`,
+    // whose module depends on `Core_models`, closing a cycle.
+    pub fn array_pair<T>(a: T, b: T) -> [T; 2] {
+        [a, b]
     }
     // A `&[]` in the model borrows a constant, which Aeneas cannot translate.
     pub fn slice_empty<'a, T>() -> &'a [T] {
@@ -231,15 +238,21 @@ pub mod string {
     }
     // `Option`/`Result` are `core` types, which `core_models` may not touch, so
     // these fallible primitives answer with a validity flag instead.
-    pub fn str_from_utf8(s: &[u8]) -> (bool, &str) {
+    // On failure, also `valid_up_to` and `error_len` (0 for `None`).
+    pub fn str_from_utf8(s: &[u8]) -> (bool, &str, usize, u8) {
         match core::str::from_utf8(s) {
-            Ok(s) => (true, s),
-            Err(_) => (false, ""),
+            Ok(s) => (true, s, 0, 0),
+            Err(e) => (false, "", e.valid_up_to(), e.error_len().unwrap_or(0) as u8),
         }
     }
     /// The UTF-8 encoding of `s`.
     pub fn str_as_bytes(s: &str) -> &[u8] {
         s.as_bytes()
+    }
+    /// `&s[b..e]` in bytes (`str_sub` counts `char`s).
+    #[hax_lib::requires(b <= e && e <= crate::slice::slice_length(str_as_bytes(s)))]
+    pub fn str_sub_bytes(s: &str, b: usize, e: usize) -> &str {
+        &s[b..e]
     }
 }
 
