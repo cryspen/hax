@@ -139,8 +139,42 @@ pub fn exists<T, U: Into<Prop>>(f: impl Fn(T) -> U) -> Prop {
 }
 
 /// The logical implication `a ==> b`.
+///
+/// Both sides are evaluated eagerly. For lazy evaluation of the
+/// right-hand side, use [`implies!`](crate::implies!) instead.
 pub fn implies(lhs: impl Into<Prop>, rhs: impl Into<Prop>) -> Prop {
     constructors::implies(lhs.into(), rhs.into())
+}
+
+/// The logical implication `a ==> b`, where `b` is evaluated only
+/// when `a` holds.
+///
+/// Unlike the function [`implies`], `implies!(a, b)` does not evaluate
+/// `b` when `a` is false. This matters when `b` is only well-defined
+/// under `a`, e.g. when `a` is a bounds check for an index in `b`.
+///
+/// `implies!(a, b)` expands to `if a { b } else { true }`, lifted to
+/// [`Prop`]: `a` is a `bool`, and `b` is anything that converts into a
+/// [`Prop`].
+///
+/// # Example:
+///
+/// ```
+/// use hax_lib::*;
+/// let a: &[u8] = &[1, 2];
+/// // Never indexes `a` out of bounds.
+/// let _ = implies!(a.len() > 2, a[2] == 0);
+/// let _ = forall(|k: usize| implies!(k < a.len(), a[k] <= 2));
+/// ```
+#[macro_export]
+macro_rules! implies {
+    ($lhs:expr, $rhs:expr $(,)?) => {
+        if $lhs {
+            $crate::Prop::from($rhs)
+        } else {
+            $crate::Prop::from(true)
+        }
+    };
 }
 
 pub use constructors::eq;
