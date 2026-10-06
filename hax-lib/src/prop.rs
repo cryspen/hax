@@ -32,7 +32,7 @@ pub mod constructors {
     }
 
     pub fn implies(lhs: Prop, other: Prop) -> Prop {
-        Prop(lhs.0 || !other.0)
+        Prop(!lhs.0 || other.0)
     }
 
     pub fn forall<A, F: Fn(A) -> Prop>(_pred: F) -> Prop {

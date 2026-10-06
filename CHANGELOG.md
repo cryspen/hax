@@ -19,6 +19,11 @@ Lean backend and library:
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
 
+### Fixed
+
+Changes to the hax-lib crate:
+ - The Rust semantics of `implies` is no longer reversed
+
 ### Changed
 
 Lean backend and library:
