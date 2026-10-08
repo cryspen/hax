@@ -178,3 +178,39 @@ macro_rules! implies {
 }
 
 pub use constructors::eq;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TRUTH_TABLE: [(bool, bool, bool); 4] = [
+        (false, false, true),
+        (false, true, true),
+        (true, false, false),
+        (true, true, true),
+    ];
+
+    #[test]
+    fn implies_truth_table() {
+        for (lhs, rhs, expected) in TRUTH_TABLE {
+            assert_eq!(implies(lhs, rhs).0, expected, "implies({lhs}, {rhs})");
+            assert_eq!(implies!(lhs, rhs).0, expected, "implies!({lhs}, {rhs})");
+        }
+    }
+
+    /// A right-hand side that panics when evaluated.
+    fn rhs() -> bool {
+        panic!("the right-hand side is evaluated")
+    }
+
+    #[test]
+    fn implies_macro_is_lazy() {
+        assert!(implies!(false, rhs()).0);
+    }
+
+    #[test]
+    #[should_panic(expected = "the right-hand side is evaluated")]
+    fn implies_macro_evaluates_rhs_when_lhs_holds() {
+        let _ = implies!(true, rhs());
+    }
+}
