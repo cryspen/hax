@@ -11,6 +11,7 @@ through the hax toolchain.
 - `#[hax_lib::attributes]`: enables `requires`/`ensures` on trait methods and refinements on struct fields.
 - `hax_lib::loop_invariant!`: loop invariants.
 - `Prop` and the logical operators `forall`, `exists`, `implies`: propositions beyond `bool`.
+- `implies!`: an implication whose right-hand side is evaluated only when its left-hand side holds.
 - `assume!`, `assert!`, `assert_prop!`: assumptions and assertions for the backends.
 - `fstar!`, `coq!`, `proverif!`, ...: inline backend code.
 
@@ -20,7 +21,7 @@ through the hax toolchain.
 /// The addition in `sum` does not overflow.
 fn no_overflow(x: &[u32], y: &[u32]) -> hax_lib::Prop {
     hax_lib::forall(|i: usize| {
-        hax_lib::implies(
+        hax_lib::implies!(
             i < x.len(),
             x[i] as u64 + y[i] as u64 <= u32::MAX as u64,
         )

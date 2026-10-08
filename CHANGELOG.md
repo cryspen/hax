@@ -9,11 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+Changes to the hax-lib crate:
+ - Add `implies!`, an implication whose right-hand side is evaluated only when
+   its left-hand side holds
+
 Lean backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
 
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
+
+### Fixed
+
+Changes to the hax-lib crate:
+ - The Rust semantics of `implies` is no longer reversed
 
 ### Changed
 

@@ -88,6 +88,11 @@ fn prop_implies_free(a: u32) -> u32 {
     a
 }
 
+#[hax_lib::requires(forall(|k: usize| implies!(k < a.len(), a[k] <= bound)))]
+fn prop_implies_macro(a: &[u8], bound: u8) -> u8 {
+    bound
+}
+
 #[hax_lib::requires(eq(a, a))]
 fn prop_eq_free(a: u32) -> u32 {
     a
